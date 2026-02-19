@@ -1,0 +1,78 @@
+##################################
+# .NET / Visual Studio
+##################################
+
+# Build results
+**/bin/
+**/obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Visual Studio cache
+.vs/
+
+# Rider / ReSharper
+.idea/
+*.DotSettings.user
+
+##################################
+# .NET Core / ASP.NET
+##################################
+
+# Publish output
+**/publish/
+
+# Logs
+*.log
+
+##################################
+# Web / Static assets
+##################################
+
+# Next.js / frontend build output inside wwwroot
+API/wwwroot/*
+API/uploads/*
+
+# Optional: if wwwroot is fully generated
+# Uncomment if you NEVER commit static output
+# API/wwwroot/
+
+##################################
+# OS files
+##################################
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# macOS
+.DS_Store
+
+##################################
+# Environment / Secrets
+##################################
+
+# Environment files
+.env
+.env.*
+
+# ASP.NET secrets
+secrets.json
+appsettings.*.json
+!appsettings.json
+
+# wwwroot *
+wwwroot/*
+
+
+##################################
+# NuGet
+##################################
+
+# NuGet packages (optional – usually restored)
+*.nupkg
