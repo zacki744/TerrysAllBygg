@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+/* Retro color variables */
+:root {
+  --background: #f4f1ec;     /* warm paper */
+  --foreground: #2b2b2b;     /* soft black */
+  --primary: #c86b3c;        /* burnt orange */
+  --secondary: #5f7a61;      /* muted green */
+  --accent: #3a5a8c;         /* dusty blue */
+  --border: #d6cfc4;         /* subtle borders */
+}
+
+/* Tailwind theme bindings */
+:root {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-accent: var(--accent);
+  --color-border: var(--border);
+
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+/* Base styles */
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
