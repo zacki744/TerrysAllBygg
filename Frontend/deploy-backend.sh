@@ -4,7 +4,7 @@ set -e
 echo "Building Next.js..."
 npm run build
 
-BACKEND_WWWROOT="../../TABB/API/wwwroot/app"
+BACKEND_WWWROOT="../TABB/API/wwwroot/app"
 
 echo "Cleaning old frontend..."
 rm -rf "$BACKEND_WWWROOT"
