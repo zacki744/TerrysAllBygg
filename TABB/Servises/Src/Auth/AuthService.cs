@@ -8,28 +8,19 @@ using System.Text;
 
 namespace Services.Src.Auth;
 
-public class AuthService : IAuthService
+public class AuthService(IDatabase db, IConfiguration config) : IAuthService
 {
-    private readonly IDatabase _db;
-    private readonly IConfiguration _config;
-
-    public AuthService(IDatabase db, IConfiguration config)
-    {
-        _db = db;
-        _config = config;
-    }
+    private readonly IDatabase _db = db;
+    private readonly IConfiguration _config = config;
 
     public async Task<LoginResponse?> LoginAsync(LoginRequest request, CancellationToken ct = default)
     {
         // Find user by username
         var user = await _db.ReadSingleAsync<AdminUser>(
             "admin_users",
-            new { Username = request.Username },  // Changed to explicitly use property name
+            new {request.Username },  // Changed to explicitly use property name
             ct
         );
-        Console.WriteLine($"Login attempt for user: {request.Username}");
-        Console.WriteLine($"User found: {user != null}");
-        Console.WriteLine($"password hash: {user.PasswordHash}");
 
         // Check if user exists
         if (user == null)
