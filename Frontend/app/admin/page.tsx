@@ -6,6 +6,7 @@ import AdminNavbar from "./components/AdminNavbar";
 import ProjectTable from "./components/ProjectTable";
 import Button from "../components/ui/Button";
 import { AuthService, AdminAPI, Project } from "../lib/auth";
+import styles from "./admin.module.css";
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -17,7 +18,6 @@ export default function AdminDashboard() {
       router.push("/admin/login");
       return;
     }
-
     loadProjects();
   }, [router]);
 
@@ -35,42 +35,38 @@ export default function AdminDashboard() {
   };
 
   const handleEdit = (id: string) => {
-    // Use query parameter instead of dynamic route
     router.push(`/admin/edit?id=${id}`);
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this project?")) return;
-
     try {
       await AdminAPI.deleteProject(id);
       setProjects((prev) => prev.filter((p) => p.id !== id));
-    } catch (error) {
+    } catch {
       alert("Failed to delete project");
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <p>Loading...</p>
+      <div className={styles.pageCenter}>
+        <p className={styles.loadingText}>Loading...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className={styles.page}>
       <AdminNavbar />
 
-      <main className="mx-auto max-w-7xl px-6 py-12 mt-16">
-        <div className="flex items-center justify-between mb-8">
+      <main className={styles.main}>
+        <div className={styles.pageHeader}>
           <div>
-            <h1 className="text-3xl font-bold">Projects</h1>
-            <p className="text-zinc-600 dark:text-zinc-400 mt-1">
-              Manage your building projects
-            </p>
+            <h1 className={styles.pageTitle}>Projects</h1>
+            <p className={styles.pageSubtitle}>Manage your building projects</p>
           </div>
-          <Button onClick={() => router.push("/admin/new.html")}>
+          <Button onClick={() => router.push("/admin/new")}>
             + New Project
           </Button>
         </div>

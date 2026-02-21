@@ -14,12 +14,13 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Terrys All Bygg - Byggföretag i Österlen, Skåne",
-  description: "Terrys All Bygg är ett lokalt byggföretag i Österlen, Skåne. Vi specialiserar oss på skräddarsydda byggprojekt som bastuer, tillbyggnader och förråd. Professionell service för både små och stora projekt.",
+  description:
+    "Terrys All Bygg är ett lokalt byggföretag i Österlen, Skåne. Vi specialiserar oss på skräddarsydda byggprojekt som bastuer, tillbyggnader och förråd.",
   keywords: "bygg, byggföretag, österlen, skåne, bastu, tillbyggnad, förråd, renovering, snickare",
   authors: [{ name: "Terrys All Bygg" }],
   openGraph: {
     title: "Terrys All Bygg - Byggföretag i Österlen",
-    description: "Skräddarsydda byggprojekt i Österlen, Skåne. Bastuer, tillbyggnader och specialanpassade lösningar.",
+    description: "Skräddarsydda byggprojekt i Österlen, Skåne.",
     url: "https://terrysallbygg.se",
     siteName: "Terrys All Bygg",
     locale: "sv_SE",
@@ -29,20 +30,16 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="sv" className="bg-background text-foreground">
+    <html lang="sv">
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#c86b3c" />
         <link rel="icon" href="/favicon.ico" />
       </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <main className="pt-20">{children}</main>
+      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+        <main style={{ paddingTop: "5rem" }}>{children}</main>
       </body>
     </html>
   );

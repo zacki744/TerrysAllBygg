@@ -1,49 +1,48 @@
 import Link from "next/link";
+import styles from "./components.module.css";
 
 export default function Footer() {
   return (
-    <footer className="mt-24 border-t border-border py-12 bg-zinc-50 w-full">
-      <div className="mx-auto max-w-7xl px-6 grid gap-8 sm:grid-cols-2 md:grid-cols-3">
+    <footer className={styles.footer}>
+      <div className={styles.footerGrid}>
+
         {/* Company Info */}
         <div>
-          <p className="text-lg font-bold text-primary mb-2">Terrys All Bygg</p>
-          <p className="text-sm text-zinc-600">
-            Lokalt byggföretag i Österlen, Skåne
-          </p>
-          <p className="text-sm text-zinc-600 mt-4">
+          <p className={styles.footerBrand}>Terrys All Bygg</p>
+          <p className={styles.footerText}>Lokalt byggföretag i Österlen, Skåne</p>
+          <p className={styles.footerText} style={{ marginTop: "1rem" }}>
             Professionell service för skräddarsydda byggprojekt
           </p>
         </div>
 
         {/* Quick Links */}
         <div>
-          <p className="text-sm font-semibold mb-3 text-foreground">Snabblänkar</p>
-          <nav className="flex flex-col gap-2 text-sm">
-            <Link href="/" className="text-zinc-600 hover:text-primary transition-colors">
-              Hem
-            </Link>
-            <Link href="/about" className="text-zinc-600 hover:text-primary transition-colors">
-              Om Oss
-            </Link>
-            <Link href="/book" className="text-zinc-600 hover:text-primary transition-colors">
-              Boka Konsultation
-            </Link>
+          <p className={styles.footerHeading}>Snabblänkar</p>
+          <nav className={styles.footerNav}>
+            <Link href="/" className={styles.footerLink}>Hem</Link>
+            <Link href="/about" className={styles.footerLink}>Om Oss</Link>
+            <Link href="/book" className={styles.footerLink}>Boka Konsultation</Link>
           </nav>
         </div>
 
         {/* Contact */}
         <div>
-          <p className="text-sm font-semibold mb-3 text-foreground">Kontakt</p>
-          <div className="text-sm text-zinc-600 space-y-2">
-            <p>📍 Österlen, Skåne</p>
-            <p>📧 <Link href="/book" className="hover:text-primary transition-colors">Boka via mejl</Link></p>
+          <p className={styles.footerHeading}>Kontakt</p>
+          <div className={styles.footerNav}>
+            <p className={styles.footerText}>📍 Österlen, Skåne</p>
+            <p className={styles.footerText}>
+              📧{" "}
+              <Link href="/book" className={styles.footerLink}>
+                Boka via mejl
+              </Link>
+            </p>
           </div>
         </div>
+
       </div>
 
-      {/* Copyright */}
-      <div className="mx-auto max-w-7xl px-6 mt-8 pt-8 border-t border-border text-center">
-        <p className="text-sm text-zinc-600">
+      <div className={styles.footerBottom}>
+        <p className={styles.footerCopy}>
           © {new Date().getFullYear()} Terrys All Bygg. Alla rättigheter förbehållna.
         </p>
       </div>

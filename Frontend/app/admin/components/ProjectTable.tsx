@@ -2,6 +2,7 @@
 
 import { Project } from "@/app/lib/auth";
 import Button from "@/app/components/ui/Button";
+import styles from "../admin.module.css";
 
 interface ProjectTableProps {
   projects: Project[];
@@ -11,41 +12,39 @@ interface ProjectTableProps {
 
 export default function ProjectTable({ projects, onEdit, onDelete }: ProjectTableProps) {
   return (
-    <div className="overflow-x-auto border border-border rounded-xl shadow-sm">
-      <table className="w-full">
-        <thead className="bg-foreground/5 border-b border-border">
+    <div className={styles.tableWrapper}>
+      <table className={styles.table}>
+        <thead className={styles.tableHead}>
           <tr>
-            <th className="px-6 py-4 text-left text-sm font-semibold">Title</th>
-            <th className="px-6 py-4 text-left text-sm font-semibold">Href</th>
-            <th className="px-6 py-4 text-left text-sm font-semibold">Construction Date</th>
-            <th className="px-6 py-4 text-right text-sm font-semibold">Actions</th>
+            <th className={styles.tableHeadCell}>Title</th>
+            <th className={styles.tableHeadCell}>Href</th>
+            <th className={styles.tableHeadCell}>Construction Date</th>
+            <th className={styles.tableHeadCellRight}>Actions</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-border">
+        <tbody className={styles.tableBody}>
           {projects.map((project) => (
-            <tr key={project.id} className="hover:bg-foreground/5 transition-colors">
-              <td className="px-6 py-4">
-                <div className="font-medium">{project.title}</div>
-                <div className="text-sm text-zinc-600 dark:text-zinc-400 line-clamp-1">
-                  {project.description}
-                </div>
+            <tr key={project.id} className={styles.tableRow}>
+              <td className={styles.tableCell}>
+                <div className={styles.tablePrimary}>{project.title}</div>
+                <div className={styles.tableSecondary}>{project.description}</div>
               </td>
-              <td className="px-6 py-4 text-sm text-zinc-600 dark:text-zinc-400">
-                {project.herf}
+              <td className={styles.tableCell}>
+                <span className={styles.tableSecondary}>{project.herf}</span>
               </td>
-              <td className="px-6 py-4 text-sm">
-                {new Date(project.constructionDate).toLocaleDateString('sv-SE')}
+              <td className={styles.tableCell}>
+                {new Date(project.constructionDate).toLocaleDateString("sv-SE")}
               </td>
-              <td className="px-6 py-4 text-right space-x-2">
+              <td className={styles.tableCellRight}>
                 <button
                   onClick={() => onEdit(project.id)}
-                  className="text-accent hover:underline text-sm font-medium"
+                  className={styles.tableActionEdit}
                 >
                   Edit
                 </button>
                 <button
                   onClick={() => onDelete(project.id)}
-                  className="text-red-600 hover:underline text-sm font-medium"
+                  className={styles.tableActionDelete}
                 >
                   Delete
                 </button>
@@ -56,7 +55,7 @@ export default function ProjectTable({ projects, onEdit, onDelete }: ProjectTabl
       </table>
 
       {projects.length === 0 && (
-        <div className="text-center py-12 text-zinc-600 dark:text-zinc-400">
+        <div className={styles.tableEmpty}>
           No projects found. Create your first project!
         </div>
       )}

@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import AdminNavbar from "../components/AdminNavbar";
 import ProjectForm from "../components/ProjectForm";
 import { AdminAPI, UpdateProjectRequest, DetailedProject } from "@/app/lib/auth";
+import styles from "../admin.module.css";
 
 export default function EditProjectContent() {
   const router = useRouter();
@@ -25,11 +26,10 @@ export default function EditProjectContent() {
 
   const loadProject = async () => {
     if (!id) return;
-
     try {
       const data = await AdminAPI.getProject(id);
       setProject(data);
-    } catch (error) {
+    } catch {
       alert("Project not found");
       router.push("/admin");
     } finally {
@@ -45,8 +45,8 @@ export default function EditProjectContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <p>Loading...</p>
+      <div className={styles.pageCenter}>
+        <p className={styles.loadingText}>Loading...</p>
       </div>
     );
   }
@@ -54,11 +54,13 @@ export default function EditProjectContent() {
   if (!project) return null;
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className={styles.page}>
       <AdminNavbar />
 
-      <main className="mx-auto max-w-7xl px-6 py-12 mt-16">
-        <h1 className="text-3xl font-bold mb-8">Edit Project</h1>
+      <main className={styles.main}>
+        <h1 className={styles.pageTitle} style={{ marginBottom: "2rem" }}>
+          Edit Project
+        </h1>
         <ProjectForm
           initialData={{
             href: project.herf,
@@ -69,7 +71,7 @@ export default function EditProjectContent() {
             additionalImages: project.images.slice(1),
           }}
           onSubmit={handleSubmit}
-          onCancel={() => router.push("/admin.html")}
+          onCancel={() => router.push("/admin")}
           isEdit
         />
       </main>

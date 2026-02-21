@@ -1,0 +1,236 @@
+/* ============================================================
+   pages.module.css
+   Scoped styles for all page-level layouts:
+   Home, About, Book, Projects, ProjectsPageContent
+   All colors reference globals.css CSS variables.
+   ============================================================ */
+
+/* ─── Shared page shell ───────────────────────────────────── */
+
+.page {
+  min-height: 100vh;
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+.pageCenter {
+  min-height: 100vh;
+  background-color: var(--background);
+  color: var(--foreground);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Shared content containers */
+.mainNarrow {
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: 3rem 1.5rem;
+}
+
+.mainWide {
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: 3rem 1.5rem;
+}
+
+/* ─── Page header (title + subtitle) ─────────────────────── */
+
+.pageTitle {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.pageSubtitle {
+  margin-top: 1rem;
+  font-size: 1.125rem;
+  color: color-mix(in srgb, var(--foreground) 60%, transparent);
+}
+
+/* ─── Loading / empty states ──────────────────────────────── */
+
+.stateText {
+  text-align: center;
+  padding: 5rem 1.5rem;
+  color: color-mix(in srgb, var(--foreground) 50%, transparent);
+  font-size: 0.875rem;
+}
+
+/* ─── Home page ───────────────────────────────────────────── */
+
+.projectsSection {
+  margin-top: 4rem;
+}
+
+.sectionTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: var(--foreground);
+}
+
+.projectGrid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .projectGrid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ─── About page ──────────────────────────────────────────── */
+
+.aboutTitle {
+  font-size: 1.875rem;
+  font-weight: 600;
+  margin-top: 3rem;
+  color: var(--foreground);
+}
+
+.aboutBody {
+  margin-top: 1rem;
+  color: color-mix(in srgb, var(--foreground) 65%, transparent);
+  line-height: 1.7;
+}
+
+/* ─── Book page ───────────────────────────────────────────── */
+
+.bookForm {
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 2rem;
+  background-color: var(--background);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.formLabel {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: var(--foreground);
+}
+
+.formField {
+  display: flex;
+  flex-direction: column;
+}
+
+.infoBox {
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  background-color: color-mix(in srgb, var(--foreground) 3%, var(--background));
+}
+
+.infoBoxTitle {
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: var(--foreground);
+}
+
+.infoBoxText {
+  font-size: 0.875rem;
+  color: color-mix(in srgb, var(--foreground) 60%, transparent);
+  line-height: 1.6;
+}
+
+/* ─── Project detail page ─────────────────────────────────── */
+
+.projectHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.projectTitle {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.projectDescription {
+  font-size: 1.125rem;
+  color: color-mix(in srgb, var(--foreground) 60%, transparent);
+}
+
+/* Two-column layout: gallery + sidebar */
+.projectLayout {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .projectLayout { flex-direction: row; }
+}
+
+.galleryPanel {
+  flex: 1;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  background-color: var(--background);
+}
+
+.sidebarPanel {
+  flex: 1;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  background-color: var(--background);
+}
+
+@media (min-width: 768px) {
+  .sidebarPanel { max-width: 24rem; }
+}
+
+.sidebarTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--foreground);
+}
+
+.sidebarDetails {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.detailLabel {
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.detailValue {
+  color: color-mix(in srgb, var(--foreground) 60%, transparent);
+  margin-top: 0.125rem;
+}
+
+.descriptionSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.descriptionTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.descriptionText {
+  color: color-mix(in srgb, var(--foreground) 70%, transparent);
+  line-height: 1.75;
+}

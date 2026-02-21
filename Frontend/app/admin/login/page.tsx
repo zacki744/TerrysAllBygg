@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Input from "@/app/components/ui/Input";
 import Button from "@/app/components/ui/Button";
 import { AuthService } from "@/app/lib/auth";
-import Link from "next/link";
+import styles from "../admin.module.css";
 
 export default function AdminLogin() {
   const router = useRouter();
@@ -22,7 +22,7 @@ export default function AdminLogin() {
     try {
       await AuthService.login({ username, password });
       router.push("/admin");
-    } catch (err) {
+    } catch {
       setError("Invalid username or password");
     } finally {
       setLoading(false);
@@ -30,18 +30,17 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-6">
-      <div className="w-full max-w-md space-y-8">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold text-foreground">Admin Login</h1>
-          <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-            Sign in to manage your projects
-          </p>
+    <div className={styles.pageCenter} style={{ padding: "0 1.5rem" }}>
+      <div className={styles.loginBox}>
+
+        <div className={styles.loginHeader}>
+          <h1 className={styles.loginTitle}>Admin Login</h1>
+          <p className={styles.loginSubtitle}>Sign in to manage your projects</p>
         </div>
 
-        <form onSubmit={handleLogin} className="space-y-6">
-          <div>
-            <label className="block text-sm font-medium mb-2">Username</label>
+        <form onSubmit={handleLogin} className={styles.form}>
+          <div className={styles.formField}>
+            <label className={styles.formLabel}>Username</label>
             <Input
               type="text"
               value={username}
@@ -51,31 +50,34 @@ export default function AdminLogin() {
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-2">Password</label>
-                <Input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter password"
-                required
-                />
-            </div>
+          <div className={styles.formField}>
+            <label className={styles.formLabel}>Password</label>
+            <Input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter password"
+              required
+            />
+          </div>
 
-            {error && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md text-sm">
-                {error}
-                </div>
-            )}
+          {error && <div className={styles.errorBox}>{error}</div>}
 
-            <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "Signing in..." : "Sign In"}
-            </Button>
+          <Button type="submit" className="w-full" disabled={loading}>
+            {loading ? "Signing in..." : "Sign In"}
+          </Button>
         </form>
-            <Button type="button" className="w-full mt-2" onClick={() => router.push("/")} disabled={loading}>
-                <Link href="/">Back to Home</Link>
-            </Button> 
-        </div>
+
+        <Button
+          type="button"
+          className="w-full"
+          onClick={() => router.push("/")}
+          disabled={loading}
+        >
+          Back to Home
+        </Button>
+
+      </div>
     </div>
   );
 }

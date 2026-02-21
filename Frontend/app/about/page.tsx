@@ -1,14 +1,21 @@
 import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import styles from "../pages.module.css";
 
 export default function About() {
   return (
-    <main className="mx-auto max-w-3xl px-6">
+    <div className={styles.page}>
       <Navbar />
-      <h1 className="text-3xl font-semibold mt-12">About us</h1>
-      <p className="mt-4 text-zinc-600 dark:text-zinc-400">
-        We are a construction company focused on quality craftsmanship
-        and long-lasting building solutions.
-      </p>
-    </main>
+
+      <main className={styles.mainNarrow}>
+        <h1 className={styles.aboutTitle}>Om oss</h1>
+        <p className={styles.aboutBody}>
+          Vi är ett byggföretag med fokus på kvalitetshantverk och långvariga
+          byggnadslösningar.
+        </p>
+      </main>
+
+      <Footer />
+    </div>
   );
 }

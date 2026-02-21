@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import Button from "../ui/Button";
+import styles from "./../components.module.css";
 
 type Props = {
   images: string[];
@@ -18,39 +18,37 @@ export default function ImageGallery({ images, title }: Props) {
   if (images.length === 0) return null;
 
   return (
-    <div className="relative w-full h-64 md:h-80 flex items-center justify-center">
+    <div className={styles.gallery}>
       <Image
         src={images[index]}
         alt={`${title} image ${index + 1}`}
         width={400}
         height={300}
-        className="rounded-xl object-cover w-full h-full border border-gray-200"
+        className={styles.galleryImage}
       />
 
       {images.length > 1 && (
         <>
-          {/* Prev / Next buttons */}
-          <Button
+          <button
             onClick={prev}
-            className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-background/80 px-3 py-2 shadow"
+            className={`${styles.galleryBtn} ${styles.galleryBtnPrev}`}
+            aria-label="Previous image"
           >
             ‹
-          </Button>
-          <Button
+          </button>
+          <button
             onClick={next}
-            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-background/80 px-3 py-2 shadow"
+            className={`${styles.galleryBtn} ${styles.galleryBtnNext}`}
+            aria-label="Next image"
           >
             ›
-          </Button>
+          </button>
 
-          {/* Indicators */}
-          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-2">
+          <div className={styles.galleryDots}>
             {images.map((_, i) => (
               <span
                 key={i}
-                className={`h-2 w-2 rounded-full ${
-                  i === index ? "bg-foreground" : "bg-muted"
-                }`}
+                className={`${styles.dot} ${i === index ? styles.dotActive : ""}`}
               />
             ))}
           </div>

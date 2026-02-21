@@ -6,6 +6,7 @@ import Textarea from "@/app/components/ui/Textarea";
 import Button from "@/app/components/ui/Button";
 import ImageUploader from "./ImageUploader";
 import { CreateProjectRequest, UpdateProjectRequest } from "@/app/lib/auth";
+import styles from "../admin.module.css";
 
 interface ProjectFormProps {
   initialData?: UpdateProjectRequest & { id?: string };
@@ -14,46 +15,50 @@ interface ProjectFormProps {
   isEdit?: boolean;
 }
 
-export default function ProjectForm({ initialData, onSubmit, onCancel, isEdit = false }: ProjectFormProps) {
-  // Combine initial images into a single array
+export default function ProjectForm({
+  initialData,
+  onSubmit,
+  onCancel,
+  isEdit = false,
+}: ProjectFormProps) {
   const initialImages = [
     ...(initialData?.mainImage ? [initialData.mainImage] : []),
-    ...(initialData?.additionalImages || [])
+    ...(initialData?.additionalImages || []),
   ];
 
   const [formData, setFormData] = useState({
     href: initialData?.href || "",
     title: initialData?.title || "",
     description: initialData?.description || "",
-    constructionDate: initialData?.constructionDate || new Date().toISOString().split('T')[0],
+    constructionDate:
+      initialData?.constructionDate || new Date().toISOString().split("T")[0],
   });
-  
+
   const [images, setImages] = useState<string[]>(initialImages);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (images.length === 0) {
       setError("Please upload at least one image");
       return;
     }
-    
+
     setError("");
     setLoading(true);
 
     try {
-      // First image is main, rest are additional
       const submitData: CreateProjectRequest = {
         href: formData.href,
         title: formData.title,
         description: formData.description,
         constructionDate: formData.constructionDate,
         mainImage: images[0],
-        additionalImages: images.slice(1)
+        additionalImages: images.slice(1),
       };
-      
+
       await onSubmit(submitData);
     } catch (err: any) {
       setError(err.message || "Failed to save project");
@@ -67,9 +72,10 @@ export default function ProjectForm({ initialData, onSubmit, onCancel, isEdit = 
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-w-3xl">
-      <div>
-        <label className="block text-sm font-medium mb-2">Title</label>
+    <form onSubmit={handleSubmit} className={styles.form}>
+
+      <div className={styles.formField}>
+        <label className={styles.formLabel}>Title</label>
         <Input
           type="text"
           value={formData.title}
@@ -79,8 +85,8 @@ export default function ProjectForm({ initialData, onSubmit, onCancel, isEdit = 
         />
       </div>
 
-      <div>
-        <label className="block text-sm font-medium mb-2">URL Slug (href)</label>
+      <div className={styles.formField}>
+        <label className={styles.formLabel}>URL Slug (href)</label>
         <Input
           type="text"
           value={formData.href}
@@ -90,13 +96,13 @@ export default function ProjectForm({ initialData, onSubmit, onCancel, isEdit = 
           title="Only lowercase letters, numbers, and hyphens"
           required
         />
-        <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1">
-          Used in URL: /projects?herf={formData.href || "your-slug"}
+        <p className={styles.formHint}>
+          Used in URL: /projects?href={formData.href || "your-slug"}
         </p>
       </div>
 
-      <div>
-        <label className="block text-sm font-medium mb-2">Description</label>
+      <div className={styles.formField}>
+        <label className={styles.formLabel}>Description</label>
         <Textarea
           value={formData.description}
           onChange={(e) => handleChange("description", e.target.value)}
@@ -106,8 +112,8 @@ export default function ProjectForm({ initialData, onSubmit, onCancel, isEdit = 
         />
       </div>
 
-      <div>
-        <label className="block text-sm font-medium mb-2">Construction Date</label>
+      <div className={styles.formField}>
+        <label className={styles.formLabel}>Construction Date</label>
         <Input
           type="date"
           value={formData.constructionDate}
@@ -116,37 +122,29 @@ export default function ProjectForm({ initialData, onSubmit, onCancel, isEdit = 
         />
       </div>
 
-      {/* Image Upload - Multiple Images in List */}
-      <div className="border border-border rounded-lg p-6">
+      <div className={styles.card}>
         <ImageUploader
           images={images}
           onImagesChange={setImages}
           label="Project Images"
           maxImages={10}
         />
-        <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-2">
+        <p className={styles.formHint} style={{ marginTop: "0.5rem" }}>
           📌 The first image will be used as the main thumbnail. Use arrows to reorder.
         </p>
       </div>
 
-      {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md text-sm">
-          {error}
-        </div>
-      )}
+      {error && <div className={styles.errorBox}>{error}</div>}
 
-      <div className="flex gap-4">
+      <div className={styles.formActions}>
         <Button type="submit" disabled={loading}>
           {loading ? "Saving..." : isEdit ? "Update Project" : "Create Project"}
         </Button>
-        <button
-          type="button"
-          onClick={onCancel}
-          className="px-6 py-3 rounded-full border border-border hover:bg-foreground/5 transition-colors"
-        >
+        <button type="button" onClick={onCancel} className={styles.btnGhost}>
           Cancel
         </button>
       </div>
+
     </form>
   );
 }

@@ -1,3 +1,5 @@
+import styles from "./ui.module.css";
+
 type SelectProps = React.SelectHTMLAttributes<HTMLSelectElement> & {
   placeholder: string;
 };
@@ -9,15 +11,10 @@ export default function Select({
   ...props
 }: SelectProps) {
   return (
-    <div className="relative w-full">
+    <div className={styles.selectWrapper}>
       <select
         defaultValue=""
-        className={`
-          w-full rounded-md border bg-background p-3
-          appearance-none pr-10
-          focus:outline-none focus:ring-2 focus:ring-accent
-          ${className}
-        `}
+        className={`${styles.select} ${className}`}
         {...props}
       >
         <option value="" disabled>
@@ -26,10 +23,9 @@ export default function Select({
         {children}
       </select>
 
-      {/* Arrow */}
-      <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+      <div className={styles.selectArrow}>
         <svg
-          className="h-4 w-4 text-gray-500"
+          className={styles.selectArrowIcon}
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"

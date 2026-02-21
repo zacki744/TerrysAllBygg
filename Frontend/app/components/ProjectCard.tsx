@@ -1,3 +1,6 @@
+import styles from "./components.module.css";
+import Link from "next/link";
+
 type ProjectCardProps = {
   id: string;
   title: string;
@@ -5,47 +8,20 @@ type ProjectCardProps = {
   image: string;
 };
 
-export default function ProjectCard({
-  id,
-  title,
-  description,
-  image,
-}: ProjectCardProps) {
+export default function ProjectCard({ id, title, description, image }: ProjectCardProps) {
   return (
-    <a 
-      href={`/projects.html?id=${id}`}
-      className="block"
-    >
-      <div
-        className="
-          group
-          overflow-hidden
-          rounded-xl
-          border border-border
-          bg-background
-          shadow-[0_4px_12px_rgba(200,107,60,0.4)]
-          transition-all
-          duration-300
-          ease-out
-          hover:-translate-y-1
-          hover:scale-[1.02]
-          hover:shadow-[0_6px_20px_rgba(200,107,60,0.4)]
-          cursor-pointer
-        "
-      >
+    <Link href={`/projects?id=${id}`} className={styles.cardLink}>
+      <div className={styles.card}>
         <img
           src={image}
           alt={title}
-          className="h-48 w-full object-cover"
+          className={styles.cardImage}
         />
-
-        <div className="p-4">
-          <h3 className="font-semibold text-lg">{title}</h3>
-          <p className="mt-2 text-sm text-zinc-600 line-clamp-3">
-            {description}
-          </p>
+        <div className={styles.cardBody}>
+          <h3 className={styles.cardTitle}>{title}</h3>
+          <p className={styles.cardDescription}>{description}</p>
         </div>
       </div>
-    </a>
+    </Link>
   );
 }
