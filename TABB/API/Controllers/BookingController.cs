@@ -6,14 +6,9 @@ namespace API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class BookingController : ControllerBase
+public class BookingController(IEmailService emailService) : ControllerBase
 {
-    private readonly IEmailService _emailService;
-
-    public BookingController(IEmailService emailService)
-    {
-        _emailService = emailService;
-    }
+    private readonly IEmailService _emailService = emailService;
 
     [HttpPost("create")]
     public async Task<IActionResult> CreateBooking([FromBody] BookingRequest request)

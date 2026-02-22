@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
-import ProjectMeta from "@/app/components/project/ProjectMeta";
 import ImageGallery from "@/app/components/project/ImageGallery";
 import Button from "@/app/components/ui/Button";
 import styles from "../pages.module.css";
+import Link from "next/link";
 
 export default function ProjectsPageContent() {
   const searchParams = useSearchParams();
@@ -33,7 +33,6 @@ export default function ProjectsPageContent() {
       .finally(() => setLoading(false));
   }, [id]);
 
-  // ── No ID ──────────────────────────────────────────────────
   if (!id) {
     return (
       <div className={styles.page}>
@@ -46,7 +45,6 @@ export default function ProjectsPageContent() {
     );
   }
 
-  // ── Loading ────────────────────────────────────────────────
   if (loading) {
     return (
       <div className={styles.page}>
@@ -59,7 +57,6 @@ export default function ProjectsPageContent() {
     );
   }
 
-  // ── Not found ──────────────────────────────────────────────
   if (!project) {
     return (
       <div className={styles.page}>
@@ -72,7 +69,6 @@ export default function ProjectsPageContent() {
     );
   }
 
-  // ── Project detail ─────────────────────────────────────────
   return (
     <div className={styles.page}>
       <Navbar />
@@ -81,31 +77,10 @@ export default function ProjectsPageContent() {
 
         <header className={styles.projectHeader}>
           <h1 className={styles.projectTitle}>{project.title}</h1>
-          <p className={styles.projectDescription}>{project.description}</p>
         </header>
 
-        {/* Gallery + Sidebar */}
-        <div className={styles.projectLayout}>
-          <div className={styles.galleryPanel}>
-            <ImageGallery images={project.images} title={project.title} />
-          </div>
-
-          <aside className={styles.sidebarPanel}>
-            <h2 className={styles.sidebarTitle}>Projektinfo</h2>
-            <ProjectMeta constructionDate={project.constructionDate} />
-
-            <div className={styles.sidebarDetails}>
-              <div>
-                <p className={styles.detailLabel}>Plats</p>
-                <p className={styles.detailValue}>Österlen, Skåne</p>
-              </div>
-              <div>
-                <p className={styles.detailLabel}>Utfört av</p>
-                <p className={styles.detailValue}>Terrys All Bygg</p>
-              </div>
-            </div>
-          </aside>
-        </div>
+        {/* Gallery — full width, no wrapper box */}
+        <ImageGallery images={project.images} title={project.title} />
 
         {/* Description */}
         <section className={styles.descriptionSection}>
@@ -113,9 +88,11 @@ export default function ProjectsPageContent() {
           <p className={styles.descriptionText}>{project.description}</p>
         </section>
 
-        <Button>
-          <a href="/">← Tillbaka till projekt</a>
-        </Button>
+        <div>
+          <Button>
+            <Link href="/">← Tillbaka till projekt</Link>
+          </Button>
+        </div>
 
       </main>
 

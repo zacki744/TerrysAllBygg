@@ -81,6 +81,14 @@
   .projectGrid { grid-template-columns: repeat(2, 1fr); }
 }
 
+/* ─── Snickerier listing ──────────────────────────────────── */
+
+.snickeriList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
 /* ─── About page ──────────────────────────────────────────── */
 
 .aboutTitle {

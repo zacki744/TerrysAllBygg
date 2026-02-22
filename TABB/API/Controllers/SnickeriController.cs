@@ -4,15 +4,10 @@ using Services.Src.Snickerier;
 namespace API.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
-public class SnickeriController : ControllerBase
+[Route("api/snickerier")]
+public class SnickeriController(ISnickeriService snickeriService) : ControllerBase
 {
-    private readonly ISnickeriService _snickeriService;
-
-    public SnickeriController(ISnickeriService snickeriService)
-    {
-        _snickeriService = snickeriService;
-    }
+    private readonly ISnickeriService _snickeriService = snickeriService;
 
     // GET: api/snickerier (overview list)
     [HttpGet]

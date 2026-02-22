@@ -13,11 +13,9 @@ export interface LoginResponse {
 // API response from backend (matches your C# models)
 export interface ProjectApiResponse {
   id: string;
-  herf: string;  // Note: backend uses 'herf'
   title: string;
   description: string;
   image?: string;
-  constructionDate: string;
 }
 
 export interface DetailedProjectApiResponse extends ProjectApiResponse {
@@ -27,11 +25,9 @@ export interface DetailedProjectApiResponse extends ProjectApiResponse {
 // Frontend models
 export interface Project {
   id: string;
-  herf: string;
   title: string;
   description: string;
   image?: string;
-  constructionDate: string;
 }
 
 export interface DetailedProject extends Project {
@@ -39,10 +35,8 @@ export interface DetailedProject extends Project {
 }
 
 export interface CreateProjectRequest {
-  href: string;
   title: string;
   description: string;
-  constructionDate: string;
   mainImage?: string;
   additionalImages?: string[];
 }
@@ -110,11 +104,9 @@ export class AdminAPI {
     // Map API response to frontend model
     return data.map(p => ({
       id: p.id,
-      herf: p.herf,
       title: p.title,
       description: p.description,
       image: p.image,
-      constructionDate: p.constructionDate,
     }));
   }
 
@@ -130,11 +122,9 @@ export class AdminAPI {
     // Map API response to frontend model
     return {
       id: data.id,
-      herf: data.herf,
       title: data.title,
       description: data.description,
       image: data.image,
-      constructionDate: data.constructionDate,
       images: data.images,
     };
   }

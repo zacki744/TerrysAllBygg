@@ -12,7 +12,7 @@ namespace Services.Src
             services.AddScoped<Mail.IEmailService, Mail.EmailService>();
             services.AddScoped<Mail.IEmailSender, Mail.SmtpEmailSender>();
             services.AddScoped<IAuthService, AuthService>();
-
+            services.AddScoped<Snickerier.ISnickeriService, Snickerier.SnickeriService>();
             services.AddSingleton<IDbConnectionFactory, MySqlConnectionFactory>();
             services.AddScoped<IDatabase, MySqlDatabase>();
 

@@ -6,6 +6,7 @@ import Input from "@/app/components/ui/Input";
 import Button from "@/app/components/ui/Button";
 import { AuthService } from "@/app/lib/auth";
 import styles from "../admin.module.css";
+import Link from "next/dist/client/link";
 
 export default function AdminLogin() {
   const router = useRouter();
@@ -68,15 +69,12 @@ export default function AdminLogin() {
           </Button>
         </form>
 
-        <Button
-          type="button"
-          className="w-full"
-          onClick={() => router.push("/")}
-          disabled={loading}
+        <Link
+          href="/"
+          className={styles.backLink}
         >
           Back to Home
-        </Button>
-
+        </Link>
       </div>
     </div>
   );

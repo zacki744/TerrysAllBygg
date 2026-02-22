@@ -231,10 +231,6 @@
   color: var(--foreground);
 }
 
-.tableBody {
-  /* divider handled per-row */
-}
-
 .tableRow {
   border-top: 1px solid var(--border);
   transition: background-color 0.15s;
@@ -267,6 +263,7 @@
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 1;
+  line-clamp: 1;
   -webkit-box-orient: vertical;
 }
 
@@ -537,4 +534,9 @@
   font-size: 0.875rem;
   color: color-mix(in srgb, var(--foreground) 45%, transparent);
   margin-top: 0.5rem;
+}
+
+.navLinkActive {
+  color: var(--accent);
+  font-weight: 600;
 }

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
-import ProjectCard from "./components/ProjectCard";
+import ProjectCard from "./components/project/ProjectCard";
 import Footer from "./components/Footer";
 import styles from "./pages.module.css";
 

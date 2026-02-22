@@ -18,14 +18,13 @@ public class ProjectsService : IProjectsService
     {
         var projects = await _db.ReadAsync<ProjectDbDto>("projects", null, ct);
 
-        return projects.Select(p => new ProjectOverview
+        return [.. projects.Select(p => new ProjectOverview
         {
             Id = Guid.Parse(p.Id),
-            Herf = p.Href,
             Title = p.Title,
             Description = p.Description,
             Image = p.MainImage ?? "/placeholder.jpg"
-        }).ToList();
+        })];
     }
 
     // Add this public method
@@ -73,10 +72,8 @@ public class ProjectsService : IProjectsService
         return new DetaildProject
         {
             Id = Guid.Parse(project.Id),
-            Herf = project.Href,
             Title = project.Title,
             Description = project.Description,
-            ConstructionDate = project.ConstructionDate,
             Images = allImages.ToArray()
         };
     }
@@ -95,10 +92,8 @@ public class ProjectsService : IProjectsService
         var dto = new
         {
             Id = id.ToString(),
-            request.Href,
             request.Title,
             request.Description,
-            request.ConstructionDate,
             request.MainImage,
             Images = imagesJson
         };
@@ -119,11 +114,9 @@ public class ProjectsService : IProjectsService
 
         var dto = new
         {
-            Href = request.Href,
-            Title = request.Title,
-            Description = request.Description,
-            ConstructionDate = request.ConstructionDate,
-            MainImage = request.MainImage,
+            request.Title,
+            request.Description,
+            request.MainImage,
             Images = imagesJson
         };
 

@@ -1,4 +1,4 @@
-using System.Text;
+﻿using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
@@ -23,7 +23,7 @@ builder.Services.Configure<DatabaseOptions>(
     builder.Configuration.GetSection("Database"));
 
 // Configure Dapper
-Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
+DefaultTypeMap.MatchNamesWithUnderscores = true;
 SqlMapper.AddTypeHandler(new DateOnlyTypeHandler());
 
 // Add JWT Authentication
@@ -53,16 +53,13 @@ builder.Services.AddAuthentication(options =>
         OnMessageReceived = context =>
         {
             if (context.Request.Cookies.ContainsKey("auth_token"))
-            {
                 context.Token = context.Request.Cookies["auth_token"];
-            }
             return Task.CompletedTask;
         }
     };
 });
 
 builder.Services.AddAuthorization();
-
 builder.Services.AddServiceLayer();
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
@@ -76,20 +73,27 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-/* Serve frontend */
+// ── Serve compiled frontend from wwwroot/app ───────────────
 var frontendPath = Path.Combine(app.Environment.ContentRootPath, "wwwroot", "app");
+
 app.UseDefaultFiles(new DefaultFilesOptions
 {
     FileProvider = new PhysicalFileProvider(frontendPath)
 });
+
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(frontendPath)
 });
 
-/* Serve uploads from persistent folder */
-var uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "uploads");
+// ── Serve uploads from outside the API/deployment folder ───
+var uploadsPath = Path.GetFullPath(
+    Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "uploads"));
+
 Directory.CreateDirectory(uploadsPath);
+
+app.Logger.LogInformation("Uploads folder: {Path}", uploadsPath);  // verify on first deploy
+
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(uploadsPath),
@@ -99,10 +103,10 @@ app.UseStaticFiles(new StaticFileOptions
 app.UseAuthentication();
 app.UseAuthorization();
 
-/* API */
+// ── API controllers ────────────────────────────────────────
 app.MapControllers();
 
-/* SPA fallback */
+// ── SPA fallback ───────────────────────────────────────────
 app.MapFallback(context =>
 {
     if (context.Request.Path.StartsWithSegments("/api") ||

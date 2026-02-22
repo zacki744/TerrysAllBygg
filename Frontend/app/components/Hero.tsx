@@ -18,10 +18,14 @@ export default function Hero() {
         färdigt resultat. Oavsett om det är en utomhusbastu, en trädgårdsstudio eller
         en tillbyggnad – vi förverkligar ditt projekt med kvalitet och omsorg.
       </p>
-      <div className={styles.heroCta}>
-        <Button>
-          <Link href="/book">Boka en konsultation</Link>
-        </Button>
+
+      <div className={styles.heroCtaRow}>
+        <Link href="/book" className={styles.heroCtaSecondary}>
+          Boka en konsultation →
+        </Link>
+        <Link href="/snickerier" className={styles.heroCtaSecondary}>
+          Se våra snickerier →
+        </Link>
       </div>
     </section>
   );

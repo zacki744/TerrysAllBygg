@@ -5,14 +5,9 @@ namespace API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ProjectsController : ControllerBase
+public class ProjectsController(IProjectsService projectsService) : ControllerBase
 {
-    private readonly IProjectsService _projectsService;
-
-    public ProjectsController(IProjectsService projectsService)
-    {
-        _projectsService = projectsService;
-    }
+    private readonly IProjectsService _projectsService = projectsService;
 
     // GET: api/projects (overview list)
     [HttpGet]

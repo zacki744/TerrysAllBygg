@@ -211,7 +211,6 @@
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 3;
-  line-clamp: 3;
   -webkit-box-orient: vertical;
 }
 
@@ -220,22 +219,22 @@
 .gallery {
   position: relative;
   width: 100%;
-  height: 16rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  aspect-ratio: 16 / 9;
+  border-radius: 0.75rem;
+  overflow: hidden;  /* clips the image to the rounded corners */
 }
 
 @media (min-width: 768px) {
-  .gallery { height: 20rem; }
+  .gallery { aspect-ratio: 3 / 2; }
 }
 
 .galleryImage {
-  border-radius: 0.75rem;
   object-fit: cover;
   width: 100%;
   height: 100%;
-  border: 1px solid var(--border);
+  display: block;
+  border-radius: 0;  /* parent handles rounding via overflow:hidden */
+  border: none;
 }
 
 .galleryBtn {
@@ -285,6 +284,135 @@
 
 .dotActive {
   background-color: var(--foreground);
+}
+
+/* ─── Hero secondary CTA row ──────────────────────────────── */
+
+.heroCtaRow {
+  margin-top: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+}
+
+.heroCtaSecondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s, color 0.2s;
+  padding-bottom: 0.1rem;
+}
+
+.heroCtaSecondary:hover {
+  border-color: var(--accent);
+}
+
+/* ─── SnickeriCard ────────────────────────────────────────── */
+
+.snickeriCardLink {
+  display: block;
+  text-decoration: none;
+}
+
+.snickeriCard {
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  border: 1px solid var(--border);
+  background-color: var(--background);
+  box-shadow: 0 4px 12px rgba(200, 107, 60, 0.12);
+  transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+  cursor: pointer;
+  min-height: 10rem;
+}
+
+.snickeriCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(200, 107, 60, 0.22);
+}
+
+.snickeriCardImage {
+  width: 13rem;
+  min-width: 13rem;
+  object-fit: cover;
+  display: block;
+  flex-shrink: 0;
+}
+
+@media (max-width: 520px) {
+  .snickeriCard { flex-direction: column; }
+  .snickeriCardImage { width: 100%; min-width: unset; height: 10rem; }
+}
+
+.snickeriCardBody {
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1;
+  min-width: 0; /* prevents text overflow escaping flex container */
+}
+
+.snickeriCardTop {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.snickeriCardTitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+/* Description with fade-out mask instead of hard clamp */
+.snickeriCardDescription {
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: color-mix(in srgb, var(--foreground) 65%, transparent);
+  /* allow up to ~4 lines before fading */
+  max-height: 6em;
+  overflow: hidden;
+  position: relative;
+  /* fade out bottom edge */
+  mask-image: linear-gradient(to bottom, black 55%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 55%, transparent 100%);
+}
+
+.snickeriCardFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
+}
+
+.snickeriCardPrice {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.snickeriCardCta {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--accent);
+}
+
+/* ─── Snickerier listing page ─────────────────────────────── */
+
+.snickeriList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
 }
 
 /* ─── ProjectMeta ─────────────────────────────────────────── */

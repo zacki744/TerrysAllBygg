@@ -11,6 +11,7 @@ export default function Navbar() {
 
         <div className={styles.navLinks}>
           <Link href="/" className={styles.navLink}>Hem</Link>
+          <Link href="/snickerier" className={styles.navLink}>Snickerier</Link>
           <Link href="/about" className={styles.navLink}>Om Oss</Link>
           <Link href="/book" className={styles.navLink}>Boka</Link>
           <Link href="/admin/login" className={styles.navLink}>Admin</Link>

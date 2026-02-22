@@ -19,13 +19,13 @@ export default function AdminNavbar() {
       <div style={{ display: "flex", alignItems: "center", gap: "2rem" }}>
         <span className={styles.navBrand}>Terrys All Bygg</span>
         <div className={styles.navLinks}>
-          <Link href="/admin.html" className={styles.navLink}>Projects</Link>
-          <Link href="/" className={styles.navLink}>View Site</Link>
+          <Link href="/admin" className={styles.navLink}>Projekt</Link>
+          <Link href="/" className={styles.navLink}>Visa sida</Link>
         </div>
       </div>
 
       <Button onClick={handleLogout} className="text-sm px-4 py-2">
-        Logout
+        Logga ut
       </Button>
     </nav>
   );

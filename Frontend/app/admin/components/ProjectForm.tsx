@@ -27,11 +27,8 @@ export default function ProjectForm({
   ];
 
   const [formData, setFormData] = useState({
-    href: initialData?.href || "",
     title: initialData?.title || "",
-    description: initialData?.description || "",
-    constructionDate:
-      initialData?.constructionDate || new Date().toISOString().split("T")[0],
+    description: initialData?.description || ""
   });
 
   const [images, setImages] = useState<string[]>(initialImages);
@@ -51,10 +48,8 @@ export default function ProjectForm({
 
     try {
       const submitData: CreateProjectRequest = {
-        href: formData.href,
         title: formData.title,
         description: formData.description,
-        constructionDate: formData.constructionDate,
         mainImage: images[0],
         additionalImages: images.slice(1),
       };
@@ -75,7 +70,7 @@ export default function ProjectForm({
     <form onSubmit={handleSubmit} className={styles.form}>
 
       <div className={styles.formField}>
-        <label className={styles.formLabel}>Title</label>
+        <label className={styles.formLabel}>Titel</label>
         <Input
           type="text"
           value={formData.title}
@@ -86,38 +81,12 @@ export default function ProjectForm({
       </div>
 
       <div className={styles.formField}>
-        <label className={styles.formLabel}>URL Slug (href)</label>
-        <Input
-          type="text"
-          value={formData.href}
-          onChange={(e) => handleChange("href", e.target.value)}
-          placeholder="e.g., outdoor-sauna"
-          pattern="[a-z0-9-]+"
-          title="Only lowercase letters, numbers, and hyphens"
-          required
-        />
-        <p className={styles.formHint}>
-          Used in URL: /projects?href={formData.href || "your-slug"}
-        </p>
-      </div>
-
-      <div className={styles.formField}>
-        <label className={styles.formLabel}>Description</label>
+        <label className={styles.formLabel}>Beskrivning</label>
         <Textarea
           value={formData.description}
           onChange={(e) => handleChange("description", e.target.value)}
           placeholder="Describe the project..."
           rows={4}
-          required
-        />
-      </div>
-
-      <div className={styles.formField}>
-        <label className={styles.formLabel}>Construction Date</label>
-        <Input
-          type="date"
-          value={formData.constructionDate}
-          onChange={(e) => handleChange("constructionDate", e.target.value)}
           required
         />
       </div>
@@ -130,7 +99,7 @@ export default function ProjectForm({
           maxImages={10}
         />
         <p className={styles.formHint} style={{ marginTop: "0.5rem" }}>
-          📌 The first image will be used as the main thumbnail. Use arrows to reorder.
+          📌 Den första bilden används som huvudbild.
         </p>
       </div>
 
@@ -141,7 +110,7 @@ export default function ProjectForm({
           {loading ? "Saving..." : isEdit ? "Update Project" : "Create Project"}
         </Button>
         <button type="button" onClick={onCancel} className={styles.btnGhost}>
-          Cancel
+          Avbryt
         </button>
       </div>
 

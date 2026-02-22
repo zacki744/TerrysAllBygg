@@ -13,7 +13,7 @@ interface ImageUploaderProps {
 export default function ImageUploader({
   images,
   onImagesChange,
-  label = "Upload Images",
+  label = "Ladda upp bilder",
   maxImages = 10,
 }: ImageUploaderProps) {
   const [uploading, setUploading] = useState(false);
@@ -24,13 +24,13 @@ export default function ImageUploader({
     if (files.length === 0) return;
 
     if (images.length + files.length > maxImages) {
-      setError(`Maximum ${maxImages} images allowed`);
+      setError(`Maximalt ${maxImages} bilder tillåtna`);
       return;
     }
 
     const oversizedFiles = files.filter((f) => f.size > 10 * 1024 * 1024);
     if (oversizedFiles.length > 0) {
-      setError("Some files are larger than 10MB");
+      setError("Vissa filer är större än 10MB");
       return;
     }
 
@@ -55,14 +55,14 @@ export default function ImageUploader({
         if (data.success) {
           uploadedPaths.push(data.path);
         } else {
-          console.error("Upload failed for file:", file.name);
+          console.error("Uppladdning misslyckades för fil:", file.name);
         }
       }
 
       onImagesChange([...images, ...uploadedPaths]);
     } catch (err) {
-      console.error("Upload error:", err);
-      setError("Upload failed. Please try again.");
+      console.error("Uppladdningsfel:", err);
+      setError("Uppladdningen misslyckades. Försök igen.");
     } finally {
       setUploading(false);
     }
@@ -83,7 +83,7 @@ export default function ImageUploader({
         body: JSON.stringify({ path: imagePath }),
       });
     } catch (err) {
-      console.error("Delete error:", err);
+      console.error("Raderingsfel:", err);
     }
   };
 
@@ -96,7 +96,7 @@ export default function ImageUploader({
 
   return (
     <div className={styles.uploader}>
-      {/* Header */}
+
       <div className={styles.uploaderHeader}>
         <span className={styles.uploaderLabel}>{label}</span>
         <span className={styles.uploaderCount}>
@@ -104,16 +104,15 @@ export default function ImageUploader({
         </span>
       </div>
 
-      {/* Image grid */}
       {images.length > 0 && (
         <div className={styles.imageGrid}>
           {images.map((img, index) => (
             <div key={index} className={styles.imageTile}>
-              <img src={img} alt={`Image ${index + 1}`} className={styles.tileImg} />
+              <img src={img} alt={`Bild ${index + 1}`} className={styles.tileImg} />
 
               <div className={styles.tileBadgeOrder}>#{index + 1}</div>
               {index === 0 && (
-                <div className={styles.tileBadgeMain}>Main</div>
+                <div className={styles.tileBadgeMain}>Huvud</div>
               )}
 
               <div className={styles.imageTileOverlay}>
@@ -123,7 +122,7 @@ export default function ImageUploader({
                       type="button"
                       onClick={() => moveImage(index, index - 1)}
                       className={styles.tileNavBtn}
-                      title="Move left"
+                      title="Flytta vänster"
                     >
                       ←
                     </button>
@@ -133,7 +132,7 @@ export default function ImageUploader({
                       type="button"
                       onClick={() => moveImage(index, index + 1)}
                       className={styles.tileNavBtn}
-                      title="Move right"
+                      title="Flytta höger"
                     >
                       →
                     </button>
@@ -145,7 +144,7 @@ export default function ImageUploader({
                   onClick={() => handleRemoveImage(index)}
                   className={styles.tileRemoveBtn}
                 >
-                  Remove
+                  Ta bort
                 </button>
               </div>
             </div>
@@ -153,7 +152,6 @@ export default function ImageUploader({
         </div>
       )}
 
-      {/* Upload zone */}
       {images.length < maxImages && (
         <label>
           <input
@@ -168,16 +166,16 @@ export default function ImageUploader({
             {uploading ? (
               <div className={styles.spinner}>
                 <div className={styles.spinnerRing} />
-                <span className={styles.spinnerText}>Uploading...</span>
+                <span className={styles.spinnerText}>Laddar upp...</span>
               </div>
             ) : (
               <div className={styles.uploadZoneInner}>
                 <svg className={styles.uploadIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                 </svg>
-                <span className={styles.uploadTitle}>Add Images</span>
-                <span className={styles.uploadSub}>Click to select or drag & drop</span>
-                <span className={styles.uploadMeta}>PNG, JPG, GIF, WEBP (max 10MB each)</span>
+                <span className={styles.uploadTitle}>Lägg till bilder</span>
+                <span className={styles.uploadSub}>Klicka för att välja eller dra och släpp</span>
+                <span className={styles.uploadMeta}>PNG, JPG, GIF, WEBP (max 10MB per bild)</span>
               </div>
             )}
           </div>
@@ -187,8 +185,9 @@ export default function ImageUploader({
       {error && <div className={styles.errorBox}>{error}</div>}
 
       {images.length === 0 && (
-        <p className={styles.noImages}>No images uploaded yet</p>
+        <p className={styles.noImages}>Inga bilder uppladdade än</p>
       )}
+
     </div>
   );
 }

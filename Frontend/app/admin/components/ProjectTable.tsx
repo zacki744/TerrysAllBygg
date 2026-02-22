@@ -16,10 +16,8 @@ export default function ProjectTable({ projects, onEdit, onDelete }: ProjectTabl
       <table className={styles.table}>
         <thead className={styles.tableHead}>
           <tr>
-            <th className={styles.tableHeadCell}>Title</th>
-            <th className={styles.tableHeadCell}>Href</th>
-            <th className={styles.tableHeadCell}>Construction Date</th>
-            <th className={styles.tableHeadCellRight}>Actions</th>
+            <th className={styles.tableHeadCell}>Titel</th>
+            <th className={styles.tableHeadCellRight}>Åtgärder</th>
           </tr>
         </thead>
         <tbody className={styles.tableBody}>
@@ -29,24 +27,18 @@ export default function ProjectTable({ projects, onEdit, onDelete }: ProjectTabl
                 <div className={styles.tablePrimary}>{project.title}</div>
                 <div className={styles.tableSecondary}>{project.description}</div>
               </td>
-              <td className={styles.tableCell}>
-                <span className={styles.tableSecondary}>{project.herf}</span>
-              </td>
-              <td className={styles.tableCell}>
-                {new Date(project.constructionDate).toLocaleDateString("sv-SE")}
-              </td>
               <td className={styles.tableCellRight}>
                 <button
                   onClick={() => onEdit(project.id)}
                   className={styles.tableActionEdit}
                 >
-                  Edit
+                  Redigera
                 </button>
                 <button
                   onClick={() => onDelete(project.id)}
                   className={styles.tableActionDelete}
                 >
-                  Delete
+                  Radera
                 </button>
               </td>
             </tr>
@@ -56,7 +48,7 @@ export default function ProjectTable({ projects, onEdit, onDelete }: ProjectTabl
 
       {projects.length === 0 && (
         <div className={styles.tableEmpty}>
-          No projects found. Create your first project!
+          Inga snickerier hittades. Skapa ditt första!
         </div>
       )}
     </div>
