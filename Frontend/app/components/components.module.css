@@ -221,7 +221,8 @@
   width: 100%;
   aspect-ratio: 16 / 9;
   border-radius: 0.75rem;
-  overflow: hidden;  /* clips the image to the rounded corners */
+  overflow: hidden;
+  background-color: color-mix(in srgb, var(--foreground) 5%, var(--background));
 }
 
 @media (min-width: 768px) {
@@ -229,13 +230,112 @@
 }
 
 .galleryImage {
-  object-fit: cover;
+  object-fit: contain;   /* never crops — letterboxes instead */
   width: 100%;
   height: 100%;
   display: block;
-  border-radius: 0;  /* parent handles rounding via overflow:hidden */
+  border-radius: 0;
   border: none;
+  cursor: zoom-in;       /* hint that fullscreen is available */
 }
+
+/* ─── Lightbox ────────────────────────────────────────────── */
+
+.lightboxBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background-color: rgba(0, 0, 0, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: zoom-out;
+}
+
+.lightboxInner {
+  position: relative;
+  max-width: 95vw;
+  max-height: 95vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;        /* don't inherit zoom-out from backdrop */
+}
+
+.lightboxImage {
+  max-width: 95vw;
+  max-height: 95vh;
+  object-fit: contain;
+  border-radius: 0.375rem;
+  display: block;
+}
+
+.lightboxClose {
+  position: fixed;
+  top: 1.25rem;
+  right: 1.25rem;
+  background-color: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 9999px;
+  width: 2.75rem;
+  height: 2.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  line-height: 1;
+  padding: 0;
+}
+
+.lightboxClose:hover {
+  background-color: rgba(255, 255, 255, 0.22);
+}
+
+.lightboxCounter {
+  position: fixed;
+  bottom: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.875rem;
+}
+
+.lightboxBtn {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 9999px;
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s;
+  padding: 0;
+}
+
+.lightboxBtn:hover {
+  background-color: rgba(255, 255, 255, 0.22);
+}
+
+.lightboxBtnPrev {
+  left: 1.25rem;
+}
+
+.lightboxBtnNext {
+  right: 1.25rem;
+}
+
+.lightboxBtnPrev:hover { transform: translateY(-50%) scale(1.08); }
+.lightboxBtnNext:hover { transform: translateY(-50%) scale(1.08); }
 
 .galleryBtn {
   position: absolute;

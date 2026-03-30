@@ -1,4 +1,5 @@
 import styles from "./components.module.css";
+import Link from "next/link";
 
 type SnickeriCardProps = {
   id: string;
@@ -16,7 +17,7 @@ export default function SnickeriCard({
   image,
 }: SnickeriCardProps) {
   return (
-    <a href={`/snickerier?id=${id}`} className={styles.snickeriCardLink}>
+    <Link href={`/snickerier/detail/?id=${id}`} className={styles.snickeriCardLink}>
       <div className={styles.snickeriCard}>
         <img
           src={image}
@@ -38,6 +39,6 @@ export default function SnickeriCard({
           </div>
         </div>
       </div>
-    </a>
+    </Link>
   );
 }
