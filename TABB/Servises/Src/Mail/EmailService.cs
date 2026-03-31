@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Models.Booking;
 using Models.Mail;
 using Models.Snickeri;
@@ -9,11 +10,16 @@ public class EmailService : IEmailService
 {
     private readonly IEmailSender _sender;
     private readonly SmtpSettings _smtp;
+    private readonly ILogger<EmailService> _logger;
 
-    public EmailService(IEmailSender sender, IOptions<SmtpSettings> smtpOptions)
+    public EmailService(
+        IEmailSender sender,
+        IOptions<SmtpSettings> smtpOptions,
+        ILogger<EmailService> logger)
     {
         _sender = sender;
         _smtp = smtpOptions.Value;
+        _logger = logger;
     }
 
     // ── Booking ────────────────────────────────────────────────
@@ -69,8 +75,9 @@ public class EmailService : IEmailService
         }
         catch (Exception ex)
         {
-            // TODO: replace with proper logging (ILogger)
-            Console.WriteLine($"Failed to send email to {to}: {ex}");
+            // Log but don't rethrow — a failed confirmation email
+            // should not roll back the user's successful submission
+            _logger.LogError(ex, "Failed to send email to {Recipient} with subject '{Subject}'", to, subject);
         }
     }
 }

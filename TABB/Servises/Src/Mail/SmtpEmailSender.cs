@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Net.Mail;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Models.Mail;
 
@@ -8,18 +9,21 @@ namespace Services.Src.Mail;
 internal class SmtpEmailSender : IEmailSender
 {
     private readonly SmtpSettings _smtp;
+    private readonly ILogger<SmtpEmailSender> _logger;
 
-    public SmtpEmailSender(IOptions<SmtpSettings> smtpOptions)
+    public SmtpEmailSender(IOptions<SmtpSettings> smtpOptions, ILogger<SmtpEmailSender> logger)
     {
         _smtp = smtpOptions.Value;
+        _logger = logger;
     }
 
     public async Task SendAsync(string to, string subject, string body, bool isHtml = false)
     {
         if (string.IsNullOrEmpty(to))
             throw new ArgumentException("Recipient email address is required", nameof(to));
+
         if (string.IsNullOrEmpty(_smtp.From))
-            throw new ArgumentException("SMTP 'From' address is not configured");
+            throw new InvalidOperationException("SMTP 'From' address is not configured");
 
         using var client = new SmtpClient(_smtp.Host, _smtp.Port)
         {
@@ -34,16 +38,18 @@ internal class SmtpEmailSender : IEmailSender
             Body = body,
             IsBodyHtml = isHtml
         };
+
         mail.To.Add(to);
 
         try
         {
             await client.SendMailAsync(mail);
+            _logger.LogInformation("Email sent to {Recipient} — subject: '{Subject}'", to, subject);
         }
         catch (SmtpException ex)
         {
-            Console.WriteLine($"SMTP error sending to {to}: {ex}");
-            throw;
+            _logger.LogError(ex, "SMTP error sending to {Recipient} — subject: '{Subject}'", to, subject);
+            throw; // rethrow so EmailService.TrySendAsync can log it at the right level
         }
     }
 }

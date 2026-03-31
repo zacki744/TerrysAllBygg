@@ -22,7 +22,7 @@
 .navInner {
   max-width: 80rem;
   margin: 0 auto;
-  padding: 1rem 1.5rem;
+  padding: 1.1rem 1.5rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -50,6 +50,94 @@
 
 .navLink:hover {
   color: var(--primary);
+}
+
+.navLinkActive {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* Hamburger button — hidden on desktop */
+.navHamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  z-index: 60;
+}
+
+@media (max-width: 640px) {
+  .navHamburger { display: flex; }
+  .navLinks     { display: none; } /* hide desktop links on mobile */
+}
+
+/* Three bars */
+.hamburgerBar {
+  display: block;
+  width: 1.5rem;
+  height: 2px;
+  background-color: var(--foreground);
+  border-radius: 2px;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+  transform-origin: center;
+}
+
+/* Animated X when open */
+.hamburgerBarTop { transform: translateY(7px) rotate(45deg); }
+.hamburgerBarMid { opacity: 0; transform: scaleX(0); }
+.hamburgerBarBot { transform: translateY(-7px) rotate(-45deg); }
+
+/* Mobile drawer backdrop */
+.mobileMenuBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 49;
+  background-color: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(2px);
+}
+
+/* Slide-in drawer from right */
+.mobileMenu {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(80vw, 18rem);
+  background-color: var(--background);
+  border-left: 1px solid var(--border);
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  padding: 5rem 2rem 2rem; /* top padding clears the navbar */
+  gap: 0.25rem;
+  z-index: 50;
+}
+
+.mobileMenuLink {
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: var(--foreground);
+  text-decoration: none;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border);
+  transition: color 0.2s;
+}
+
+.mobileMenuLink:last-child {
+  border-bottom: none;
+}
+
+.mobileMenuLink:hover {
+  color: var(--primary);
+}
+
+.mobileMenuLinkActive {
+  color: var(--primary);
+  font-weight: 600;
 }
 
 /* ─── Footer ──────────────────────────────────────────────── */
@@ -131,39 +219,120 @@
 
 /* ─── Hero ────────────────────────────────────────────────── */
 
+.heroWrapper {
+  position: relative;
+  width: 100%;
+  min-height: 92vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.heroBgImage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 0;
+}
+
+.heroBgOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.65) 0%,
+    rgba(0, 0, 0, 0.35) 65%,
+    rgba(0, 0, 0, 0.05) 100%
+  );
+  z-index: 1;
+}
+
+@media (min-width: 768px) {
+  .heroWrapper    { min-height: unset; padding: 4rem 0; overflow: visible; }
+  .heroBgImage    { display: none; }
+  .heroBgOverlay  { display: none; }
+}
+
+.heroInner {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+@media (min-width: 768px) {
+  .heroInner { flex-direction: row; align-items: center; gap: 4rem; }
+}
+
+.heroContent { flex: 1; }
+
+.heroImageCol { display: none; }
+
+@media (min-width: 768px) {
+  .heroImageCol {
+    display: block;
+    flex: 1;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    aspect-ratio: 4 / 3;
+  }
+}
+
+.heroSideImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 .hero {
-  max-width: 42rem;
-  padding: 3rem 0;
+  padding: 3rem 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .hero { padding: 0; }
 }
 
 .heroTitle {
-  font-size: 3rem;
+  font-size: 2.75rem;
   font-weight: 700;
   line-height: 1.15;
-  color: var(--foreground);
+  color: #fff;
 }
 
-@media (min-width: 640px) {
-  .heroTitle { font-size: 3.25rem; }
+@media (min-width: 768px) {
+  .heroTitle { font-size: 3.25rem; color: var(--foreground); }
 }
 
 .heroLead {
   margin-top: 1.5rem;
-  font-size: 1.25rem;
+  font-size: 1.125rem;
   line-height: 1.7;
-  color: color-mix(in srgb, var(--foreground) 70%, transparent);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+@media (min-width: 768px) {
+  .heroLead { color: color-mix(in srgb, var(--foreground) 70%, transparent); }
 }
 
 .heroBody {
   margin-top: 1rem;
-  font-size: 1.125rem;
+  font-size: 1rem;
   line-height: 1.7;
-  color: color-mix(in srgb, var(--foreground) 60%, transparent);
+  color: rgba(255, 255, 255, 0.72);
 }
 
-.heroCta {
-  margin-top: 2rem;
+@media (min-width: 768px) {
+  .heroBody { color: color-mix(in srgb, var(--foreground) 60%, transparent); }
 }
+
+.heroCta { margin-top: 2rem; }
 
 /* ─── ProjectCard ─────────────────────────────────────────── */
 
@@ -386,7 +555,7 @@
   background-color: var(--foreground);
 }
 
-/* ─── Hero secondary CTA row ──────────────────────────────── */
+/* ─── Hero CTA row ────────────────────────────────────────── */
 
 .heroCtaRow {
   margin-top: 2rem;
@@ -402,15 +571,21 @@
   gap: 0.4rem;
   font-size: 0.9375rem;
   font-weight: 500;
-  color: var(--accent);
+  color: rgba(255, 255, 255, 0.9);
   text-decoration: none;
-  border-bottom: 1px solid transparent;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
   transition: border-color 0.2s, color 0.2s;
   padding-bottom: 0.1rem;
 }
 
 .heroCtaSecondary:hover {
-  border-color: var(--accent);
+  color: #fff;
+  border-color: #fff;
+}
+
+@media (min-width: 768px) {
+  .heroCtaSecondary { color: var(--accent); border-color: transparent; }
+  .heroCtaSecondary:hover { color: var(--accent); border-color: var(--accent); }
 }
 
 /* ─── SnickeriCard ────────────────────────────────────────── */

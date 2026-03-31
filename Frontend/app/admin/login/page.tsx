@@ -2,79 +2,97 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { AuthService } from "@/app/lib/auth";
 import Input from "@/app/components/ui/Input";
 import Button from "@/app/components/ui/Button";
-import { AuthService } from "@/app/lib/auth";
 import styles from "../admin.module.css";
-import Link from "next/dist/client/link";
+import Link from "next/link";
 
 export default function AdminLogin() {
   const router = useRouter();
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [form, setForm] = useState({ username: "", password: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
     try {
-      await AuthService.login({ username, password });
-      router.push("/admin");
+      const success = await AuthService.login(form.username, form.password, { username: form.username, password: form.password });
+      if (success) {
+        router.push("/admin");
+      } else {
+        setError("Fel användarnamn eller lösenord.");
+      }
     } catch {
-      setError("Invalid username or password");
+      setError("Något gick fel. Försök igen.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className={styles.pageCenter} style={{ padding: "0 1.5rem" }}>
+    <div className={styles.pageCenter}>
       <div className={styles.loginBox}>
 
         <div className={styles.loginHeader}>
-          <h1 className={styles.loginTitle}>Admin Login</h1>
-          <p className={styles.loginSubtitle}>Sign in to manage your projects</p>
+          <h1 className={styles.loginTitle}>Admin</h1>
+          <p className={styles.loginSubtitle}>Logga in för att hantera sidan</p>
         </div>
 
-        <form onSubmit={handleLogin} className={styles.form}>
-          <div className={styles.formField}>
-            <label className={styles.formLabel}>Username</label>
+        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+
+          <div>
+            <label className={styles.formLabel}>Användarnamn</label>
             <Input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Enter username"
+              name="username"
+              placeholder="Ange användarnamn"
+              value={form.username}
+              onChange={handleChange}
               required
+              autoComplete="username"
             />
           </div>
 
-          <div className={styles.formField}>
-            <label className={styles.formLabel}>Password</label>
+          <div>
+            <label className={styles.formLabel}>Lösenord</label>
             <Input
+              name="password"
               type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter password"
+              placeholder="Ange lösenord"
+              value={form.password}
+              onChange={handleChange}
               required
+              autoComplete="current-password"
             />
           </div>
 
           {error && <div className={styles.errorBox}>{error}</div>}
 
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Signing in..." : "Sign In"}
+          <Button type="submit" disabled={loading} className="w-full">
+            {loading ? "Loggar in..." : "Logga in"}
           </Button>
+
         </form>
 
         <Link
           href="/"
-          className={styles.backLink}
+          style={{
+            fontSize: "0.875rem",
+            color: "color-mix(in srgb, var(--foreground) 55%, transparent)",
+            textDecoration: "none",
+            textAlign: "center" as const,
+          }}
         >
-          Back to Home
+          ← Tillbaka till startsidan
         </Link>
+
       </div>
     </div>
   );

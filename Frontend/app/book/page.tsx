@@ -9,7 +9,16 @@ import Button from "../components/ui/Button";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "../pages.module.css";
+import type { Metadata } from "next";
 
+export const metadataBook: Metadata = {
+  title: "Boka Konsultation",
+  description:
+    "Boka en kostnadsfri konsultation med Terrys All Bygg. " +
+    "Vi återkommer inom 24 timmar.",
+  alternates:  { canonical: "/book" },
+  robots:      { index: false, follow: false }, // no need to index a form page
+};
 export default function Book() {
   const router = useRouter();
   const [form, setForm] = useState({

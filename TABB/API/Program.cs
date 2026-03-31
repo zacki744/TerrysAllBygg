@@ -1,32 +1,60 @@
-﻿using System.Text;
+﻿using API.Extensions;
+using API.Middleware;
+using Dapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Models.Mail;
 using Services.Src;
 using Services.Src.DB;
-using Dapper;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// ── Configuration ──────────────────────────────────────────
 if (builder.Environment.IsDevelopment())
-{
     builder.Configuration.AddUserSecrets<Program>();
-}
 
-// Configure SMTP settings
 builder.Services.Configure<SmtpSettings>(
     builder.Configuration.GetSection("Smtp"));
 
-// Configure database options
 builder.Services.Configure<DatabaseOptions>(
     builder.Configuration.GetSection("Database"));
 
-// Configure Dapper
+// ── Dapper ─────────────────────────────────────────────────
 DefaultTypeMap.MatchNamesWithUnderscores = true;
 SqlMapper.AddTypeHandler(new DateOnlyTypeHandler());
 
-// Add JWT Authentication
+// ── CORS ───────────────────────────────────────────────────
+var allowedOrigins = builder.Configuration
+    .GetSection("AllowedOrigins")
+    .Get<string[]>() ?? [];
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("ProductionPolicy", policy =>
+    {
+        if (builder.Environment.IsDevelopment())
+        {
+            // Permissive in dev — localhost on any port
+            policy.SetIsOriginAllowed(origin =>
+                new Uri(origin).Host == "localhost")
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+        }
+        else
+        {
+            // Strict in production — only configured origins
+            policy.WithOrigins(allowedOrigins)
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+        }
+    });
+});
+
+// ── JWT Authentication ─────────────────────────────────────
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -60,18 +88,24 @@ builder.Services.AddAuthentication(options =>
 });
 
 builder.Services.AddAuthorization();
+builder.Services.AddAppRateLimiting();
 builder.Services.AddServiceLayer();
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
+// ── Health check ───────────────────────────────────────────
+builder.Services.AddHealthChecks();
+
 var app = builder.Build();
 
+// ── Exception handler — must be FIRST in pipeline ─────────
+app.UseMiddleware<GlobalExceptionHandler>();
+
 if (app.Environment.IsDevelopment())
-{
     app.MapOpenApi();
-}
 
 app.UseHttpsRedirection();
+app.UseCors("ProductionPolicy");
 
 // ── Serve compiled frontend from wwwroot/app ───────────────
 var frontendPath = Path.Combine(app.Environment.ContentRootPath, "wwwroot", "app");
@@ -86,13 +120,13 @@ app.UseStaticFiles(new StaticFileOptions
     FileProvider = new PhysicalFileProvider(frontendPath)
 });
 
-// ── Serve uploads from outside the API/deployment folder ───
+// ── Uploads — outside wwwroot, safe from FTP wipes ────────
 var uploadsPath = Path.GetFullPath(
     Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "uploads"));
 
 Directory.CreateDirectory(uploadsPath);
 
-app.Logger.LogInformation("Uploads folder: {Path}", uploadsPath);  // verify on first deploy
+app.Logger.LogInformation("Uploads folder resolved to: {Path}", uploadsPath);
 
 app.UseStaticFiles(new StaticFileOptions
 {
@@ -102,6 +136,11 @@ app.UseStaticFiles(new StaticFileOptions
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseRateLimiter();
+
+
+// ── Health check endpoint ──────────────────────────────────
+app.MapHealthChecks("/health");
 
 // ── API controllers ────────────────────────────────────────
 app.MapControllers();
@@ -110,7 +149,8 @@ app.MapControllers();
 app.MapFallback(context =>
 {
     if (context.Request.Path.StartsWithSegments("/api") ||
-        context.Request.Path.StartsWithSegments("/uploads"))
+        context.Request.Path.StartsWithSegments("/uploads") ||
+        context.Request.Path.StartsWithSegments("/health"))
     {
         context.Response.StatusCode = 404;
         return Task.CompletedTask;

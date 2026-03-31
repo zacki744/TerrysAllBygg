@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using API.Extensions;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Models.Booking;
 using Services.Src.Mail;
 
@@ -6,11 +8,14 @@ namespace API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class BookingController(IEmailService emailService) : ControllerBase
+[EnableRateLimiting(RateLimitingExtensions.GeneralApi)]
+public class BookingController(IEmailService emailService, ILogger<BookingController> logger) : ControllerBase
 {
     private readonly IEmailService _emailService = emailService;
+    private readonly ILogger<BookingController> _logger = logger;
 
     [HttpPost("create")]
+    [EnableRateLimiting(RateLimitingExtensions.PublicForm)]  // overrides class-level policy
     public async Task<IActionResult> CreateBooking([FromBody] BookingRequest request)
     {
         if (!ModelState.IsValid)
@@ -23,9 +28,8 @@ public class BookingController(IEmailService emailService) : ControllerBase
         }
         catch (Exception ex)
         {
-            // TODO: replace with proper logging
-            Console.WriteLine(ex);
-            return StatusCode(500, new { error = "Failed to send booking email", detail = ex.Message });
+            _logger.LogError(ex, "Failed to process booking request from {Email}", request.Email);
+            return StatusCode(500, new { error = "Failed to send booking email" });
         }
     }
 }

@@ -1,7 +1,15 @@
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import styles from "../pages.module.css";
+import type { Metadata } from "next";
 
+export const metadataAbout: Metadata = {
+  title: "Om Oss",
+  description:
+    "Läs mer om Terrys All Bygg — vår historia, våra värderingar " +
+    "och varför vi är rätt val för ditt byggprojekt i Österlen.",
+  alternates:  { canonical: "/about" },
+};
 export default function About() {
   return (
     <div className={styles.page}>

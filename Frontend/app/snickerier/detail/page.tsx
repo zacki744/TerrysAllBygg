@@ -1,9 +1,13 @@
-"use client";
-
 import { Suspense } from "react";
 import SnickeriPageContent from "./SnickeriPageContent";
 import styles from "../../pages.module.css";
+import type { Metadata } from "next";
 
+export const metadata: Metadata = {
+  title: "Snickeri",
+  description: "Se detaljer och skicka en förfrågan om detta snickeri.",
+  alternates: { canonical: "/snickerier/detalj" },
+};
 export default function SnickeriDetailPage() {
   return (
     <Suspense

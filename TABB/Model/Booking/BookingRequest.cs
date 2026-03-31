@@ -7,7 +7,7 @@ public class BookingRequest
     [EmailAddress]
     public required string Email { get; set; }
     [Phone]
-    public required string PhoneNumber { get; set; }
+    public string? PhoneNumber { get; set; }   // optional — matches the frontend form
     public required string Placement { get; set; }
     public string? Otther1 { get; set; }
     public required string Project { get; set; }

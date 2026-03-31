@@ -12,7 +12,7 @@ public static class EmailTemplate
 
         Namn:        {b.Name}
         E-post:      {b.Email}
-        Telefon:     {b.PhoneNumber}
+        Telefon:     {b.PhoneNumber ?? "–"}
         Projekt:     {b.Project}
         Adress:      {b.Address}
 

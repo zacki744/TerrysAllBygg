@@ -1,4 +1,6 @@
+using API.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Models.Snickeri;
 using Services.Src.Mail;
 using Services.Src.Snickerier;
@@ -7,16 +9,15 @@ namespace API.Controllers;
 
 [ApiController]
 [Route("api/snickerier")]
-public class SnickeriController : ControllerBase
+[EnableRateLimiting(RateLimitingExtensions.GeneralApi)]
+public class SnickeriController(
+    ISnickeriService snickeriService,
+    IEmailService emailService,
+    ILogger<SnickeriController> logger) : ControllerBase
 {
-    private readonly ISnickeriService _snickeriService;
-    private readonly IEmailService _emailService;
-
-    public SnickeriController(ISnickeriService snickeriService, IEmailService emailService)
-    {
-        _snickeriService = snickeriService;
-        _emailService = emailService;
-    }
+    private readonly ISnickeriService _snickeriService = snickeriService;
+    private readonly IEmailService _emailService = emailService;
+    private readonly ILogger<SnickeriController> _logger = logger;
 
     // GET: api/snickerier
     [HttpGet]
@@ -38,6 +39,7 @@ public class SnickeriController : ControllerBase
 
     // POST: api/snickerier/inquire
     [HttpPost("inquire")]
+    [EnableRateLimiting(RateLimitingExtensions.PublicForm)]  // overrides class-level
     public async Task<IActionResult> Inquire(
         [FromBody] SnickeriInquiryRequest request,
         CancellationToken ct)
@@ -52,8 +54,8 @@ public class SnickeriController : ControllerBase
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex);
-            return StatusCode(500, new { error = "Kunde inte skicka förfrågan", detail = ex.Message });
+            _logger.LogError(ex, "Failed to process snickeri inquiry from {Email}", request.Email);
+            return StatusCode(500, new { error = "Kunde inte skicka förfrågan" });
         }
     }
 }
