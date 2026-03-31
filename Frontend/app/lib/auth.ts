@@ -45,8 +45,8 @@ export interface UpdateProjectRequest extends CreateProjectRequest {}
 export class AuthService {
   private static TOKEN_KEY = "admin_token";
 
-  static async login(username: string, password: string, credentials: LoginRequest): Promise<LoginResponse> {
-    const response = await fetch("/api/auth/login", {
+  static async login(credentials: LoginRequest): Promise<LoginResponse> {
+    const response = await fetch("/api/admin/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(credentials),
@@ -62,7 +62,7 @@ export class AuthService {
   }
 
   static async logout(): Promise<void> {
-    await fetch("/api/auth/logout", { method: "POST" });
+    await fetch("/api/admin/auth/logout", { method: "POST" });
     this.clearToken();
   }
 

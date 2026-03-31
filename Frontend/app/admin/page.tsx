@@ -1,5 +1,5 @@
 "use client";
-
+import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import AdminNavbar from "./components/AdminNavbar";
@@ -120,7 +120,7 @@ export default function AdminDashboard() {
           </div>
           <Button>
             <Link href="/admin/Projects/new">
-              + New Project
+                <Plus size={16} strokeWidth={2} />
             </Link>
           </Button>
         </div>
@@ -139,7 +139,7 @@ export default function AdminDashboard() {
           </div>
           <Button>
             <Link href="/admin/snickerier/new">
-              + Nytt snickeri
+              <Plus size={16} strokeWidth={2} />
             </Link>
         </Button>
         </div>

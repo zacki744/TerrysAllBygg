@@ -7,10 +7,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
 
   // ── Default — overridden per page ─────────────────────────
-  title: {
-    default: "Terrys All Bygg — Byggföretag i Österlen",
-    template: "%s | Terrys All Bygg",   // "Snickerier | Terrys All Bygg"
-  },
+  title: "Terrys All Bygg",
   // the icon image
   icons: {
     icon: "/og-image.jpeg",  // place a 512×512 image in /public/

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import SnickeriOverviewPage from "./SnickeriOverviewPage";
 
 export const metadataSnickerier: Metadata = {
-  title: "Snickerier",
+  title: "Snickerier | Terrys All Bygg",
   description:
     "Handgjorda snickerier färdiga att beställa — stolar, bord, hyllor och mer. " +
     "Kontakta oss för en förfrågan.",

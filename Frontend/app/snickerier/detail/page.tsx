@@ -4,7 +4,7 @@ import styles from "../../pages.module.css";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Snickeri",
+  title: "Snickeri | Terrys All Bygg",
   description: "Se detaljer och skicka en förfrågan om detta snickeri.",
   alternates: { canonical: "/snickerier/detalj" },
 };

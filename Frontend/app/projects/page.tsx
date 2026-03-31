@@ -4,7 +4,7 @@ import styles from "../pages.module.css";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Projekt",
+  title: "Projekt | Terrys All Bygg",
   description: "Se våra tidigare byggprojekt — bastuer, tillbyggnader, förråd och mer i Österlen, Skåne.",
   alternates: { canonical: "/projects" },
 };

@@ -1,6 +1,7 @@
 "use client";
 
 import styles from "../admin.module.css";
+import { Pencil, Trash2 } from "lucide-react";
 
 interface SnickeriItem {
   id: string;
@@ -42,14 +43,18 @@ export default function SnickeriTable({ items, onEdit, onDelete }: SnickeriTable
                 <button
                   onClick={() => onEdit(item.id)}
                   className={styles.tableActionEdit}
+                  aria-label="Redigera"
+                  title="Redigera"
                 >
-                  Redigera
+                  <Pencil size={16} strokeWidth={1.75} />
                 </button>
                 <button
                   onClick={() => onDelete(item.id)}
                   className={styles.tableActionDelete}
+                  aria-label="Radera"
+                  title="Radera"
                 >
-                  Radera
+                  <Trash2 size={16} strokeWidth={1.75} />
                 </button>
               </td>
             </tr>

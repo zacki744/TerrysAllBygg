@@ -12,7 +12,7 @@ import styles from "../pages.module.css";
 import type { Metadata } from "next";
 
 export const metadataBook: Metadata = {
-  title: "Boka Konsultation",
+  title: "Boka | Terrys All Bygg",
   description:
     "Boka en kostnadsfri konsultation med Terrys All Bygg. " +
     "Vi återkommer inom 24 timmar.",

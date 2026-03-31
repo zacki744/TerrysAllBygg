@@ -4,7 +4,7 @@ import styles from "../pages.module.css";
 import type { Metadata } from "next";
 
 export const metadataAbout: Metadata = {
-  title: "Om Oss",
+  title: "Om Oss | Terrys All Bygg",
   description:
     "Läs mer om Terrys All Bygg — vår historia, våra värderingar " +
     "och varför vi är rätt val för ditt byggprojekt i Österlen.",

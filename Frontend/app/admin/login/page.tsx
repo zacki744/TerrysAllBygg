@@ -24,7 +24,8 @@ export default function AdminLogin() {
     setLoading(true);
 
     try {
-      const success = await AuthService.login(form.username, form.password, { username: form.username, password: form.password });
+      const success = await AuthService.login({ username: form.username, password: form.password });
+      console.log("Login success?:", success);
       if (success) {
         router.push("/admin");
       } else {

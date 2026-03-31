@@ -1,7 +1,7 @@
 "use client";
 
 import { Project } from "@/app/lib/auth";
-import Button from "@/app/components/ui/Button";
+import { Pencil, Trash2 } from "lucide-react";
 import styles from "../admin.module.css";
 
 interface ProjectTableProps {
@@ -31,14 +31,18 @@ export default function ProjectTable({ projects, onEdit, onDelete }: ProjectTabl
                 <button
                   onClick={() => onEdit(project.id)}
                   className={styles.tableActionEdit}
+                  aria-label="Redigera"
+                  title="Redigera"
                 >
-                  Redigera
+                  <Pencil size={16} strokeWidth={1.75} />
                 </button>
                 <button
                   onClick={() => onDelete(project.id)}
                   className={styles.tableActionDelete}
+                  aria-label="Radera"
+                  title="Radera"
                 >
-                  Radera
+                  <Trash2 size={16} strokeWidth={1.75} />
                 </button>
               </td>
             </tr>
