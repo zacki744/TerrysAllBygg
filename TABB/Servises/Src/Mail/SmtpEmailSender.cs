@@ -6,16 +6,10 @@ using Models.Mail;
 
 namespace Services.Src.Mail;
 
-internal class SmtpEmailSender : IEmailSender
+internal class SmtpEmailSender(IOptions<SmtpSettings> smtpOptions, ILogger<SmtpEmailSender> logger) : IEmailSender
 {
-    private readonly SmtpSettings _smtp;
-    private readonly ILogger<SmtpEmailSender> _logger;
-
-    public SmtpEmailSender(IOptions<SmtpSettings> smtpOptions, ILogger<SmtpEmailSender> logger)
-    {
-        _smtp = smtpOptions.Value;
-        _logger = logger;
-    }
+    private readonly SmtpSettings _smtp = smtpOptions.Value;
+    private readonly ILogger<SmtpEmailSender> _logger = logger;
 
     public async Task SendAsync(string to, string subject, string body, bool isHtml = false)
     {

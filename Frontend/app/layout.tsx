@@ -6,13 +6,10 @@ const BASE_URL = "https://terrysallbygg.se";
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
 
-  // ── Default — overridden per page ─────────────────────────
-  title: "Terrys All Bygg",
-  // the icon image
-  icons: {
-    icon: "/og-image.jpeg",  // place a 512×512 image in /public/
+  title: {
+    default:  "Terrys All Bygg — Byggföretag i Österlen",
+    template: "%s | Terrys All Bygg",
   },
-
 
   description:
     "Terrys All Bygg är ditt lokala byggföretag i Österlen, Skåne. " +
@@ -30,7 +27,20 @@ export const metadata: Metadata = {
 
   authors: [{ name: "Terrys All Bygg" }],
 
-  // ── Open Graph (Facebook, LinkedIn, iMessage previews) ────
+  // ── Icons ─────────────────────────────────────────────────
+  icons: {
+    icon: [
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon.ico" },
+    ],
+    apple: "/apple-touch-icon.png",
+    other: [
+      { rel: "manifest", url: "/site.webmanifest" },
+    ],
+  },
+
+  // ── Open Graph ────────────────────────────────────────────
   openGraph: {
     type:        "website",
     locale:      "sv_SE",
@@ -42,7 +52,7 @@ export const metadata: Metadata = {
       "Kontakta oss för konsultation.",
     images: [
       {
-        url:    "/og-image.jpg",   // place a 1200×630 image in /public/
+        url:    "/og-image.jpg",
         width:  1200,
         height: 630,
         alt:    "Terrys All Bygg",
@@ -50,7 +60,7 @@ export const metadata: Metadata = {
     ],
   },
 
-  // ── Twitter / X card ──────────────────────────────────────
+  // ── Twitter / X ───────────────────────────────────────────
   twitter: {
     card:        "summary_large_image",
     title:       "Terrys All Bygg — Byggföretag i Österlen",

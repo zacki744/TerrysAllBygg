@@ -1,32 +1,37 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { AuthService } from "@/app/lib/auth";
-import Button from "@/app/components/ui/Button";
 import styles from "../admin.module.css";
 import Link from "next/link";
 
 export default function AdminNavbar() {
-  const router = useRouter();
+  const router  = useRouter();
+  const pathname = usePathname();
 
   const handleLogout = async () => {
-    await AuthService.logout();
+    await AuthService.logout();   // clears httpOnly cookie via backend
     router.push("/admin/login");
   };
+
+  const isActive = (path: string) =>
+    pathname?.startsWith(path)
+      ? `${styles.navLink} ${styles.navLinkActive}`
+      : styles.navLink;
 
   return (
     <nav className={styles.navbar}>
       <div style={{ display: "flex", alignItems: "center", gap: "2rem" }}>
         <span className={styles.navBrand}>Terrys All Bygg</span>
         <div className={styles.navLinks}>
-          <Link href="/admin" className={styles.navLink}>Projekt</Link>
+          <Link href="/admin" className={isActive("/admin")}>Projekt</Link>
           <Link href="/" className={styles.navLink}>Visa sida</Link>
         </div>
       </div>
 
-      <Button onClick={handleLogout} className="text-sm px-4 py-2">
+      <button onClick={handleLogout} className={styles.addButton}>
         Logga ut
-      </Button>
+      </button>
     </nav>
   );
 }

@@ -4,14 +4,9 @@ using System.Text.Json;
 
 namespace Services.Src.Projects;
 
-public class ProjectsService : IProjectsService
+public class ProjectsService(IDatabase db) : IProjectsService
 {
-    private readonly IDatabase _db;
-
-    public ProjectsService(IDatabase db)
-    {
-        _db = db;
-    }
+    private readonly IDatabase _db = db;
 
     // Public routes
     public async Task<List<ProjectOverview>> GetOverviewInformationAsync(CancellationToken ct = default)
@@ -74,7 +69,7 @@ public class ProjectsService : IProjectsService
             Id = Guid.Parse(project.Id),
             Title = project.Title,
             Description = project.Description,
-            Images = allImages.ToArray()
+            Images = [.. allImages]
         };
     }
 
@@ -107,7 +102,7 @@ public class ProjectsService : IProjectsService
     {
         // Serialize additional images to JSON
         string? imagesJson = null;
-        if (request.AdditionalImages != null && request.AdditionalImages.Any())
+        if (request.AdditionalImages != null && request.AdditionalImages.Count != 0)
         {
             imagesJson = JsonSerializer.Serialize(request.AdditionalImages);
         }

@@ -16,40 +16,54 @@ public class GlobalExceptionHandler(RequestDelegate next, ILogger<GlobalExceptio
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex,
-                "Unhandled exception on {Method} {Path}",
-                context.Request.Method,
-                context.Request.Path);
-
-            await WriteErrorResponseAsync(context, ex);
+            await HandleExceptionAsync(context, ex);
         }
     }
 
-    private static async Task WriteErrorResponseAsync(HttpContext context, Exception ex)
+    private async Task HandleExceptionAsync(HttpContext context, Exception ex)
     {
-        // Don't overwrite a response that's already started streaming
+        var (statusCode, message) = ex switch
+        {
+            ArgumentException => (HttpStatusCode.BadRequest, "Ogiltig förfrågan."),
+            UnauthorizedAccessException => (HttpStatusCode.Unauthorized, "Ej behörig."),
+            KeyNotFoundException => (HttpStatusCode.NotFound, "Resursen hittades inte."),
+            OperationCanceledException => (HttpStatusCode.ServiceUnavailable, "Förfrågan avbröts."),
+            _ => (HttpStatusCode.InternalServerError, "Ett oväntat fel uppstod.")
+        };
+
+        // Log with appropriate level and full context
+        if ((int)statusCode >= 500)
+        {
+            _logger.LogError(ex,
+                "Ohanterat undantag [{ExceptionType}] på {Method} {Path} → {StatusCode}",
+                ex.GetType().Name,
+                context.Request.Method,
+                context.Request.Path,
+                (int)statusCode);
+        }
+        else
+        {
+            _logger.LogWarning(
+                "Hanterat undantag [{ExceptionType}] på {Method} {Path} → {StatusCode}: {Message}",
+                ex.GetType().Name,
+                context.Request.Method,
+                context.Request.Path,
+                (int)statusCode,
+                ex.Message);
+        }
+
         if (context.Response.HasStarted) return;
 
         context.Response.Clear();
-        context.Response.ContentType = "application/json";
-
-        var (statusCode, message) = ex switch
-        {
-            ArgumentException => (HttpStatusCode.BadRequest, "Invalid request."),
-            UnauthorizedAccessException => (HttpStatusCode.Unauthorized, "Unauthorized."),
-            KeyNotFoundException => (HttpStatusCode.NotFound, "Resource not found."),
-            OperationCanceledException => (HttpStatusCode.ServiceUnavailable, "Request was cancelled."),
-            _ => (HttpStatusCode.InternalServerError, "An unexpected error occurred.")
-        };
-
         context.Response.StatusCode = (int)statusCode;
+        context.Response.ContentType = "application/json";
 
         var body = JsonSerializer.Serialize(new
         {
             error = message,
             status = (int)statusCode,
             path = context.Request.Path.Value,
-            traceId = context.TraceIdentifier   // safe to expose — just a correlation ID
+            traceId = context.TraceIdentifier
         });
 
         await context.Response.WriteAsync(body);

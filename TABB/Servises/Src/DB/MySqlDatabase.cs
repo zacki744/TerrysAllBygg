@@ -103,9 +103,8 @@ public sealed class MySqlDatabase(IDbConnectionFactory factory) : IDatabase
 
     private static PropertyInfo[] GetDtoProps<TDto>(TDto dto)
     {
-        return dto!.GetType()
+        return [.. dto!.GetType()
             .GetProperties(BindingFlags.Public | BindingFlags.Instance)
-            .Where(p => p.CanRead && p.GetMethod is not null)
-            .ToArray();
+            .Where(p => p.CanRead && p.GetMethod is not null)];
     }
 }

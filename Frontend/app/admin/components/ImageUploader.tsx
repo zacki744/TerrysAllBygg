@@ -38,7 +38,6 @@ export default function ImageUploader({
     setUploading(true);
 
     try {
-      const token = localStorage.getItem("admin_token");
       const uploadedPaths: string[] = [];
 
       for (const file of files) {
@@ -46,9 +45,10 @@ export default function ImageUploader({
         formData.append("image", file);
 
         const response = await fetch("/api/admin/image/upload", {
-          method: "POST",
-          headers: { Authorization: `Bearer ${token}` },
-          body: formData,
+          method:      "POST",
+          credentials: "include",   // cookie sent automatically
+          body:        formData,
+          // No Content-Type header — browser sets it with boundary for multipart
         });
 
         const data = await response.json();
@@ -73,14 +73,11 @@ export default function ImageUploader({
     onImagesChange(images.filter((_, i) => i !== index));
 
     try {
-      const token = localStorage.getItem("admin_token");
       await fetch("/api/admin/image/delete", {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ path: imagePath }),
+        method:      "DELETE",
+        credentials: "include",
+        headers:     { "Content-Type": "application/json" },
+        body:        JSON.stringify({ path: imagePath }),
       });
     } catch (err) {
       console.error("Raderingsfel:", err);
@@ -96,12 +93,9 @@ export default function ImageUploader({
 
   return (
     <div className={styles.uploader}>
-
       <div className={styles.uploaderHeader}>
         <span className={styles.uploaderLabel}>{label}</span>
-        <span className={styles.uploaderCount}>
-          {images.length} / {maxImages}
-        </span>
+        <span className={styles.uploaderCount}>{images.length} / {maxImages}</span>
       </div>
 
       {images.length > 0 && (
@@ -109,43 +103,21 @@ export default function ImageUploader({
           {images.map((img, index) => (
             <div key={index} className={styles.imageTile}>
               <img src={img} alt={`Bild ${index + 1}`} className={styles.tileImg} />
-
               <div className={styles.tileBadgeOrder}>#{index + 1}</div>
-              {index === 0 && (
-                <div className={styles.tileBadgeMain}>Huvud</div>
-              )}
-
+              {index === 0 && <div className={styles.tileBadgeMain}>Huvud</div>}
               <div className={styles.imageTileOverlay}>
                 <div className={styles.tileNavButtons}>
                   {index > 0 && (
-                    <button
-                      type="button"
-                      onClick={() => moveImage(index, index - 1)}
-                      className={styles.tileNavBtn}
-                      title="Flytta vänster"
-                    >
-                      ←
-                    </button>
+                    <button type="button" onClick={() => moveImage(index, index - 1)}
+                      className={styles.tileNavBtn} title="Flytta vänster">←</button>
                   )}
                   {index < images.length - 1 && (
-                    <button
-                      type="button"
-                      onClick={() => moveImage(index, index + 1)}
-                      className={styles.tileNavBtn}
-                      title="Flytta höger"
-                    >
-                      →
-                    </button>
+                    <button type="button" onClick={() => moveImage(index, index + 1)}
+                      className={styles.tileNavBtn} title="Flytta höger">→</button>
                   )}
                 </div>
-
-                <button
-                  type="button"
-                  onClick={() => handleRemoveImage(index)}
-                  className={styles.tileRemoveBtn}
-                >
-                  Ta bort
-                </button>
+                <button type="button" onClick={() => handleRemoveImage(index)}
+                  className={styles.tileRemoveBtn}>Ta bort</button>
               </div>
             </div>
           ))}
@@ -154,14 +126,9 @@ export default function ImageUploader({
 
       {images.length < maxImages && (
         <label>
-          <input
-            type="file"
-            accept="image/*"
-            multiple
-            onChange={handleFileSelect}
-            disabled={uploading}
-            style={{ display: "none" }}
-          />
+          <input type="file" accept="image/*" multiple
+            onChange={handleFileSelect} disabled={uploading}
+            style={{ display: "none" }} />
           <div className={`${styles.uploadZone} ${uploading ? styles.uploadZoneDisabled : ""}`}>
             {uploading ? (
               <div className={styles.spinner}>
@@ -183,11 +150,7 @@ export default function ImageUploader({
       )}
 
       {error && <div className={styles.errorBox}>{error}</div>}
-
-      {images.length === 0 && (
-        <p className={styles.noImages}>Inga bilder uppladdade än</p>
-      )}
-
+      {images.length === 0 && <p className={styles.noImages}>Inga bilder uppladdade än</p>}
     </div>
   );
 }

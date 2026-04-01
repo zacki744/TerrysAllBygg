@@ -6,21 +6,14 @@ using Models.Snickeri;
 
 namespace Services.Src.Mail;
 
-public class EmailService : IEmailService
+public class EmailService(
+    IEmailSender sender,
+    IOptions<SmtpSettings> smtpOptions,
+    ILogger<EmailService> logger) : IEmailService
 {
-    private readonly IEmailSender _sender;
-    private readonly SmtpSettings _smtp;
-    private readonly ILogger<EmailService> _logger;
-
-    public EmailService(
-        IEmailSender sender,
-        IOptions<SmtpSettings> smtpOptions,
-        ILogger<EmailService> logger)
-    {
-        _sender = sender;
-        _smtp = smtpOptions.Value;
-        _logger = logger;
-    }
+    private readonly IEmailSender _sender = sender;
+    private readonly SmtpSettings _smtp = smtpOptions.Value;
+    private readonly ILogger<EmailService> _logger = logger;
 
     // ── Booking ────────────────────────────────────────────────
 

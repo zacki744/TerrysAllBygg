@@ -1,14 +1,13 @@
 "use client";
+
 import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import AdminNavbar from "./components/AdminNavbar";
 import ProjectTable from "./components/ProjectTable";
 import SnickeriTable from "./components/SnickeriTable";
-import Button from "../components/ui/Button";
 import { AuthService, AdminAPI, Project } from "../lib/auth";
 import styles from "./admin.module.css";
-import Link from "next/link";
 
 interface SnickeriItem {
   id: string;
@@ -18,9 +17,9 @@ interface SnickeriItem {
   image: string;
 }
 
-async function fetchSnickerier(token: string): Promise<SnickeriItem[]> {
+async function fetchSnickerier(): Promise<SnickeriItem[]> {
   const res = await fetch("/api/admin/snickerier", {
-    headers: { Authorization: `Bearer ${token}` },
+    credentials: "include",   // cookie sent automatically
   });
   if (!res.ok) throw new Error("Failed to load snickerier");
   return res.json();
@@ -28,12 +27,12 @@ async function fetchSnickerier(token: string): Promise<SnickeriItem[]> {
 
 export default function AdminDashboard() {
   const router = useRouter();
-
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [projects, setProjects]   = useState<Project[]>([]);
   const [snickerier, setSnickerier] = useState<SnickeriItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading]     = useState(true);
 
   useEffect(() => {
+    // Quick local check first, then verify with server
     if (!AuthService.isAuthenticated()) {
       router.push("/admin/login");
       return;
@@ -43,51 +42,39 @@ export default function AdminDashboard() {
 
   const loadAll = async () => {
     try {
-      const token = localStorage.getItem("admin_token") ?? "";
       const [projectData, snickeriData] = await Promise.all([
         AdminAPI.getAllProjects(),
-        fetchSnickerier(token),
+        fetchSnickerier(),
       ]);
       setProjects(projectData);
       setSnickerier(snickeriData);
     } catch (error) {
       console.error("Failed to load admin data:", error);
-      AuthService.logout();
       router.push("/admin/login");
     } finally {
       setLoading(false);
     }
   };
 
-  // ── Projects ───────────────────────────────────────────────
-
-  const handleEditProject = (id: string) => {
-    router.push(`/admin/projects/edit?id=${id}`);
-  };
+  const handleEditProject  = (id: string) => router.push(`/admin/projects/edit?id=${id}`);
+  const handleEditSnickeri = (id: string) => router.push(`/admin/snickerier/edit?id=${id}`);
 
   const handleDeleteProject = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this project?")) return;
+    if (!confirm("Är du säker på att du vill radera detta projekt?")) return;
     try {
       await AdminAPI.deleteProject(id);
       setProjects((prev) => prev.filter((p) => p.id !== id));
     } catch {
-      alert("Failed to delete project");
+      alert("Kunde inte radera projekt");
     }
-  };
-
-  // ── Snickerier ─────────────────────────────────────────────
-
-  const handleEditSnickeri = (id: string) => {
-    router.push(`/admin/snickerier/edit?id=${id}`);
   };
 
   const handleDeleteSnickeri = async (id: string) => {
     if (!confirm("Är du säker på att du vill radera detta snickeri?")) return;
     try {
-      const token = localStorage.getItem("admin_token") ?? "";
       const res = await fetch(`/api/admin/snickerier/${id}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
+        method:      "DELETE",
+        credentials: "include",
       });
       if (!res.ok) throw new Error();
       setSnickerier((prev) => prev.filter((s) => s.id !== id));
@@ -95,8 +82,6 @@ export default function AdminDashboard() {
       alert("Kunde inte radera snickeri");
     }
   };
-
-  // ── Render ─────────────────────────────────────────────────
 
   if (loading) {
     return (
@@ -109,46 +94,37 @@ export default function AdminDashboard() {
   return (
     <div className={styles.page}>
       <AdminNavbar />
-
       <main className={styles.main}>
 
-        {/* ── Projects section ── */}
         <div className={styles.pageHeader}>
           <div>
-            <h1 className={styles.pageTitle}>Project</h1>
-            <p className={styles.pageSubtitle}>Hantera dina färdiga project</p>
+            <h1 className={styles.pageTitle}>Projekt</h1>
+            <p className={styles.pageSubtitle}>Hantera dina byggprojekt</p>
           </div>
-          <Button>
-            <Link href="/admin/Projects/new">
-                <Plus size={16} strokeWidth={2} />
-            </Link>
-          </Button>
+          <button className={styles.addButton}
+            onClick={() => router.push("/admin/projects/new")}>
+            <Plus size={18} strokeWidth={2} />
+            <span>Nytt projekt</span>
+          </button>
         </div>
 
-        <ProjectTable
-          projects={projects}
-          onEdit={handleEditProject}
-          onDelete={handleDeleteProject}
-        />
+        <ProjectTable projects={projects}
+          onEdit={handleEditProject} onDelete={handleDeleteProject} />
 
-        {/* ── Snickerier section ── */}
         <div className={styles.pageHeader} style={{ marginTop: "3rem" }}>
           <div>
             <h1 className={styles.pageTitle}>Snickerier</h1>
             <p className={styles.pageSubtitle}>Hantera dina färdiga snickerier</p>
           </div>
-          <Button>
-            <Link href="/admin/snickerier/new">
-              <Plus size={16} strokeWidth={2} />
-            </Link>
-        </Button>
+          <button className={styles.addButton}
+            onClick={() => router.push("/admin/snickerier/new")}>
+            <Plus size={18} strokeWidth={2} />
+            <span>Nytt snickeri</span>
+          </button>
         </div>
 
-        <SnickeriTable
-          items={snickerier}
-          onEdit={handleEditSnickeri}
-          onDelete={handleDeleteSnickeri}
-        />
+        <SnickeriTable items={snickerier}
+          onEdit={handleEditSnickeri} onDelete={handleDeleteSnickeri} />
 
       </main>
     </div>

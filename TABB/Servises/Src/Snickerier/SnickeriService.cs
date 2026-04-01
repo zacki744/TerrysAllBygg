@@ -8,8 +8,6 @@ public class SnickeriService(IDatabase db) : ISnickeriService
 {
     private readonly IDatabase _db = db;
 
-    // ── Public ──────────────────────────────────────────────
-
     public async Task<List<SnickeriOverview>> GetOverviewAsync(CancellationToken ct = default)
     {
         var rows = await _db.ReadAsync<SnickeriDbDto>("snickerier", null, ct);
@@ -25,16 +23,10 @@ public class SnickeriService(IDatabase db) : ISnickeriService
     }
 
     public async Task<DetailedSnickeri?> GetByIdPublicAsync(Guid id, CancellationToken ct = default)
-    {
-        return await GetByIdAsync(id, ct);
-    }
-
-    // ── Admin ────────────────────────────────────────────────
+        => await GetByIdAsync(id, ct);
 
     public async Task<List<SnickeriOverview>> GetAllAdminAsync(CancellationToken ct = default)
-    {
-        return await GetOverviewAsync(ct);
-    }
+        => await GetOverviewAsync(ct);
 
     public async Task<DetailedSnickeri?> GetByIdAsync(Guid id, CancellationToken ct = default)
     {
@@ -44,8 +36,7 @@ public class SnickeriService(IDatabase db) : ISnickeriService
             ct
         );
 
-        if (row == null)
-            return null;
+        if (row == null) return null;
 
         var allImages = new List<string>();
         if (!string.IsNullOrEmpty(row.MainImage))
@@ -59,10 +50,7 @@ public class SnickeriService(IDatabase db) : ISnickeriService
                 if (additional != null)
                     allImages.AddRange(additional);
             }
-            catch
-            {
-                // Ignore malformed JSON
-            }
+            catch { }
         }
 
         return new DetailedSnickeri
@@ -71,7 +59,7 @@ public class SnickeriService(IDatabase db) : ISnickeriService
             Title = row.Title,
             Description = row.Description,
             Price = row.Price,
-            Images = allImages.ToArray()
+            Images = [.. allImages]
         };
     }
 
@@ -88,27 +76,26 @@ public class SnickeriService(IDatabase db) : ISnickeriService
             Id = id.ToString(),
             request.Title,
             request.Description,
-            request.Price,
+            Price = Math.Round(request.Price, 2, MidpointRounding.AwayFromZero),
             request.MainImage,
             Images = imagesJson
         };
 
         await _db.InsertAsync("snickerier", dto, ct);
-
         return id;
     }
 
     public async Task<bool> UpdateAsync(Guid id, UpdateSnickeriRequest request, CancellationToken ct = default)
     {
         string? imagesJson = null;
-        if (request.AdditionalImages != null && request.AdditionalImages.Any())
+        if (request.AdditionalImages != null && request.AdditionalImages.Count != 0)
             imagesJson = JsonSerializer.Serialize(request.AdditionalImages);
 
         var dto = new
         {
             request.Title,
             request.Description,
-            request.Price,
+            Price = Math.Round(request.Price, 2, MidpointRounding.AwayFromZero),
             request.MainImage,
             Images = imagesJson
         };
