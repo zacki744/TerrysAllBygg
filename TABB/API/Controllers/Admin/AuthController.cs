@@ -27,28 +27,27 @@ public class AuthController(IAuthService authService, ILogger<AuthController> lo
             var response = await _authService.LoginAsync(request);
             if (response == null)
             {
-                _logger.LogWarning("Misslyckat inloggningsförsök för användare {Username}", request.Username);
-                return Unauthorized(new { error = "Fel användarnamn eller lösenord" });
+                _logger.LogWarning("Misslyckat inloggningsförsök för {Email}", request.Email);
+                return Unauthorized(new { error = "Fel e-post eller lösenord" });
             }
 
-            // Set httpOnly cookie — not accessible from JavaScript
             Response.Cookies.Append("auth_token", response.Token, new CookieOptions
             {
                 HttpOnly = true,
-                Secure = true,          // HTTPS only
+                Secure = true,
                 SameSite = SameSiteMode.Strict,
                 Expires = DateTimeOffset.UtcNow.AddHours(24),
                 Path = "/"
             });
 
-            _logger.LogInformation("Inloggning lyckades för användare {Username}", request.Username);
+            _logger.LogInformation("Inloggning lyckades för {Email}", request.Email);
 
-            // Don't return the token in the body — it's in the cookie
-            return Ok(new { username = response.Username });
+            // Return email (not token) for display purposes
+            return Ok(new { email = response.Email });
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Fel vid inloggning för användare {Username}", request.Username);
+            _logger.LogError(ex, "Fel vid inloggning för {Email}", request.Email);
             return StatusCode(500, new { error = "Inloggning misslyckades" });
         }
     }
@@ -66,16 +65,18 @@ public class AuthController(IAuthService authService, ILogger<AuthController> lo
             Path = "/"
         });
 
-        _logger.LogInformation("Användare loggade ut");
+        _logger.LogInformation("Utloggning genomförd");
         return Ok(new { message = "Utloggad" });
     }
 
-    // GET: api/admin/auth/me — check if still authenticated
+    // GET: api/admin/auth/me
     [HttpGet("me")]
     [Authorize(Roles = "Admin")]
     public IActionResult Me()
     {
-        var username = User.Identity?.Name ?? "okänd";
-        return Ok(new { username, authenticated = true });
+        var email = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value
+                 ?? User.Identity?.Name
+                 ?? "okänd";
+        return Ok(new { email, authenticated = true });
     }
 }

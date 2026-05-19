@@ -1,0 +1,15 @@
+# robots.txt — Terrys All Bygg
+# https://terrysallbygg.se
+
+User-agent: *
+Allow: /
+
+# Block admin area from all crawlers
+Disallow: /admin/
+Disallow: /api/
+
+# Block token-based pages
+Disallow: /admin/accept-invite
+Disallow: /admin/reset-password
+
+Sitemap: https://terrysallbygg.se/sitemap.xml

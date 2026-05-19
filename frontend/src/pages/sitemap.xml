@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+  <!-- ── Huvudsidor ─────────────────────────────────────── -->
+
+  <url>
+    <loc>https://terrysallbygg.se/</loc>
+    <lastmod>2025-01-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="sv" href="https://terrysallbygg.se/"/>
+  </url>
+
+  <url>
+    <loc>https://terrysallbygg.se/snickerier</loc>
+    <lastmod>2025-01-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="sv" href="https://terrysallbygg.se/snickerier"/>
+  </url>
+
+  <url>
+    <loc>https://terrysallbygg.se/about</loc>
+    <lastmod>2025-01-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="sv" href="https://terrysallbygg.se/about"/>
+  </url>
+
+  <url>
+    <loc>https://terrysallbygg.se/book</loc>
+    <lastmod>2025-01-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="sv" href="https://terrysallbygg.se/book"/>
+  </url>
+
+  <!-- ── Notera: /snickeri?id=xxx och /projects?id=xxx ─── -->
+  <!-- Detaljsidor indexeras ej i sitemap eftersom de är    -->
+  <!-- query-param-baserade och Google hanterar dem via     -->
+  <!-- länkarna från snickerier-listan.                     -->
+
+</urlset>

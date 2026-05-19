@@ -1,0 +1,66 @@
+/* ============================================================
+   index.css — global styles & CSS variables
+   ============================================================ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+:root {
+  /* ── Brand colours ──────────────────────────────────────── */
+  --primary:    #C86B3C;   /* burnt orange */
+  --accent:     #5B7FA6;   /* dusty blue */
+  --background: #F5F0E8;   /* warm paper */
+  --foreground: #2C2416;   /* dark brown */
+  --border:     #D9D0C1;   /* warm grey */
+  --secondary:  #8C7B6B;   /* muted brown */
+
+  /* ── Typography ─────────────────────────────────────────── */
+  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--foreground);
+  background-color: var(--background);
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Reset ───────────────────────────────────────────────── */
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  line-height: 1.2;
+}
+
+p { margin: 0; }
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
