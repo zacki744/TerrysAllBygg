@@ -19,13 +19,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 6rem 1.5rem 2rem; /* top clears navbar, sides & bottom for mobile */
 }
 
 .main {
   max-width: 80rem;
   margin: 0 auto;
-  padding: 3rem 1.5rem;
-  margin-top: 4rem; /* clears fixed navbar */
+  padding: 6rem 1.5rem 3rem; /* was 3rem top + margin-top 4rem — unified */
+}
+
+@media (max-width: 640px) {
+  .main       { padding: 5rem 1rem 2rem; }
+  .pageCenter { padding: 5rem 1rem 2rem; }
 }
 
 /* ─── Page header ─────────────────────────────────────────── */
@@ -34,6 +39,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;       /* stacks on narrow screens */
   margin-bottom: 2rem;
 }
 
@@ -41,6 +48,10 @@
   font-size: 1.875rem;
   font-weight: 700;
   color: var(--foreground);
+}
+
+@media (max-width: 640px) {
+  .pageTitle { font-size: 1.5rem; }
 }
 
 .pageSubtitle {
@@ -67,6 +78,10 @@
   border-bottom: 1px solid var(--border);
 }
 
+@media (max-width: 640px) {
+  .navbar { padding: 0.875rem 1rem; }
+}
+
 .navBrand {
   font-size: 1.125rem;
   font-weight: 600;
@@ -78,6 +93,10 @@
   gap: 1.5rem;
   font-size: 0.875rem;
   font-weight: 500;
+}
+
+@media (max-width: 640px) {
+  .navLinks { gap: 1rem; font-size: 0.8125rem; }
 }
 
 .navLink {
@@ -115,6 +134,10 @@
   font-family: inherit;
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+@media (max-width: 640px) {
+  .inlineInput { min-width: 0; width: 100%; }
 }
 
 .inlineInput:focus {
@@ -183,6 +206,7 @@
   display: flex;
   gap: 1rem;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 /* ─── Error / alert ───────────────────────────────────────── */
@@ -242,6 +266,10 @@
   font-size: 1.875rem;
   font-weight: 700;
   color: var(--foreground);
+}
+
+@media (max-width: 640px) {
+  .loginTitle { font-size: 1.5rem; }
 }
 
 .loginSubtitle {
@@ -307,9 +335,9 @@
 }
 
 @media (max-width: 640px) {
-  .tableCell         { max-width: 8rem;  padding: 0.75rem 0.75rem; }
-  .tableCellRight    { padding: 0.75rem 0.75rem; }
-  .tableHeadCell     { padding: 0.75rem 0.75rem; }
+  .tableCell          { max-width: 8rem;  padding: 0.75rem 0.75rem; }
+  .tableCellRight     { padding: 0.75rem 0.75rem; }
+  .tableHeadCell      { padding: 0.75rem 0.75rem; }
   .tableHeadCellRight { padding: 0.75rem 0.75rem; }
 }
 
@@ -485,6 +513,11 @@
   gap: 0.75rem;
 }
 
+/* On touch devices the overlay is always visible since there's no hover */
+@media (hover: none) {
+  .imageTileOverlay { opacity: 1; }
+}
+
 .tileNavButtons {
   display: flex;
   gap: 0.5rem;
@@ -522,7 +555,7 @@
   font-weight: 600;
   cursor: pointer;
   box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-  transition: transform 0.15s, background-color 0.15s;
+  transition: transform 0.15rem, background-color 0.15s;
 }
 
 .tileRemoveBtn:hover {

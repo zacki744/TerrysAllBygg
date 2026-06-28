@@ -10,7 +10,6 @@ const links = [
   { href: "/snickerier", label: "Snickerier" },
   { href: "/about",      label: "Om Oss" },
   { href: "/book",       label: "Boka" },
-  { href: "/admin",      label: "Admin" },
 ];
 
 export default function Navbar() {
@@ -31,7 +30,7 @@ export default function Navbar() {
       <nav className={styles.navbar}>
         <div className={styles.navInner}>
           <Link to="/" className={styles.navBrand}>
-            Terrys All Bygg
+            Terrys Allbygg
           </Link>
 
           {/* Desktop links */}

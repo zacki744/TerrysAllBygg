@@ -9,15 +9,8 @@ import { useNavigate } from "react-router-dom";
 import styles from "../pages.module.css";
 import PageMeta from "../components/PageMeta";
 
-<PageMeta
-  title="Boka Konsultation"
-  description="Boka en kostnadsfri konsultation med Terrys All Bygg. Vi återkommer inom 24 timmar."
-  canonical="/book"
-  noIndex={true}   // no need for Google to index the booking form
-/>
-
 export default function Book() {
-  const navigate  = useNavigate();
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -58,6 +51,13 @@ export default function Book() {
 
   return (
     <div className={styles.page}>
+      <PageMeta
+        title="Boka Konsultation"
+        description="Boka en kostnadsfri konsultation med Terrys Allbygg. Vi återkommer inom 24 timmar."
+        canonical="/book"
+        noIndex={true}
+      />
+
       <Navbar />
 
       <main className={styles.mainNarrow}>
@@ -72,6 +72,7 @@ export default function Book() {
 
           <form className={styles.bookForm} onSubmit={handleSubmit}>
 
+            {/* Row 1: Namn + E-post */}
             <div className={styles.formField}>
               <label className={styles.formLabel}>Namn *</label>
               <Input name="name" placeholder="Ditt namn" value={form.name} onChange={handleChange} required />
@@ -82,6 +83,7 @@ export default function Book() {
               <Input name="email" placeholder="din@email.se" type="email" value={form.email} onChange={handleChange} required />
             </div>
 
+            {/* Row 2: Telefon + Byggesplats */}
             <div className={styles.formField}>
               <label className={styles.formLabel}>Telefonnummer</label>
               <Input name="phoneNumber" placeholder="070-123 45 67" type="tel" value={form.phoneNumber} onChange={handleChange} />
@@ -96,13 +98,15 @@ export default function Book() {
               </Select>
             </div>
 
+            {/* Conditional: specificera byggesplats — full width */}
             {form.placement === "annat" && (
-              <div className={styles.formField}>
+              <div className={`${styles.formField} ${styles.formFieldFull}`}>
                 <label className={styles.formLabel}>Specificera byggesplats</label>
                 <Input name="other1" placeholder="Beskriv platsen" value={form.other1} onChange={handleChange} />
               </div>
             )}
 
+            {/* Row 3: Typ av projekt + Adress */}
             <div className={styles.formField}>
               <label className={styles.formLabel}>Typ av projekt *</label>
               <Select name="project" value={form.project} onChange={handleChange} required placeholder="Välj typ av byggprojekt">
@@ -119,19 +123,21 @@ export default function Book() {
               </Select>
             </div>
 
-            {form.project === "annat" && (
-              <div className={styles.formField}>
-                <label className={styles.formLabel}>Specificera projekttyp</label>
-                <Input name="other2" placeholder="Beskriv ditt projekt" value={form.other2} onChange={handleChange} />
-              </div>
-            )}
-
             <div className={styles.formField}>
               <label className={styles.formLabel}>Adress *</label>
               <Input name="address" placeholder="Gatuadress, Ort" value={form.address} onChange={handleChange} required />
             </div>
 
-            <div className={styles.formField}>
+            {/* Conditional: specificera projekttyp — full width */}
+            {form.project === "annat" && (
+              <div className={`${styles.formField} ${styles.formFieldFull}`}>
+                <label className={styles.formLabel}>Specificera projekttyp</label>
+                <Input name="other2" placeholder="Beskriv ditt projekt" value={form.other2} onChange={handleChange} />
+              </div>
+            )}
+
+            {/* Projektbeskrivning — full width */}
+            <div className={`${styles.formField} ${styles.formFieldFull}`}>
               <label className={styles.formLabel}>Projektbeskrivning *</label>
               <Textarea
                 name="description"
@@ -143,9 +149,12 @@ export default function Book() {
               />
             </div>
 
-            <Button type="submit" className="w-full">
-              Skicka förfrågan
-            </Button>
+            {/* Submit — full width */}
+            <div className={styles.formFieldFull}>
+              <Button type="submit" className="w-full">
+                Skicka förfrågan
+              </Button>
+            </div>
 
           </form>
 

@@ -5,32 +5,12 @@
 // ══════════════════════════════════════════════════════════
 
 export const CONTACT = {
-  companyName: "Terrys All Bygg",
-  phone:       "07X-XXX XX XX",       // ← uppdatera
-  phoneHref:   "tel:+467XXXXXXXX",    // ← uppdatera (e.164 format)
-  email:       "info@terrysallbygg.se",
-  emailHref:   "mailto:info@terrysallbygg.se",
+  companyName: "Terrys Allbygg",
+  phone:       "076-820 59 61",
+  phoneHref:   "tel:+46768205961",
+  email:       "terrysallbygg@gmail.com",
+  emailHref:   "mailto:terrysallbygg@gmail.com",
 
-  address: {
-    street:   "Din Gatuadress X",     // ← uppdatera
-    postcode: "XXX XX",               // ← uppdatera
-    city:     "Österlen",
-    region:   "Skåne",
-    country:  "Sverige",
-    full:     "Din Gatuadress X, XXX XX Österlen", // ← uppdatera
-  },
-
-  geo: {
-    lat: 55.6,    // ← uppdatera med exakta koordinater
-    lng: 14.2,
-  },
-
-  // Öppettider — visas i footer och PageMeta JSON-LD
-  hours: {
-    weekdays: "07:00–17:00",
-    saturday: "Stängt",
-    sunday:   "Stängt",
-  },
 
   // Sociala medier — lägg till om de finns
   social: {
@@ -40,6 +20,6 @@ export const CONTACT = {
 
   // SEO
   baseUrl:   "https://terrysallbygg.se",
-  ogImage:   "https://terrysallbygg.se/og-image.jpg",
+  ogImage:   "https://terrysallbygg.se/og-image.ico",
   areaServed: ["Österlen", "Simrishamn", "Tomelilla", "Ystad", "Skåne"],
 } as const;

@@ -1,6 +1,7 @@
 import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthService } from "./lib/auth";
+import ScrollToTop from "./components/ScrollToTop";
 
 // ── Public pages ───────────────────────────────────────────
 import Home       from "./pages/Home";
@@ -11,16 +12,15 @@ import Snickeri   from "./pages/Snickeri";
 import Projects   from "./pages/Projects";
 import NotFound   from "./pages/NotFound";
 
-// ── Admin pages ────────────────────────────────────────────
-import AdminLogin    from "./pages/admin/AdminLogin";
-import AcceptInvite  from "./pages/admin/AcceptInvite";
-import Dashboard     from "./pages/admin/Dashboard";
-import Users         from "./pages/admin/Users";
-import ProjectsNew   from "./pages/admin/ProjectsNew";
-import ProjectsEdit  from "./pages/admin/ProjectsEdit";
-import SnickeriNew   from "./pages/admin/snickerierNew";
-import SnickeriEdit  from "./pages/admin/snickerierEdit";
-
+// ── Admin pages — lazy loaded (aldrig behövda av publika besökare) ──
+const AdminLogin   = lazy(() => import("./pages/admin/AdminLogin"));
+const AcceptInvite = lazy(() => import("./pages/admin/AcceptInvite"));
+const Dashboard    = lazy(() => import("./pages/admin/Dashboard"));
+const Users        = lazy(() => import("./pages/admin/Users"));
+const ProjectsNew  = lazy(() => import("./pages/admin/ProjectsNew"));
+const ProjectsEdit = lazy(() => import("./pages/admin/ProjectsEdit"));
+const SnickeriNew  = lazy(() => import("./pages/admin/snickerierNew"));
+const SnickeriEdit = lazy(() => import("./pages/admin/snickerierEdit"));
 const ResetPassword = lazy(() => import("./pages/admin/ResetPassword"));
 
 // ── Auth guard ─────────────────────────────────────────────
@@ -31,9 +31,15 @@ function RequireAuth({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+// ── Gemensam Suspense-wrapper för admin ────────────────────
+function AdminPage({ children }: { children: React.ReactNode }) {
+  return <Suspense fallback={null}>{children}</Suspense>;
+}
+
 export default function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
 
         {/* ── Public ── */}
@@ -45,30 +51,28 @@ export default function App() {
         <Route path="/projects"   element={<Projects />} />
 
         {/* ── Admin — public ── */}
-        <Route path="/admin/login"          element={<AdminLogin />} />
-        <Route path="/admin/accept-invite"  element={<AcceptInvite />} />
-        <Route path="/admin/reset-password" element={
-          <Suspense fallback={null}><ResetPassword /></Suspense>
-        } />
+        <Route path="/admin/login"         element={<AdminPage><AdminLogin /></AdminPage>} />
+        <Route path="/admin/accept-invite" element={<AdminPage><AcceptInvite /></AdminPage>} />
+        <Route path="/admin/reset-password" element={<AdminPage><ResetPassword /></AdminPage>} />
 
         {/* ── Admin — protected ── */}
         <Route path="/admin" element={
-          <RequireAuth><Dashboard /></RequireAuth>
+          <RequireAuth><AdminPage><Dashboard /></AdminPage></RequireAuth>
         } />
         <Route path="/admin/users" element={
-          <RequireAuth><Users /></RequireAuth>
+          <RequireAuth><AdminPage><Users /></AdminPage></RequireAuth>
         } />
         <Route path="/admin/projects/new" element={
-          <RequireAuth><ProjectsNew /></RequireAuth>
+          <RequireAuth><AdminPage><ProjectsNew /></AdminPage></RequireAuth>
         } />
         <Route path="/admin/projects/edit" element={
-          <RequireAuth><ProjectsEdit /></RequireAuth>
+          <RequireAuth><AdminPage><ProjectsEdit /></AdminPage></RequireAuth>
         } />
         <Route path="/admin/snickerier/new" element={
-          <RequireAuth><SnickeriNew /></RequireAuth>
+          <RequireAuth><AdminPage><SnickeriNew /></AdminPage></RequireAuth>
         } />
         <Route path="/admin/snickerier/edit" element={
-          <RequireAuth><SnickeriEdit /></RequireAuth>
+          <RequireAuth><AdminPage><SnickeriEdit /></AdminPage></RequireAuth>
         } />
 
         {/* ── 404 ── */}

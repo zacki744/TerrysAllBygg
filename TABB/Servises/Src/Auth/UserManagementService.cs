@@ -33,12 +33,12 @@ public class UserManagementService : IUserManagementService
     public async Task<List<AdminUserSummary>> GetAllAdminsAsync(CancellationToken ct = default)
     {
         var users = await _db.ReadAsync<AdminUser>("admin_users", null, ct);
-        return users.Select(u => new AdminUserSummary
+        return [.. users.Select(u => new AdminUserSummary
         {
             Id = u.Id,
             Email = u.Email,
             CreatedAt = u.CreatedAt
-        }).ToList();
+        })];
     }
 
     public async Task<bool> DeleteAdminAsync(string id, CancellationToken ct = default)

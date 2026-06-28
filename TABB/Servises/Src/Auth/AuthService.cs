@@ -22,7 +22,7 @@ public class AuthService(IDatabase db, IConfiguration config, ILogger<AuthServic
         // Look up by Email, not Username
         var user = await _db.ReadSingleAsync<AdminUser>(
             "admin_users",
-            new { Email = request.Email },
+            new { request.Email },
             ct
         );
 

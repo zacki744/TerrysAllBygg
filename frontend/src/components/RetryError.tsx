@@ -1,5 +1,4 @@
 import { useEffect, useState, useRef } from "react";
-import { Link } from "react-router-dom";
 import Navbar from "./../components/Navbar";
 import Footer from "./../components/Footer";
 import Hero from "./../components/Hero";
@@ -36,7 +35,7 @@ export default function Home() {
       .then((res) => { if (!res.ok) throw new Error(); return res.json(); })
       .then((data: Project[]) => {
         setProjects(data);
-        timer.current = setTimeout(() => data.slice(3).forEach((p) => prefetchImage(p.image)), 2000);
+        timer.current = setTimeout(() => data.slice(2).forEach((p) => prefetchImage(p.image)), 2000);
       })
       .catch(() => setError(true))
       .finally(() => setLoading(false));
@@ -51,7 +50,7 @@ export default function Home() {
       />
       <Navbar />
 
-      <Hero />
+      <div className={styles.heroContainer}><Hero /></div>
 
       <div className={styles.trustBar}>
         {["Lokalt företag i Österlen", "Kostnadsfri konsultation", "Skräddarsydda lösningar"].map((t) => (
@@ -62,32 +61,18 @@ export default function Home() {
       </div>
 
       <main className={styles.mainWide}>
-
-        {/* ── Projekt ── */}
         <section className={styles.projectsSection}>
-          <h2 className={styles.sectionTitle}>Tidigare projekt</h2>
+          <div className={styles.sectionHeader}>
+            <h2 className={styles.sectionTitle}>Tidigare projekt</h2>
+          </div>
           <div className={styles.projectGrid}>
-            {loading && Array.from({ length: 6 }).map((_, i) => <ProjectCardSkeleton key={i} />)}
+            {loading && Array.from({ length: 4 }).map((_, i) => <ProjectCardSkeleton key={i} />)}
             {!loading && error && <RetryError />}
             {!loading && !error && projects.map((p, i) => (
-              <ProjectCard key={p.id} {...p} priority={i < 3} />
+              <ProjectCard key={p.id} {...p} priority={i < 2} />
             ))}
           </div>
         </section>
-
-        {/* ── CTA ── */}
-        <div className={styles.homeCta}>
-          <p className={styles.homeCtaTitle}>Redo att sätta igång?</p>
-          <p className={styles.homeCtaSubtitle}>
-            Vi erbjuder kostnadsfri konsultation — berätta om ditt projekt
-            så återkommer vi inom 24 timmar.
-          </p>
-          <div className={styles.homeCtaButtons}>
-            <Link to="/book"       className={styles.btnPrimary}>Boka konsultation</Link>
-            <Link to="/snickerier" className={styles.btnGhost}>Se snickerier</Link>
-          </div>
-        </div>
-
       </main>
 
       <Footer />

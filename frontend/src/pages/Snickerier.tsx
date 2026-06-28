@@ -3,6 +3,7 @@ import Navbar from "./../components/Navbar";
 import Footer from "./../components/Footer";
 import SnickeriCard from "./../components/SnickeriCard";
 import { SnickeriCardSkeleton } from "./../components/Skeletons";
+import RetryError from "./../components/RetryError";
 import PageMeta from "./../components/PageMeta";
 import styles from "./../pages.module.css";
 
@@ -15,9 +16,9 @@ interface SnickeriItem {
 }
 
 export default function Snickerier() {
-  const [items, setItems]   = useState<SnickeriItem[]>([]);
+  const [items, setItems]     = useState<SnickeriItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError]   = useState(false);
+  const [error, setError]     = useState(false);
 
   useEffect(() => {
     fetch("/api/snickerier")
@@ -31,7 +32,7 @@ export default function Snickerier() {
     <div className={styles.page}>
       <PageMeta
         title="Snickerier"
-        description="Handgjorda snickerier från Terrys All Bygg — stolar, bord, hyllor och mer. Färdiga att beställa i Österlen, Skåne."
+        description="Handgjorda snickerier från Terrys AllBygg — stolar, bord, hyllor och mer. Färdiga att beställa i Österlen, Skåne."
         canonical="/snickerier"
       />
       <Navbar />
@@ -50,28 +51,18 @@ export default function Snickerier() {
           ))}
 
           {!loading && error && (
-            <p className={styles.stateText}>
-              Kunde inte ladda snickerier. <button
-                onClick={() => window.location.reload()}
-                style={{ color: "var(--accent)", background: "none", border: "none",
-                  cursor: "pointer", textDecoration: "underline" }}>
-                Försök igen
-              </button>
-            </p>
+            <RetryError/>
           )}
 
           {!loading && !error && items.length === 0 && (
             <p className={styles.stateText}>Inga snickerier tillgängliga just nu.</p>
           )}
 
-          {!loading && !error && items.map((item) => (
+          {!loading && !error && items.map((item, i) => (
             <SnickeriCard
               key={item.id}
-              id={item.id}
-              title={item.title}
-              description={item.description}
-              price={item.price}
-              image={item.image}
+              {...item}
+              priority={i === 0}
             />
           ))}
         </div>

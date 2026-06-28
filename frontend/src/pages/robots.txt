@@ -1,4 +1,4 @@
-# robots.txt — Terrys All Bygg
+# robots.txt — Terrys Allbygg
 # https://terrysallbygg.se
 
 User-agent: *

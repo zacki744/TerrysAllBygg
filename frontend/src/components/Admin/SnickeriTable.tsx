@@ -2,6 +2,7 @@
 
 import styles from "../../admin.module.css";
 import { Pencil, Trash2 } from "lucide-react";
+import { formatPrice } from "../../lib/formatPrice";
 
 interface SnickeriItem {
   id: string;
@@ -36,7 +37,7 @@ export default function SnickeriTable({ items, onEdit, onDelete }: SnickeriTable
               </td>
               <td className={styles.tableCell}>
                 <span className={styles.tablePrimary}>
-                  {item.price.toLocaleString("sv-SE")} kr
+                  {formatPrice(item.price)}
                 </span>
               </td>
               <td className={styles.tableCellRight}>

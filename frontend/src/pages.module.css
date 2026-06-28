@@ -13,6 +13,7 @@
   color: var(--foreground);
   display: flex;
   flex-direction: column;
+  padding-top: 4rem;   /* space for fixed header */
 }
 
 /* main areas grow to fill space — pushes footer down */
@@ -32,15 +33,20 @@
 
 /* Shared content containers */
 .mainNarrow {
-  max-width: 48rem;
+  max-width: 56rem;
   margin: 0 auto;
   padding: 6rem 1.5rem 3rem;
 }
 
 .mainWide {
-  max-width: 64rem;
+  max-width: 72rem;
   margin: 0 auto;
-  padding: 6rem 1.5rem 0rem 1.5rem;
+  padding: 6rem 2rem 3rem;
+}
+
+@media (max-width: 640px) {
+  .mainNarrow { padding: 5rem 1rem 2rem; }
+  .mainWide   { padding: 5rem 1rem 2rem; }
 }
 
 /* ─── Page header (title + subtitle) ─────────────────────── */
@@ -69,7 +75,7 @@
 /* ─── Home page ───────────────────────────────────────────── */
 
 .projectsSection {
-  margin-top: 4rem;
+  margin-top: 1.5rem;
 }
 
 .sectionTitle {
@@ -84,11 +90,14 @@
   gap: 1.5rem;
   grid-template-columns: 1fr;
 }
-
+ 
 @media (min-width: 640px) {
   .projectGrid { grid-template-columns: repeat(2, 1fr); }
 }
-
+ 
+@media (min-width: 1024px) {
+  .projectGrid { grid-template-columns: repeat(3, 1fr); }
+}
 /* ─── Snickerier listing ──────────────────────────────────── */
 
 .snickeriList {
@@ -120,9 +129,13 @@
   padding: 2rem;
   background-color: var(--background);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr;   /* mobile: single column */
   gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .bookForm { grid-template-columns: repeat(2, 1fr); }
 }
 
 .formLabel {
@@ -136,6 +149,11 @@
 .formField {
   display: flex;
   flex-direction: column;
+}
+
+/* Stretch a field across both columns */
+.formFieldFull {
+  grid-column: 1 / -1;
 }
 
 .infoBox {
@@ -202,7 +220,6 @@
   color: color-mix(in srgb, var(--foreground) 60%, transparent);
 }
 
-/* Two-column layout: gallery + sidebar */
 .projectLayout {
   display: flex;
   flex-direction: column;
@@ -275,4 +292,170 @@
 .descriptionText {
   color: color-mix(in srgb, var(--foreground) 70%, transparent);
   line-height: 1.75;
+}
+
+/* ── Hero container ───────────────────────────────────────── */
+.heroContainer { width: 100%; }
+
+/* ── Trust bar ────────────────────────────────────────────── */
+.trustBar {
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 0.875rem 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+  background-color: color-mix(in srgb, var(--foreground) 3%, var(--background));
+}
+
+.trustItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: color-mix(in srgb, var(--foreground) 65%, transparent);
+}
+
+.trustDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background-color: var(--primary);
+  flex-shrink: 0;
+}
+
+/* ── Section header ───────────────────────────────────────── */
+.sectionHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+/* ── Shared button classes (replaces inline styles) ───────── */
+.btnPrimary {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.75rem 2rem;
+  border-radius: 9999px;
+  background-color: var(--primary);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  text-decoration: none;
+  transition: opacity 0.15s;
+}
+.btnPrimary:hover { opacity: 0.88; }
+
+.btnGhost {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.75rem 2rem;
+  border-radius: 9999px;
+  border: 1px solid var(--border);
+  color: var(--foreground);
+  font-weight: 500;
+  font-size: 0.9375rem;
+  text-decoration: none;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+.btnGhost:hover {
+  background-color: color-mix(in srgb, var(--foreground) 6%, transparent);
+  border-color: color-mix(in srgb, var(--foreground) 30%, transparent);
+}
+
+/* ── Retry button (inline text button) ────────────────────── */
+.retryButton {
+  color: var(--accent);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: inherit;
+  padding: 0;
+}
+
+/* ── NotFound ─────────────────────────────────────────────── */
+.notFound {
+  text-align: center;
+  padding: 5rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.notFoundCode {
+  font-size: 6rem;
+  font-weight: 800;
+  color: var(--primary);
+  line-height: 1;
+}
+
+.notFoundActions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* ── About page ───────────────────────────────────────────── */
+.aboutHeader { margin-bottom: 3rem; }
+
+.aboutList {
+  margin-top: 1rem;
+  padding-left: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  color: color-mix(in srgb, var(--foreground) 70%, transparent);
+  line-height: 1.7;
+}
+
+.aboutCta {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+.projectDetailMain {
+  max-width: 56rem;          /* smalare än mainWide — projekt behöver inte 72rem */
+}
+
+.homeCta {
+  margin-top: 3rem;
+  padding: 3rem 2rem;
+  border-radius: 1rem;
+  background-color: color-mix(in srgb, var(--primary) 6%, var(--background));
+  border: 1px solid color-mix(in srgb, var(--primary) 20%, var(--border));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+}
+ 
+.homeCtaTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--foreground);
+}
+ 
+.homeCtaSubtitle {
+  font-size: 1rem;
+  color: color-mix(in srgb, var(--foreground) 65%, transparent);
+  max-width: 36ch;
+  line-height: 1.6;
+}
+ 
+.homeCtaButtons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 0.5rem;
 }

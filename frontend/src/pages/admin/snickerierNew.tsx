@@ -7,7 +7,7 @@ import styles from "../../admin.module.css";
 async function createSnickeri(data: SnickeriFormData): Promise<void> {
   const res = await fetch("/api/admin/snickerier", {
     method:      "POST",
-    credentials: "include",           // cookie auth — no token needed
+    credentials: "include",
     headers:     { "Content-Type": "application/json" },
     body: JSON.stringify({
       title:            data.title,
@@ -28,7 +28,7 @@ export default function NewSnickeri() {
 
   const handleSubmit = async (data: SnickeriFormData) => {
     await createSnickeri(data);
-    navigate("/admin");             // ← /admin not /admin/snickerier
+    navigate("/admin");
   };
 
   return (

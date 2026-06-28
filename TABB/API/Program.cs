@@ -126,8 +126,13 @@ try
     builder.Services.AddAppRateLimiting();
     builder.Services.AddServiceLayer();
     builder.Services.AddControllers();
-    builder.Services.AddOpenApi();
     builder.Services.AddHealthChecks();
+
+    // ── Kestrel — tillåt 50 MB uploads ────────────────────
+    builder.Services.Configure<Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServerOptions>(options =>
+    {
+        options.Limits.MaxRequestBodySize = 52_428_800; // 50 MB
+    });
 
     var app = builder.Build();
 
@@ -136,7 +141,6 @@ try
     {
         opts.MessageTemplate = "{RequestMethod} {RequestPath} → {StatusCode} ({Elapsed:0}ms)";
 
-        // Skip noisy static file requests
         opts.GetLevel = (ctx, _, ex) =>
         {
             if (ex != null) return LogEventLevel.Error;
@@ -152,9 +156,6 @@ try
     // ── Exception handler — FIRST in pipeline ──────────────
     app.UseMiddleware<GlobalExceptionHandler>();
 
-    if (app.Environment.IsDevelopment())
-        app.MapOpenApi();
-
     app.UseHttpsRedirection();
     app.UseCors("ProductionPolicy");
 
@@ -166,22 +167,41 @@ try
         FileProvider = new PhysicalFileProvider(frontendPath)
     });
 
+    // Vite-bygget: JS/CSS har hash i filnamnet → lång cache.
+    // index.html har aldrig hash → no-cache så SPA-uppdateringar slår igenom.
     app.UseStaticFiles(new StaticFileOptions
     {
-        FileProvider = new PhysicalFileProvider(frontendPath)
+        FileProvider = new PhysicalFileProvider(frontendPath),
+        OnPrepareResponse = ctx =>
+        {
+            var headers = ctx.Context.Response.Headers;
+            if (ctx.File.Name.EndsWith(".html", StringComparison.OrdinalIgnoreCase))
+                headers.CacheControl = "no-cache, no-store, must-revalidate";
+            else
+                headers.CacheControl = "public, max-age=31536000, immutable";
+        }
     });
 
     // ── Uploads ────────────────────────────────────────────
     var uploadsPath = Path.GetFullPath(
-        Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "uploads"));
+        Path.Combine(app.Environment.ContentRootPath, "uploads"));
 
     Directory.CreateDirectory(uploadsPath);
     Log.Information("Uploads-mapp: {Path}", uploadsPath);
 
+    // Uppladdade bilder är UUID-namngivna och ändras aldrig → safe att cache:a 1 år.
     app.UseStaticFiles(new StaticFileOptions
     {
         FileProvider = new PhysicalFileProvider(uploadsPath),
-        RequestPath = "/uploads"
+        RequestPath = "/uploads",
+        OnPrepareResponse = ctx =>
+        {
+            ctx.Context.Response.Headers.CacheControl = "public, max-age=31536000, immutable";
+
+            // Explicit MIME-typ för WebP (saknas i vissa host-miljöer)
+            if (ctx.File.Name.EndsWith(".webp", StringComparison.OrdinalIgnoreCase))
+                ctx.Context.Response.ContentType = "image/webp";
+        }
     });
 
     app.UseAuthentication();

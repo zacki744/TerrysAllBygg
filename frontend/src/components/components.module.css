@@ -222,10 +222,20 @@
 .heroWrapper {
   position: relative;
   width: 100%;
-  min-height: 92vh;
+  padding-top: 4rem;          /* ← clearar den fixerade navbaren (ca 64px) */
   display: flex;
   align-items: center;
   overflow: hidden;
+  background-color: var(--background);
+}
+ 
+@media (min-width: 768px) {
+  .heroWrapper {
+    padding: 6rem 0 4rem;     /* mer luft på desktop */
+    overflow: visible;
+  }
+  .heroBgImage   { display: none; }
+  .heroBgOverlay { display: none; }
 }
 
 .heroBgImage {
@@ -260,15 +270,23 @@
   position: relative;
   z-index: 2;
   width: 100%;
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 0 2rem;
   display: flex;
   flex-direction: column;
   gap: 2.5rem;
+  padding-top: 2rem;
 }
-
+ 
 @media (min-width: 768px) {
-  .heroInner { flex-direction: row; align-items: center; gap: 4rem; }
+  .heroInner {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 4rem;
+    padding-top: 4rem;
+  }
 }
-
 .heroContent { flex: 1; }
 
 .heroImageCol { display: none; }
@@ -389,24 +407,25 @@
 .gallery {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 4 / 3;
   border-radius: 0.75rem;
   overflow: hidden;
   background-color: color-mix(in srgb, var(--foreground) 5%, var(--background));
+  min-height: 280px;
 }
-
+ 
 @media (min-width: 768px) {
-  .gallery { aspect-ratio: 3 / 2; }
+  .gallery { aspect-ratio: 16 / 9; }
 }
 
 .galleryImage {
-  object-fit: contain;   /* never crops — letterboxes instead */
+  object-fit: contain;
   width: 100%;
   height: 100%;
   display: block;
   border-radius: 0;
   border: none;
-  cursor: zoom-in;       /* hint that fullscreen is available */
+  cursor: zoom-in;
 }
 
 /* ─── Lightbox ────────────────────────────────────────────── */
@@ -735,7 +754,7 @@
 }
 
 .skeletonCardImage {
-  height: 12rem;
+  height: 15rem;
   width: 100%;
    color-scheme: skeleton;
   border-radius: 0;
@@ -822,4 +841,184 @@
 @media (max-width: 520px) {
   .skeletonSnickeriCard  { flex-direction: column; }
   .skeletonSnickeriImage { width: 100%; min-width: unset; height: 10rem; }
+}
+
+/* ── ProjectCard image wrapper ────────────────────────────── */
+
+.cardImageWrapper {
+  position: relative;
+  height: 15rem;
+  overflow: hidden;
+  background-color: color-mix(in srgb, var(--foreground) 6%, var(--background));
+}
+.cardImagePlaceholder {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--foreground) 6%, var(--background)) 25%,
+    color-mix(in srgb, var(--foreground) 11%, var(--background)) 50%,
+    color-mix(in srgb, var(--foreground) 6%, var(--background)) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+/* Shared fade states used by both card types */
+.cardImageHidden {
+  opacity: 0;
+}
+
+.cardImageLoaded {
+  opacity: 1;
+  transition: opacity 0.35s ease;
+}
+
+/* Override cardImage to fill the wrapper */
+.cardImageWrapper .cardImage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ── SnickeriCard image wrapper ───────────────────────────── */
+
+.snickeriCardImageWrapper {
+  position: relative;
+  width: 13rem;
+  min-width: 13rem;
+  flex-shrink: 0;
+  overflow: hidden;
+  background-color: color-mix(in srgb, var(--foreground) 6%, var(--background));
+}
+
+.snickeriCardImagePlaceholder {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--foreground) 6%, var(--background)) 25%,
+    color-mix(in srgb, var(--foreground) 11%, var(--background)) 50%,
+    color-mix(in srgb, var(--foreground) 6%, var(--background)) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+.snickeriCardImageWrapper .snickeriCardImage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+@media (max-width: 520px) {
+  .snickeriCardImageWrapper {
+    width: 100%;
+    min-width: unset;
+    height: 10rem;
+    position: relative;
+  }
+}
+/* Gallery shimmer placeholder */
+.galleryPlaceholder {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--foreground) 6%,  var(--background)) 25%,
+    color-mix(in srgb, var(--foreground) 11%, var(--background)) 50%,
+    color-mix(in srgb, var(--foreground) 6%,  var(--background)) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+  border-radius: 0.75rem;
+  z-index: 0;
+}
+ 
+/* Shared fade states — used by gallery, cards */
+.cardImageHidden {
+  opacity: 0;
+}
+ 
+.cardImageLoaded {
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+ 
+/* ── ProjectCard image wrapper ────────────────────────────── */
+ 
+.cardImageWrapper {
+  position: relative;
+  height: 15rem;
+  overflow: hidden;
+  background-color: color-mix(in srgb, var(--foreground) 6%, var(--background));
+}
+ 
+.cardImagePlaceholder {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--foreground) 6%,  var(--background)) 25%,
+    color-mix(in srgb, var(--foreground) 11%, var(--background)) 50%,
+    color-mix(in srgb, var(--foreground) 6%,  var(--background)) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+ 
+.cardImageWrapper .cardImage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+ 
+/* ── SnickeriCard image wrapper ───────────────────────────── */
+ 
+.snickeriCardImageWrapper {
+  position: relative;
+  width: 13rem;
+  min-width: 13rem;
+  flex-shrink: 0;
+  overflow: hidden;
+  background-color: color-mix(in srgb, var(--foreground) 6%, var(--background));
+}
+ 
+.snickeriCardImagePlaceholder {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--foreground) 6%,  var(--background)) 25%,
+    color-mix(in srgb, var(--foreground) 11%, var(--background)) 50%,
+    color-mix(in srgb, var(--foreground) 6%,  var(--background)) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+ 
+.snickeriCardImageWrapper .snickeriCardImage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+ 
+@media (max-width: 520px) {
+  .snickeriCardImageWrapper {
+    width: 100%;
+    min-width: unset;
+    height: 10rem;
+  }
 }

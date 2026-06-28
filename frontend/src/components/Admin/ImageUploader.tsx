@@ -18,51 +18,76 @@ export default function ImageUploader({
 }: ImageUploaderProps) {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
+  const [errors, setErrors] = useState<string[]>([]);
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
+
+    // reset errors
+    setError("");
+    setErrors([]);
 
     if (images.length + files.length > maxImages) {
       setError(`Maximalt ${maxImages} bilder tillåtna`);
       return;
     }
 
-    const oversizedFiles = files.filter((f) => f.size > 10 * 1024 * 1024);
+    const oversizedFiles = files.filter((f) => f.size > 50 * 1024 * 1024);
     if (oversizedFiles.length > 0) {
-      setError("Vissa filer är större än 10MB");
+      setError("Vissa filer är större än 50MB");
       return;
     }
 
-    setError("");
     setUploading(true);
 
     try {
       const uploadedPaths: string[] = [];
+      const errorMessages: string[] = [];
 
       for (const file of files) {
-        const formData = new FormData();
-        formData.append("image", file);
+        try {
+          const formData = new FormData();
+          formData.append("image", file);
 
-        const response = await fetch("/api/admin/image/upload", {
-          method:      "POST",
-          credentials: "include",   // cookie sent automatically
-          body:        formData,
-          // No Content-Type header — browser sets it with boundary for multipart
-        });
+          const response = await fetch("/api/admin/image/upload", {
+            method: "POST",
+            credentials: "include",
+            body: formData,
+          });
 
-        const data = await response.json();
-        if (data.success) {
+          let data: any = {};
+          try {
+            data = await response.json();
+          } catch {
+            // om backend inte returnerar JSON
+          }
+
+          if (!response.ok || !data?.success) {
+            const msg =
+              data?.error ||
+              `Uppladdning misslyckades (${response.status})`;
+
+            errorMessages.push(`${file.name}: ${msg}`);
+            continue;
+          }
+
           uploadedPaths.push(data.path);
-        } else {
-          console.error("Uppladdning misslyckades för fil:", file.name);
+        } catch (err) {
+          errorMessages.push(`${file.name}: Nätverksfel / timeout`);
         }
       }
 
-      onImagesChange([...images, ...uploadedPaths]);
+      if (uploadedPaths.length > 0) {
+        onImagesChange([...images, ...uploadedPaths]);
+      }
+
+      if (errorMessages.length > 0) {
+        setErrors(errorMessages);
+      }
     } catch (err) {
       console.error("Uppladdningsfel:", err);
-      setError("Uppladdningen misslyckades. Försök igen.");
+      setError("Kritiskt fel vid uppladdning. Försök igen.");
     } finally {
       setUploading(false);
     }
@@ -74,10 +99,10 @@ export default function ImageUploader({
 
     try {
       await fetch("/api/admin/image/delete", {
-        method:      "DELETE",
+        method: "DELETE",
         credentials: "include",
-        headers:     { "Content-Type": "application/json" },
-        body:        JSON.stringify({ path: imagePath }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ path: imagePath }),
       });
     } catch (err) {
       console.error("Raderingsfel:", err);
@@ -95,29 +120,59 @@ export default function ImageUploader({
     <div className={styles.uploader}>
       <div className={styles.uploaderHeader}>
         <span className={styles.uploaderLabel}>{label}</span>
-        <span className={styles.uploaderCount}>{images.length} / {maxImages}</span>
+        <span className={styles.uploaderCount}>
+          {images.length} / {maxImages}
+        </span>
       </div>
 
       {images.length > 0 && (
         <div className={styles.imageGrid}>
           {images.map((img, index) => (
             <div key={index} className={styles.imageTile}>
-              <img src={img} alt={`Bild ${index + 1}`} className={styles.tileImg} />
+              <img
+                src={img}
+                alt={`Bild ${index + 1}`}
+                className={styles.tileImg}
+              />
+
               <div className={styles.tileBadgeOrder}>#{index + 1}</div>
-              {index === 0 && <div className={styles.tileBadgeMain}>Huvud</div>}
+
+              {index === 0 && (
+                <div className={styles.tileBadgeMain}>Huvud</div>
+              )}
+
               <div className={styles.imageTileOverlay}>
                 <div className={styles.tileNavButtons}>
                   {index > 0 && (
-                    <button type="button" onClick={() => moveImage(index, index - 1)}
-                      className={styles.tileNavBtn} title="Flytta vänster">←</button>
+                    <button
+                      type="button"
+                      onClick={() => moveImage(index, index - 1)}
+                      className={styles.tileNavBtn}
+                      title="Flytta vänster"
+                    >
+                      ←
+                    </button>
                   )}
+
                   {index < images.length - 1 && (
-                    <button type="button" onClick={() => moveImage(index, index + 1)}
-                      className={styles.tileNavBtn} title="Flytta höger">→</button>
+                    <button
+                      type="button"
+                      onClick={() => moveImage(index, index + 1)}
+                      className={styles.tileNavBtn}
+                      title="Flytta höger"
+                    >
+                      →
+                    </button>
                   )}
                 </div>
-                <button type="button" onClick={() => handleRemoveImage(index)}
-                  className={styles.tileRemoveBtn}>Ta bort</button>
+
+                <button
+                  type="button"
+                  onClick={() => handleRemoveImage(index)}
+                  className={styles.tileRemoveBtn}
+                >
+                  Ta bort
+                </button>
               </div>
             </div>
           ))}
@@ -126,10 +181,20 @@ export default function ImageUploader({
 
       {images.length < maxImages && (
         <label>
-          <input type="file" accept="image/*" multiple
-            onChange={handleFileSelect} disabled={uploading}
-            style={{ display: "none" }} />
-          <div className={`${styles.uploadZone} ${uploading ? styles.uploadZoneDisabled : ""}`}>
+          <input
+            type="file"
+            accept="image/*,.heic,.heif,.hif"
+            multiple
+            onChange={handleFileSelect}
+            disabled={uploading}
+            style={{ display: "none" }}
+          />
+
+          <div
+            className={`${styles.uploadZone} ${
+              uploading ? styles.uploadZoneDisabled : ""
+            }`}
+          >
             {uploading ? (
               <div className={styles.spinner}>
                 <div className={styles.spinnerRing} />
@@ -137,20 +202,55 @@ export default function ImageUploader({
               </div>
             ) : (
               <div className={styles.uploadZoneInner}>
-                <svg className={styles.uploadIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                <svg
+                  className={styles.uploadIcon}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 4v16m8-8H4"
+                  />
                 </svg>
-                <span className={styles.uploadTitle}>Lägg till bilder</span>
-                <span className={styles.uploadSub}>Klicka för att välja eller dra och släpp</span>
-                <span className={styles.uploadMeta}>PNG, JPG, GIF, WEBP (max 10MB per bild)</span>
+
+                <span className={styles.uploadTitle}>
+                  Lägg till bilder
+                </span>
+
+                <span className={styles.uploadSub}>
+                  Klicka för att välja eller dra och släpp
+                </span>
+
+                <span className={styles.uploadMeta}>
+                  PNG, JPG, WEBP, HEIC, HEIF, HIF (max 50MB per bild)
+                </span>
               </div>
             )}
           </div>
         </label>
       )}
 
+      {/* GLOBAL ERROR */}
       {error && <div className={styles.errorBox}>{error}</div>}
-      {images.length === 0 && <p className={styles.noImages}>Inga bilder uppladdade än</p>}
+
+      {/* PER-FILE ERRORS */}
+      {errors.length > 0 && (
+        <div className={styles.errorBox}>
+          <strong>Vissa bilder kunde inte laddas upp:</strong>
+          <ul>
+            {errors.map((e, i) => (
+              <li key={i}>{e}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {images.length === 0 && (
+        <p className={styles.noImages}>Inga bilder uppladdade än</p>
+      )}
     </div>
   );
 }
