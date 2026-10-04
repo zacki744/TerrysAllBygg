@@ -217,141 +217,184 @@
   color: color-mix(in srgb, var(--foreground) 55%, transparent);
 }
 
-/* ─── Hero ────────────────────────────────────────────────── */
+/* ─── Hero v7 (mobile: image-behind-text overlay, desktop: split) ── */
 
 .heroWrapper {
   position: relative;
   width: 100%;
-  padding-top: 4rem;          /* ← clearar den fixerade navbaren (ca 64px) */
-  display: flex;
-  align-items: center;
-  overflow: hidden;
-  background-color: var(--background);
 }
- 
-@media (min-width: 768px) {
-  .heroWrapper {
-    padding: 6rem 0 4rem;     /* mer luft på desktop */
-    overflow: visible;
-  }
-  .heroBgImage   { display: none; }
-  .heroBgOverlay { display: none; }
+
+.heroInner {
+  position: relative;
+  max-width: 80rem;
+  margin: 0 auto;
+}
+
+.heroMedia {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
 }
 
 .heroBgImage {
-  position: absolute;
-  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center;
-  z-index: 0;
+  object-position: left center; /* focus on the left side of the photo */
+  display: block;
 }
 
 .heroBgOverlay {
   position: absolute;
   inset: 0;
   background: linear-gradient(
-    to right,
-    rgba(0, 0, 0, 0.65) 0%,
-    rgba(0, 0, 0, 0.35) 65%,
-    rgba(0, 0, 0, 0.05) 100%
+    to top,
+    rgba(0, 0, 0, 0.8) 0%,
+    rgba(0, 0, 0, 0.45) 45%,
+    rgba(0, 0, 0, 0.1) 100%
   );
-  z-index: 1;
 }
 
-@media (min-width: 768px) {
-  .heroWrapper    { min-height: unset; padding: 4rem 0; overflow: visible; }
-  .heroBgImage    { display: none; }
-  .heroBgOverlay  { display: none; }
-}
-
-.heroInner {
+.heroContent {
   position: relative;
   z-index: 2;
-  width: 100%;
-  max-width: 80rem;
-  margin: 0 auto;
-  padding: 0 2rem;
+  padding: 8rem 1.5rem 3rem;
+  min-height: 32rem;
   display: flex;
   flex-direction: column;
-  gap: 2.5rem;
-  padding-top: 2rem;
-}
- 
-@media (min-width: 768px) {
-  .heroInner {
-    flex-direction: row;
-    align-items: flex-start;
-    gap: 4rem;
-    padding-top: 4rem;
-  }
-}
-.heroContent { flex: 1; }
-
-.heroImageCol { display: none; }
-
-@media (min-width: 768px) {
-  .heroImageCol {
-    display: block;
-    flex: 1;
-    border-radius: 1rem;
-    overflow: hidden;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-    aspect-ratio: 4 / 3;
-  }
+  justify-content: flex-end;
 }
 
-.heroSideImage {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.hero {
-  padding: 3rem 1.5rem;
-}
-
-@media (min-width: 768px) {
-  .hero { padding: 0; }
+.heroBadge {
+  display: inline-block;
+  width: fit-content;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #fff;
+  background-color: var(--primary);
+  padding: 0.3rem 0.75rem;
+  border-radius: 9999px;
+  margin-bottom: 1.25rem;
 }
 
 .heroTitle {
-  font-size: 2.75rem;
+  font-size: 2.25rem;
   font-weight: 700;
   line-height: 1.15;
   color: #fff;
+  max-width: 18ch;
 }
 
-@media (min-width: 768px) {
-  .heroTitle { font-size: 3.25rem; color: var(--foreground); }
+.heroTitleAccent {
+  color: color-mix(in srgb, var(--primary) 55%, white 45%);
+  font-style: italic;
 }
 
 .heroLead {
-  margin-top: 1.5rem;
-  font-size: 1.125rem;
+  margin-top: 1.25rem;
+  font-size: 1.0625rem;
   line-height: 1.7;
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(255, 255, 255, 0.9);
+  max-width: 42ch;
 }
 
-@media (min-width: 768px) {
-  .heroLead { color: color-mix(in srgb, var(--foreground) 70%, transparent); }
+.heroCtaRow {
+  margin-top: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
 }
 
-.heroBody {
-  margin-top: 1rem;
-  font-size: 1rem;
-  line-height: 1.7;
-  color: rgba(255, 255, 255, 0.72);
+.heroCtaPrimary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #fff;
+  background-color: var(--primary);
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  transition: background-color 0.2s, transform 0.2s;
 }
 
-@media (min-width: 768px) {
-  .heroBody { color: color-mix(in srgb, var(--foreground) 60%, transparent); }
+.heroCtaPrimary:hover {
+  background-color: color-mix(in srgb, var(--primary) 85%, black);
+  transform: translateY(-1px);
 }
 
-.heroCta { margin-top: 2rem; }
+.heroCtaSecondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: #fff;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+  padding-bottom: 0.15rem;
+  transition: border-color 0.2s, color 0.2s;
+}
 
+.heroCtaSecondary:hover {
+  color: color-mix(in srgb, var(--primary) 55%, white 45%);
+  border-color: color-mix(in srgb, var(--primary) 55%, white 45%);
+}
+
+/* ─── Desktop: split layout, image no longer behind text ──── */
+
+@media (min-width: 900px) {
+  .heroWrapper { padding: 8rem 2rem 5rem; }
+
+  .heroInner {
+    display: flex;
+    align-items: center;
+    gap: 4rem;
+  }
+
+  .heroMedia {
+    position: static;
+    flex: 1;
+    border-radius: 1.25rem;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.16);
+    aspect-ratio: 4 / 3;
+  }
+
+  .heroBgOverlay { display: none; }
+
+  .heroContent {
+    flex: 1;
+    min-height: 0;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .heroBadge {
+    color: var(--primary);
+    background-color: color-mix(in srgb, var(--primary) 12%, transparent);
+  }
+
+  .heroTitle {
+    font-size: 3.25rem;
+    color: var(--foreground);
+  }
+
+  .heroLead {
+    color: color-mix(in srgb, var(--foreground) 65%, transparent);
+  }
+
+  .heroCtaSecondary {
+    color: var(--foreground);
+    border-color: var(--border);
+  }
+
+  .heroCtaSecondary:hover {
+    color: var(--primary);
+    border-color: var(--primary);
+  }
+}
 /* ─── ProjectCard ─────────────────────────────────────────── */
 
 .cardLink {
@@ -575,38 +618,6 @@
   background-color: var(--foreground);
 }
 
-/* ─── Hero CTA row ────────────────────────────────────────── */
-
-.heroCtaRow {
-  margin-top: 2rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  align-items: center;
-}
-
-.heroCtaSecondary {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  font-size: 0.9375rem;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.9);
-  text-decoration: none;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
-  transition: border-color 0.2s, color 0.2s;
-  padding-bottom: 0.1rem;
-}
-
-.heroCtaSecondary:hover {
-  color: #fff;
-  border-color: #fff;
-}
-
-@media (min-width: 768px) {
-  .heroCtaSecondary { color: var(--accent); border-color: transparent; }
-  .heroCtaSecondary:hover { color: var(--accent); border-color: var(--accent); }
-}
 
 /* ─── SnickeriCard ────────────────────────────────────────── */
 

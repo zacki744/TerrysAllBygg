@@ -3,7 +3,6 @@ import { useSearchParams, Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import ImageGallery from "../components/project/ImageGallery";
-import Button from "../components/ui/Button";
 import PageMeta from "../components/PageMeta";
 import styles from "../pages.module.css";
 
@@ -72,11 +71,9 @@ export default function ProjectsPageContent() {
           </section>
 
           <div style={{ marginTop: "1.5rem" }}>
-            <Button>
-              <Link to="/" style={{ color: "inherit", textDecoration: "none" }}>
-                ← Tillbaka till projekt
-              </Link>
-            </Button>
+            <div>
+                <Link to="/" className={styles.btnGhost}>← Tillbaka till projekt</Link>
+            </div>
           </div>
         </div>
 
