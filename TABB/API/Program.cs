@@ -125,6 +125,7 @@ try
     builder.Services.AddAuthorization();
     builder.Services.AddAppRateLimiting();
     builder.Services.AddServiceLayer();
+    builder.Services.AddScoped<API.Helpers.ImageMaintenance>();
     builder.Services.AddControllers();
     builder.Services.AddHealthChecks();
 

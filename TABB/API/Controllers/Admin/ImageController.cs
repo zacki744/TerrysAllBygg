@@ -11,16 +11,15 @@ namespace API.Controllers.Admin;
 [Authorize(Roles = "Admin")]
 public class ImageController(
     IWebHostEnvironment environment,
+    ImageMaintenance maintenance,
     ILogger<ImageController> logger
 ) : ControllerBase
 {
+    private readonly ImageMaintenance _maintenance = maintenance;
     private readonly IWebHostEnvironment _environment = environment;
     private readonly ILogger<ImageController> _logger = logger;
 
     private static readonly HashSet<string> HeicExtensions = [".heic", ".heif", ".hif"];
-
-    private const int MaxWidth = 1600;
-    private const int JpegQuality = 82;
 
     private string UploadsRoot =>
         Path.GetFullPath(Path.Combine(_environment.ContentRootPath, "uploads"));
@@ -36,12 +35,12 @@ public class ImageController(
         var ext = Path.GetExtension(image.FileName).ToLowerInvariant();
         var isHeic = HeicExtensions.Contains(ext);
 
-        var fileName = $"{Guid.NewGuid()}.jpg";
+        var fileName = $"{Guid.NewGuid()}.webp";
         var folder = Path.Combine(UploadsRoot, "projects");
         Directory.CreateDirectory(folder);
 
         var finalPath = Path.Combine(folder, fileName);
-        var tempPath = finalPath + ".tmp";
+        var tempPath = finalPath + ".tmp";   // används av WriteAtomicAsync
 
         MemoryStream? ms = null;
         MemoryStream? heicStream = null;
@@ -71,58 +70,20 @@ public class ImageController(
             }
 
             // -------------------------
-            // 3. PROCESS IMAGE
+            // 3. PROCESS IMAGE → WebP 1600 px + miniatyr 640 px
             // -------------------------
-            using var codec = SKCodec.Create(input)
-                ?? throw new InvalidOperationException("Invalid image format.");
+            using var oriented = ImageProcessor.LoadOriented(input);
 
-            using var decoded = new SKBitmap(codec.Info);
-
-            var result = codec.GetPixels(decoded.Info, decoded.GetPixels());
-            if (result != SKCodecResult.Success &&
-                result != SKCodecResult.IncompleteInput)
+            using (var full = ImageProcessor.ResizeToWidth(oriented, ImageProcessor.FullWidth))
             {
-                throw new InvalidOperationException($"Decode failed: {result}");
+                var bytes = ImageProcessor.Encode(full, SKEncodedImageFormat.Webp, ImageProcessor.WebpQuality);
+                await ImageProcessor.WriteAtomicAsync(finalPath, bytes, ct);
             }
 
-            using var oriented = ApplyExifOrientation(decoded, codec.EncodedOrigin);
-
-            SKBitmap final;
-
-            if (oriented.Width > MaxWidth)
+            using (var thumb = ImageProcessor.ResizeToWidth(oriented, ImageProcessor.ThumbWidth))
             {
-                var scale = MaxWidth / (float)oriented.Width;
-
-                var info = new SKImageInfo(
-                    MaxWidth,
-                    Math.Max(1, (int)(oriented.Height * scale)),
-                    SKColorType.Bgra8888,
-                    SKAlphaType.Premul);
-
-                final = oriented.Resize(
-                    info,
-                    new SKSamplingOptions(SKFilterMode.Linear, SKMipmapMode.Linear))
-                    ?? throw new InvalidOperationException("Resize failed.");
-            }
-            else
-            {
-                final = oriented.Copy(SKColorType.Bgra8888)
-                    ?? throw new InvalidOperationException("Copy failed.");
-            }
-
-            using (final)
-            {
-                // -------------------------
-                // 4. DIRECT JPEG ENCODE
-                // -------------------------
-                using var data = final.Encode(SKEncodedImageFormat.Jpeg, JpegQuality)
-                    ?? throw new InvalidOperationException("JPEG encode failed.");
-
-                await System.IO.File.WriteAllBytesAsync(
-                    tempPath,
-                    data.ToArray(),
-                    ct);
-                System.IO.File.Move(tempPath, finalPath, overwrite: true);
+                var bytes = ImageProcessor.Encode(thumb, SKEncodedImageFormat.Webp, ImageProcessor.ThumbWebpQuality);
+                await ImageProcessor.WriteAtomicAsync(ImageProcessor.ThumbPathFor(finalPath), bytes, ct);
             }
 
             _logger.LogInformation(
@@ -181,50 +142,56 @@ public class ImageController(
     }
 
     // -------------------------
-    // EXIF ORIENTATION
+    // DELETE (anropas när en bild tas bort i admin-formuläret)
     // -------------------------
-    private static SKBitmap ApplyExifOrientation(SKBitmap src, SKEncodedOrigin origin)
+    public record DeleteImageRequest(string Path);
+
+    /// <summary>
+    /// Flyttar en bild till uploads/projects/.oanvanda — men bara om inget projekt
+    /// eller snickeri längre använder den. Formuläret anropar detta innan det
+    /// sparats, så en bild som fortfarande finns i databasen (t.ex. om
+    /// redigeringen avbryts) får ligga kvar. Bildunderhållet städar resten.
+    /// </summary>
+    [HttpDelete("delete")]
+    public async Task<IActionResult> DeleteImage([FromBody] DeleteImageRequest request, CancellationToken ct)
     {
-        if (origin is SKEncodedOrigin.TopLeft or SKEncodedOrigin.Default)
-            return src.Copy(SKColorType.Bgra8888);
+        var name = System.IO.Path.GetFileName(request.Path ?? "");
+        var expectedPrefix = $"/uploads/{ImageMaintenance.UploadsSubfolder}/";
 
-        bool swap = origin is
-            SKEncodedOrigin.LeftTop or
-            SKEncodedOrigin.RightTop or
-            SKEncodedOrigin.RightBottom or
-            SKEncodedOrigin.LeftBottom;
+        // Bara filnamn direkt i uploads/projects — inga ../ eller andra mappar
+        if (string.IsNullOrEmpty(name) ||
+            !request.Path!.StartsWith(expectedPrefix, StringComparison.OrdinalIgnoreCase) ||
+            request.Path.Length != expectedPrefix.Length + name.Length)
+            return BadRequest(new { error = "Ogiltig sökväg." });
 
-        int w = swap ? src.Height : src.Width;
-        int h = swap ? src.Width : src.Height;
+        var file = System.IO.Path.Combine(_maintenance.ProjectsFolder, name);
+        if (!System.IO.File.Exists(file))
+            return Ok(new { moved = false });
 
-        var dst = new SKBitmap(
-            new SKImageInfo(w, h, SKColorType.Bgra8888, SKAlphaType.Premul));
+        var referenced = await _maintenance.GetReferencedFileNamesAsync(ct);
+        if (referenced.Contains(name))
+            return Ok(new { moved = false, reason = "Används fortfarande" });
 
-        using var canvas = new SKCanvas(dst);
-
-        var matrix = origin switch
-        {
-            SKEncodedOrigin.TopRight =>
-                SKMatrix.CreateScale(-1, 1, w / 2f, h / 2f),
-
-            SKEncodedOrigin.BottomRight =>
-                SKMatrix.CreateRotationDegrees(180, w / 2f, h / 2f),
-
-            SKEncodedOrigin.BottomLeft =>
-                SKMatrix.CreateScale(1, -1, w / 2f, h / 2f),
-
-            SKEncodedOrigin.RightTop =>
-                SKMatrix.CreateRotationDegrees(90, w / 2f, h / 2f),
-
-            SKEncodedOrigin.LeftBottom =>
-                SKMatrix.CreateRotationDegrees(270, w / 2f, h / 2f),
-
-            _ => SKMatrix.Identity
-        };
-
-        canvas.SetMatrix(matrix);
-        canvas.DrawBitmap(src, 0, 0);
-
-        return dst;
+        _maintenance.MoveToUnused(file);
+        _logger.LogInformation("Bild flyttad till {Folder}: {File}", ImageMaintenance.UnusedFolder, name);
+        return Ok(new { moved = true });
     }
+
+    // -------------------------
+    // BILDUNDERHÅLL
+    // -------------------------
+
+    /// <summary>Provkörning: visar vad underhållet skulle göra, ändrar inget.</summary>
+    [HttpGet("maintenance")]
+    public async Task<IActionResult> PreviewMaintenance(CancellationToken ct)
+        => Ok(await _maintenance.RunAsync(dryRun: true, ct));
+
+    /// <summary>
+    /// Krymper stora bilder, skapar miniatyrer och flyttar oanvända bilder.
+    /// Arbetar i omgångar (se ImageMaintenance.TimeBudget); anropa igen så
+    /// länge svaret har Remaining &gt; 0.
+    /// </summary>
+    [HttpPost("maintenance")]
+    public async Task<IActionResult> RunMaintenance(CancellationToken ct)
+        => Ok(await _maintenance.RunAsync(dryRun: false, ct));
 }

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import AdminNavbar from "./../../components/Admin/AdminNavbar";
 import ProjectTable from "./../../components/Admin/ProjectTable";
 import SnickeriTable from "./../../components/Admin/SnickeriTable";
+import ImageMaintenancePanel from "./../../components/Admin/ImageMaintenancePanel";
 import PageMeta from "../../components/PageMeta";
 import { AuthService, AdminAPI, type Project } from "../../lib/auth";
 import styles from "./../../admin.module.css";
@@ -120,6 +121,8 @@ export default function AdminDashboard() {
 
         <SnickeriTable items={snickerier}
           onEdit={handleEditSnickeri} onDelete={handleDeleteSnickeri} />
+
+        <ImageMaintenancePanel />
 
       </main>
     </div>

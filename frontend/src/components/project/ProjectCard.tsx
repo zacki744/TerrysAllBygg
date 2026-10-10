@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import styles from "./../components.module.css";
 import { projectPath } from "../../lib/routes";
+import { cardSrcSet, thumbUrl } from "../../lib/images";
 
 interface ProjectCardProps {
   id: string;
@@ -19,6 +20,8 @@ export default function ProjectCard({
   priority = false,
 }: ProjectCardProps) {
   const [loaded, setLoaded] = useState(false);
+  // Äldre bilder kan sakna miniatyr tills bildunderhållet körts — då används originalet
+  const [thumbFailed, setThumbFailed] = useState(false);
 
   return (
     <Link to={projectPath(id, title)} className={styles.cardLink}>
@@ -27,7 +30,10 @@ export default function ProjectCard({
           {/* Placeholder visas tills bilden laddats */}
           {!loaded && <div className={styles.cardImagePlaceholder} />}
           <img
-            src={image}
+            src={thumbFailed ? image : thumbUrl(image)}
+            srcSet={thumbFailed ? undefined : cardSrcSet(image)}
+            sizes="(min-width: 1024px) 380px, (min-width: 640px) 50vw, 100vw"
+            onError={() => setThumbFailed(true)}
             alt={title}
             className={`${styles.cardImage} ${loaded ? styles.cardImageLoaded : styles.cardImageHidden}`}
             loading={priority ? "eager" : "lazy"}

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import styles from "./components.module.css";
 import { formatPrice } from "../lib/formatPrice";
 import { snickeriPath } from "../lib/routes";
+import { thumbUrl } from "../lib/images";
 
 type SnickeriCardProps = {
   id: string;
@@ -22,6 +23,7 @@ export default function SnickeriCard({
   priority = false,
 }: SnickeriCardProps) {
   const [loaded, setLoaded] = useState(false);
+  const [thumbFailed, setThumbFailed] = useState(false);
 
   return (
     <Link to={snickeriPath(id, title)} className={styles.snickeriCardLink}>
@@ -29,7 +31,8 @@ export default function SnickeriCard({
         <div className={styles.snickeriCardImageWrapper}>
           {!loaded && <div className={styles.snickeriCardImagePlaceholder} />}
           <img
-            src={image}
+            src={thumbFailed ? image : thumbUrl(image)}
+            onError={() => setThumbFailed(true)}
             alt={title}
             className={`${styles.snickeriCardImage} ${loaded ? styles.cardImageLoaded : styles.cardImageHidden}`}
             loading={priority ? "eager" : "lazy"}
