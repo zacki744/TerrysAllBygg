@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "./../components/Navbar";
 import Footer from "./../components/Footer";
@@ -30,31 +30,17 @@ interface Project {
   image: string;
 }
 
-const prefetched = new Set<string>();
-function prefetchImage(url: string) {
-  if (prefetched.has(url)) return;
-  prefetched.add(url);
-  const link = document.createElement("link");
-  link.rel = "prefetch"; link.as = "image"; link.href = url;
-  document.head.appendChild(link);
-}
-
 export default function Home() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading]   = useState(true);
   const [error, setError]       = useState(false);
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     fetch("/api/projects")
       .then((res) => { if (!res.ok) throw new Error(); return res.json(); })
-      .then((data: Project[]) => {
-        setProjects(data);
-        timer.current = setTimeout(() => data.slice(3).forEach((p) => prefetchImage(p.image)), 2000);
-      })
+      .then((data: Project[]) => setProjects(data))
       .catch(() => setError(true))
       .finally(() => setLoading(false));
-    return () => { if (timer.current) clearTimeout(timer.current); };
   }, []);
 
   return (

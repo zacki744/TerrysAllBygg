@@ -183,7 +183,7 @@ try
             var headers = ctx.Context.Response.Headers;
             var name = ctx.File.Name;
             if (name.EndsWith(".html", StringComparison.OrdinalIgnoreCase))
-                headers.CacheControl = "no-cache, no-store, must-revalidate";
+                headers.CacheControl = "no-cache";   // revalidera alltid, men tillåt back/forward-cache
             // robots.txt, sitemap.xml, site.webmanifest saknar hash → kort cache
             else if (name.EndsWith(".txt", StringComparison.OrdinalIgnoreCase) ||
                      name.EndsWith(".xml", StringComparison.OrdinalIgnoreCase) ||
@@ -255,7 +255,7 @@ try
         var spaTemplate = Path.Combine(frontendPath, "index.spa.html");
         var indexPath = File.Exists(spaTemplate) ? spaTemplate : Path.Combine(frontendPath, "index.html");
         context.Response.ContentType = "text/html; charset=utf-8";
-        context.Response.Headers.CacheControl = "no-cache, no-store, must-revalidate";
+        context.Response.Headers.CacheControl = "no-cache";
         return context.Response.SendFileAsync(indexPath);
     });
 

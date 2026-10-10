@@ -14,7 +14,7 @@ export default function CallBar() {
 
   return (
     <div className={styles.callBar}>
-      <a href={CONTACT.phoneHref} className={styles.callBarPhone} aria-label={`Ring ${CONTACT.phone}`}>
+      <a href={CONTACT.phoneHref} className={styles.callBarPhone} aria-label={`Ring oss på ${CONTACT.phone}`}>
         <Phone size={18} aria-hidden />
         Ring oss
       </a>

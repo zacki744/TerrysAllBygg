@@ -178,7 +178,7 @@
 
 .footerText {
   font-size: 0.875rem;
-  color: color-mix(in srgb, var(--foreground) 60%, transparent);
+  color: color-mix(in srgb, var(--foreground) 72%, transparent);
 }
 
 .footerHeading {
@@ -196,7 +196,7 @@
 
 .footerLink {
   font-size: 0.875rem;
-  color: color-mix(in srgb, var(--foreground) 60%, transparent);
+  color: color-mix(in srgb, var(--foreground) 72%, transparent);
   text-decoration: none;
   transition: color 0.2s;
 }
@@ -216,7 +216,7 @@
 
 .footerCopy {
   font-size: 0.875rem;
-  color: color-mix(in srgb, var(--foreground) 55%, transparent);
+  color: color-mix(in srgb, var(--foreground) 72%, transparent);
 }
 
 /* ─── Hero v7 (mobile: image-behind-text overlay, desktop: split) ── */
@@ -375,7 +375,8 @@
   }
 
   .heroBadge {
-    color: var(--primary-ink);
+    /* Mörkare än --primary-ink: den tonade bakgrunden sänker kontrasten */
+    color: color-mix(in srgb, var(--primary-ink) 85%, black);
     background-color: color-mix(in srgb, var(--primary) 12%, transparent);
   }
 
@@ -385,7 +386,7 @@
   }
 
   .heroLead {
-    color: color-mix(in srgb, var(--foreground) 65%, transparent);
+    color: color-mix(in srgb, var(--foreground) 72%, transparent);
   }
 
   .heroCtaSecondary {
@@ -440,7 +441,7 @@
 .cardDescription {
   margin-top: 0.5rem;
   font-size: 0.875rem;
-  color: color-mix(in srgb, var(--foreground) 60%, transparent);
+  color: color-mix(in srgb, var(--foreground) 72%, transparent);
   overflow: hidden;
   display: -webkit-box;
   line-clamp: 3;
@@ -689,7 +690,7 @@
 .snickeriCardDescription {
   font-size: 0.875rem;
   line-height: 1.6;
-  color: color-mix(in srgb, var(--foreground) 65%, transparent);
+  color: color-mix(in srgb, var(--foreground) 72%, transparent);
   /* allow up to ~4 lines before fading */
   max-height: 6em;
   overflow: hidden;
@@ -735,7 +736,7 @@
   flex-wrap: wrap;
   gap: 1.5rem;
   font-size: 0.875rem;
-  color: color-mix(in srgb, var(--foreground) 60%, transparent);
+  color: color-mix(in srgb, var(--foreground) 72%, transparent);
 }
 
 .metaLabel {
@@ -1050,7 +1051,7 @@
   justify-content: center;
   gap: 0.25rem 1rem;
   font-size: 0.8125rem;
-  color: color-mix(in srgb, var(--foreground) 55%, transparent);
+  color: color-mix(in srgb, var(--foreground) 72%, transparent);
 }
 
 .footerLegal a {
