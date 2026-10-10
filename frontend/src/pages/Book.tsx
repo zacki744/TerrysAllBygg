@@ -6,6 +6,7 @@ import Textarea from "../components/ui/Textarea";
 import Button from "../components/ui/Button";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { CircleCheck, MapPin } from "lucide-react";
 import styles from "../pages.module.css";
 import PageMeta from "../components/PageMeta";
 import PrivacyNotice from "../components/PrivacyNotice";
@@ -85,7 +86,7 @@ export default function Book() {
 
           {status === "sent" ? (
             <div className={styles.infoBox} role="status">
-              <p className={styles.infoBoxTitle}>✓ Tack, din förfrågan är skickad!</p>
+              <p className={`${styles.infoBoxTitle} ${styles.iconLine}`}><CircleCheck size={18} aria-hidden /> Tack, din förfrågan är skickad!</p>
               <p className={styles.infoBoxText}>
                 Vi har skickat en bekräftelse till {form.email}. Vi hör av oss inom 24 timmar
                 på vardagar. Brådskande? Ring <a href={CONTACT.phoneHref}>{CONTACT.phone}</a>.
@@ -99,42 +100,42 @@ export default function Book() {
 
             {/* Row 1: Namn + E-post */}
             <div className={styles.formField}>
-              <label className={styles.formLabel}>Namn *</label>
-              <Input name="name" placeholder="Ditt namn" value={form.name} onChange={handleChange} required />
+              <label htmlFor="book-name" className={styles.formLabel}>Namn *</label>
+              <Input id="book-name" name="name" autoComplete="name" placeholder="Ditt namn" value={form.name} onChange={handleChange} required />
             </div>
 
             <div className={styles.formField}>
-              <label className={styles.formLabel}>E-post *</label>
-              <Input name="email" placeholder="din@email.se" type="email" value={form.email} onChange={handleChange} required />
+              <label htmlFor="book-email" className={styles.formLabel}>E-post *</label>
+              <Input id="book-email" name="email" autoComplete="email" placeholder="din@email.se" type="email" value={form.email} onChange={handleChange} required />
             </div>
 
-            {/* Row 2: Telefon + Byggesplats */}
+            {/* Row 2: Telefon + Byggplats */}
             <div className={styles.formField}>
-              <label className={styles.formLabel}>Telefonnummer</label>
-              <Input name="phoneNumber" placeholder="070-123 45 67" type="tel" value={form.phoneNumber} onChange={handleChange} />
+              <label htmlFor="book-phoneNumber" className={styles.formLabel}>Telefonnummer</label>
+              <Input id="book-phoneNumber" name="phoneNumber" autoComplete="tel" placeholder="070-123 45 67" type="tel" value={form.phoneNumber} onChange={handleChange} />
             </div>
 
             <div className={styles.formField}>
-              <label className={styles.formLabel}>Byggesplats *</label>
-              <Select name="placement" value={form.placement} onChange={handleChange} required placeholder="Välj var projektet ska utföras">
-                <option value="innomhus">Inomhus</option>
+              <label htmlFor="book-placement" className={styles.formLabel}>Byggplats *</label>
+              <Select id="book-placement" name="placement" value={form.placement} onChange={handleChange} required placeholder="Välj var projektet ska utföras">
+                <option value="inomhus">Inomhus</option>
                 <option value="utomhus">Utomhus</option>
                 <option value="annat">Annat</option>
               </Select>
             </div>
 
-            {/* Conditional: specificera byggesplats — full width */}
+            {/* Conditional: specificera byggplats — full width */}
             {form.placement === "annat" && (
               <div className={`${styles.formField} ${styles.formFieldFull}`}>
-                <label className={styles.formLabel}>Specificera byggesplats</label>
-                <Input name="other1" placeholder="Beskriv platsen" value={form.other1} onChange={handleChange} />
+                <label htmlFor="book-other1" className={styles.formLabel}>Specificera byggplats</label>
+                <Input id="book-other1" name="other1" placeholder="Beskriv platsen" value={form.other1} onChange={handleChange} />
               </div>
             )}
 
             {/* Row 3: Typ av projekt + Adress */}
             <div className={styles.formField}>
-              <label className={styles.formLabel}>Typ av projekt *</label>
-              <Select name="project" value={form.project} onChange={handleChange} required placeholder="Välj typ av byggprojekt">
+              <label htmlFor="book-project" className={styles.formLabel}>Typ av projekt *</label>
+              <Select id="book-project" name="project" value={form.project} onChange={handleChange} required placeholder="Välj typ av byggprojekt">
                 <option value="altan">Altan</option>
                 <option value="garage">Garage</option>
                 <option value="friggebod">Friggebod</option>
@@ -149,23 +150,23 @@ export default function Book() {
             </div>
 
             <div className={styles.formField}>
-              <label className={styles.formLabel}>Adress *</label>
-              <Input name="address" placeholder="Gatuadress, Ort" value={form.address} onChange={handleChange} required />
+              <label htmlFor="book-address" className={styles.formLabel}>Adress *</label>
+              <Input id="book-address" name="address" autoComplete="street-address" placeholder="Gatuadress, Ort" value={form.address} onChange={handleChange} required />
             </div>
 
             {/* Conditional: specificera projekttyp — full width */}
             {form.project === "annat" && (
               <div className={`${styles.formField} ${styles.formFieldFull}`}>
-                <label className={styles.formLabel}>Specificera projekttyp</label>
-                <Input name="other2" placeholder="Beskriv ditt projekt" value={form.other2} onChange={handleChange} />
+                <label htmlFor="book-other2" className={styles.formLabel}>Specificera projekttyp</label>
+                <Input id="book-other2" name="other2" placeholder="Beskriv ditt projekt" value={form.other2} onChange={handleChange} />
               </div>
             )}
 
             {/* Projektbeskrivning — full width */}
             <div className={`${styles.formField} ${styles.formFieldFull}`}>
-              <label className={styles.formLabel}>Projektbeskrivning *</label>
+              <label htmlFor="book-description" className={styles.formLabel}>Projektbeskrivning *</label>
               <Textarea
-                name="description"
+                id="book-description" name="description"
                 rows={6}
                 placeholder="Berätta mer om ditt projekt, önskemål och tidsram..."
                 value={form.description}
@@ -200,7 +201,7 @@ export default function Book() {
           <div className={styles.infoBox}>
             <h3 className={styles.infoBoxTitle}>Kontaktinformation</h3>
             <div className={styles.infoBoxText}>
-              <p>📍 Österlen, Skåne</p>
+              <p className={styles.iconLine}><MapPin size={16} aria-hidden /> Österlen, Skåne</p>
               <p style={{ marginTop: "0.5rem" }}>Vi svarar normalt inom 24 timmar på vardagar.</p>
             </div>
           </div>

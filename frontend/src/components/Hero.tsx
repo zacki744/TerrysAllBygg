@@ -35,7 +35,7 @@ export default function Hero() {
               Boka konsultation
             </Link>
             <Link to="/snickerier" className={styles.heroCtaSecondary}>
-              Se snickerier →
+              Se våra snickerier
             </Link>
           </div>
         </div>

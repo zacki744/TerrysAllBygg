@@ -29,9 +29,10 @@
 }
 
 .navBrand {
+  font-family: var(--font-display);
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--primary);
+  color: var(--primary-ink);
   text-decoration: none;
 }
 
@@ -49,11 +50,11 @@
 }
 
 .navLink:hover {
-  color: var(--primary);
+  color: var(--primary-ink);
 }
 
 .navLinkActive {
-  color: var(--primary);
+  color: var(--primary-ink);
   font-weight: 600;
 }
 
@@ -132,11 +133,11 @@
 }
 
 .mobileMenuLink:hover {
-  color: var(--primary);
+  color: var(--primary-ink);
 }
 
 .mobileMenuLinkActive {
-  color: var(--primary);
+  color: var(--primary-ink);
   font-weight: 600;
 }
 
@@ -168,9 +169,10 @@
 }
 
 .footerBrand {
+  font-family: var(--font-display);
   font-size: 1.125rem;
   font-weight: 700;
-  color: var(--primary);
+  color: var(--primary-ink);
   margin-bottom: 0.5rem;
 }
 
@@ -200,7 +202,7 @@
 }
 
 .footerLink:hover {
-  color: var(--primary);
+  color: var(--primary-ink);
 }
 
 .footerBottom {
@@ -271,18 +273,19 @@
   font-size: 0.8125rem;
   font-weight: 600;
   color: #fff;
-  background-color: var(--primary);
+  background-color: var(--primary-ink);
   padding: 0.3rem 0.75rem;
   border-radius: 9999px;
   margin-bottom: 1.25rem;
 }
 
 .heroTitle {
-  font-size: 2.25rem;
-  font-weight: 700;
-  line-height: 1.15;
+  font-size: 2.75rem;
+  font-weight: 760;
+  line-height: 1.02;
+  letter-spacing: -0.02em;
   color: #fff;
-  max-width: 18ch;
+  max-width: 14ch;
 }
 
 .heroTitleAccent {
@@ -313,7 +316,7 @@
   font-size: 0.9375rem;
   font-weight: 600;
   color: #fff;
-  background-color: var(--primary);
+  background-color: var(--primary-ink);
   padding: 0.75rem 1.5rem;
   border-radius: 0.5rem;
   text-decoration: none;
@@ -321,7 +324,7 @@
 }
 
 .heroCtaPrimary:hover {
-  background-color: color-mix(in srgb, var(--primary) 85%, black);
+  background-color: color-mix(in srgb, var(--primary-ink) 85%, black);
   transform: translateY(-1px);
 }
 
@@ -372,12 +375,12 @@
   }
 
   .heroBadge {
-    color: var(--primary);
+    color: var(--primary-ink);
     background-color: color-mix(in srgb, var(--primary) 12%, transparent);
   }
 
   .heroTitle {
-    font-size: 3.25rem;
+    font-size: clamp(3.25rem, 4.6vw, 4.25rem);
     color: var(--foreground);
   }
 
@@ -391,7 +394,7 @@
   }
 
   .heroCtaSecondary:hover {
-    color: var(--primary);
+    color: var(--primary-ink);
     border-color: var(--primary);
   }
 }
@@ -704,13 +707,13 @@
 .snickeriCardPrice {
   font-size: 1.125rem;
   font-weight: 700;
-  color: var(--primary);
+  color: var(--primary-ink);
 }
 
 .snickeriCardCta {
   font-size: 0.8125rem;
   font-weight: 500;
-  color: var(--accent);
+  color: var(--accent-ink);
 }
 
 /* ─── Snickerier listing page ─────────────────────────────── */
@@ -1050,4 +1053,62 @@
   color: inherit;
   text-decoration: underline;
   text-underline-offset: 2px;
+}
+
+/* ─── Ikoner i sidfoten ───────────────────────────────────── */
+
+.footerIconLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ─── Åtgärdsrad på mobil ─────────────────────────────────── */
+
+.callBar {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .callBar {
+    position: fixed;
+    inset: auto 0 0 0;
+    z-index: 40;
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.625rem 0.75rem calc(0.625rem + env(safe-area-inset-bottom));
+    background-color: var(--background);
+    border-top: 1px solid var(--border);
+    box-shadow: 0 -4px 16px rgba(44, 36, 22, 0.08);
+  }
+
+  .callBarPhone,
+  .callBarBook {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 2.875rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .callBarPhone {
+    background-color: var(--primary-ink);
+    color: #fff;
+  }
+
+  .callBarBook {
+    border: 1px solid var(--border);
+    color: var(--foreground);
+  }
+
+  /* Plats så att raden inte täcker sidfotens sista rad */
+  .footer {
+    padding-bottom: calc(3rem + 4.5rem + env(safe-area-inset-bottom));
+  }
 }

@@ -18,6 +18,17 @@ export const CONTACT = {
   vatNumber:   "SE570303939501",   // momsreg.nr = SE + org.nr + 01
   address:     "",   // TODO: "Gatuadress, Postnr Ort"
 
+  // Förtroende — visas i förtroenderaden på startsidan när de är true.
+  // Sätt bara true för det som faktiskt stämmer.
+  trust: {
+    rotDeduction: false,  // TODO: true om ni drar av ROT direkt på fakturan
+    fTax:         false,  // TODO: true om företaget har F-skatt
+    insured:      false,  // TODO: true om ansvarsförsäkring finns
+  },
+
+  // Länk till Google-profilens omdömen (visas i sidfoten när ifylld)
+  googleReviewsUrl: "",   // TODO: "https://g.page/r/…"
+
   // Sociala medier — lägg till om de finns
   social: {
     facebook:  "",   // "https://facebook.com/terrysallbygg"

@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 import { CONTACT } from "../lib/contact";
 import { PRIVACY } from "../lib/privacy";
+import { Mail, Phone, Star } from "lucide-react";
+import CallBar from "./CallBar";
 import styles from "./components.module.css";
 
 export default function Footer() {
@@ -52,12 +54,18 @@ export default function Footer() {
         <div>
           <p className={styles.footerHeading}>Kontakt</p>
           <div className={styles.footerNav}>
-            <a href={CONTACT.phoneHref} className={styles.footerLink}>
-              📞 {CONTACT.phone}
+            <a href={CONTACT.phoneHref} className={`${styles.footerLink} ${styles.footerIconLink}`}>
+              <Phone size={16} aria-hidden /> {CONTACT.phone}
             </a>
-            <a href={CONTACT.emailHref} className={styles.footerLink}>
-              ✉️ {CONTACT.email}
+            <a href={CONTACT.emailHref} className={`${styles.footerLink} ${styles.footerIconLink}`}>
+              <Mail size={16} aria-hidden /> {CONTACT.email}
             </a>
+            {CONTACT.googleReviewsUrl && (
+              <a href={CONTACT.googleReviewsUrl} target="_blank" rel="noopener noreferrer"
+                className={`${styles.footerLink} ${styles.footerIconLink}`}>
+                <Star size={16} aria-hidden /> Läs våra omdömen på Google
+              </a>
+            )}
           </div>
         </div>
 
@@ -74,6 +82,7 @@ export default function Footer() {
           <Link to={PRIVACY.path}>Integritetspolicy</Link>
         </div>
       </div>
+      <CallBar />
     </footer>
   );
 }

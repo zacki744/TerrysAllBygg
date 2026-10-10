@@ -8,6 +8,17 @@ import { ProjectCardSkeleton } from "./../components/Skeletons";
 import RetryError from "./../components/RetryError";
 import PageMeta from "./../components/PageMeta";
 import styles from "./../pages.module.css";
+import { Check } from "lucide-react";
+import { CONTACT } from "../lib/contact";
+
+// Punkter som styrs av inställningar i contact.ts visas bara när de stämmer
+const TRUST_ITEMS = [
+  CONTACT.trust.rotDeduction && "ROT-avdrag direkt på fakturan",
+  "Kostnadsfri konsultation",
+  "Lokalt företag på Österlen",
+  CONTACT.trust.fTax && "Godkänd för F-skatt",
+  CONTACT.trust.insured && "Ansvarsförsäkrad",
+].filter((t): t is string => Boolean(t));
 
 interface Project {
   id: string;
@@ -53,13 +64,13 @@ export default function Home() {
 
       <Hero />
 
-      <div className={styles.trustBar}>
-        {["Lokalt företag i Österlen", "Kostnadsfri konsultation", "Skräddarsydda lösningar"].map((t) => (
-          <span key={t} className={styles.trustItem}>
-            <span className={styles.trustDot} />{t}
-          </span>
+      <ul className={styles.trustBar} aria-label="Därför Terrys Allbygg">
+        {TRUST_ITEMS.map((t) => (
+          <li key={t} className={styles.trustItem}>
+            <Check size={15} strokeWidth={2.5} className={styles.trustIcon} aria-hidden />{t}
+          </li>
         ))}
-      </div>
+      </ul>
 
       <main className={styles.mainWide}>
 

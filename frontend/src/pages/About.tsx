@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { Mail, Phone } from "lucide-react";
 import PageShell from "../components/PageShell";
 import PageMeta from "../components/PageMeta";
 import { CONTACT } from "../lib/contact";
@@ -57,8 +58,8 @@ export default function About() {
         <div className={styles.infoBox} style={{ marginTop: "1.5rem" }}>
           <p className={styles.infoBoxTitle}>Kontaktuppgifter</p>
           <div className={styles.infoBoxText} style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-            <a href={CONTACT.phoneHref} style={{ color: "inherit" }}>📞 {CONTACT.phone}</a>
-            <a href={CONTACT.emailHref} style={{ color: "inherit" }}>✉️ {CONTACT.email}</a>
+            <a href={CONTACT.phoneHref} className={styles.iconLine}><Phone size={16} aria-hidden /> {CONTACT.phone}</a>
+            <a href={CONTACT.emailHref} className={styles.iconLine}><Mail size={16} aria-hidden /> {CONTACT.email}</a>
           </div>
         </div>
       </section>

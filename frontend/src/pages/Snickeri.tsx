@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
+import { CircleCheck } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import ImageGallery from "../components/project/ImageGallery";
@@ -139,31 +140,31 @@ export default function SnickeriPageContent() {
 
           {submitted ? (
             <div className={styles.infoBox} style={{ marginTop: "1rem" }}>
-              <p className={styles.infoBoxTitle}>✓ Förfrågan skickad!</p>
+              <p className={`${styles.infoBoxTitle} ${styles.iconLine}`}><CircleCheck size={18} aria-hidden /> Förfrågan skickad!</p>
               <p className={styles.infoBoxText}>Tack! Vi hör av oss så snart som möjligt.</p>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className={styles.bookForm} style={{ marginTop: "1rem" }}>
 
               <div className={styles.formField}>
-                <label className={styles.formLabel}>Namn *</label>
-                <Input name="name" placeholder="Ditt namn" value={form.name} onChange={handleChange} required />
+                <label htmlFor="inquiry-name" className={styles.formLabel}>Namn *</label>
+                <Input id="inquiry-name" name="name" autoComplete="name" placeholder="Ditt namn" value={form.name} onChange={handleChange} required />
               </div>
 
               <div className={styles.formField}>
-                <label className={styles.formLabel}>E-post *</label>
-                <Input name="email" type="email" placeholder="din@email.se" value={form.email} onChange={handleChange} required />
+                <label htmlFor="inquiry-email" className={styles.formLabel}>E-post *</label>
+                <Input id="inquiry-email" name="email" autoComplete="email" type="email" placeholder="din@email.se" value={form.email} onChange={handleChange} required />
               </div>
 
               <div className={styles.formField}>
-                <label className={styles.formLabel}>Telefonnummer</label>
-                <Input name="phoneNumber" type="tel" placeholder="070-123 45 67" value={form.phoneNumber} onChange={handleChange} />
+                <label htmlFor="inquiry-phoneNumber" className={styles.formLabel}>Telefonnummer</label>
+                <Input id="inquiry-phoneNumber" name="phoneNumber" autoComplete="tel" type="tel" placeholder="070-123 45 67" value={form.phoneNumber} onChange={handleChange} />
               </div>
 
               <div className={`${styles.formField} ${styles.formFieldFull}`}>
-                <label className={styles.formLabel}>Meddelande</label>
+                <label htmlFor="inquiry-notes" className={styles.formLabel}>Meddelande</label>
                 <Textarea
-                  name="notes"
+                  id="inquiry-notes" name="notes"
                   rows={4}
                   placeholder="Eventuella frågor eller önskemål om färg, storlek, material..."
                   value={form.notes}

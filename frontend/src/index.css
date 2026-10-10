@@ -2,6 +2,16 @@
    index.css — global styles & CSS variables
    ============================================================ */
 
+/* Rubriktypsnitt: Archivo (SIL OFL, se assets/fonts/OFL-archivo.txt).
+   Självhostad delmängd — latin + åäö, bredd 88, vikt 500–800 — 17 kB. */
+@font-face {
+  font-family: "Archivo Display";
+  src: url("./assets/fonts/archivo-display.woff2") format("woff2");
+  font-weight: 500 800;
+  font-style: normal;
+  font-display: swap;
+}
+
 *, *::before, *::after {
   box-sizing: border-box;
 }
@@ -14,6 +24,13 @@
   --foreground: #2C2416;   /* dark brown */
   --border:     #D9D0C1;   /* warm grey */
   --secondary:  #8C7B6B;   /* muted brown */
+
+  /* Mörkare toner för text och knappar — klarar WCAG AA (4,5:1).
+     --primary/--accent används fortsatt för dekor (prickar, ramar, fokus). */
+  --primary-ink: #A4512A;  /* 5,5:1 mot vit text, 4,9:1 mot --background */
+  --accent-ink:  #46658A;  /* 5,3:1 mot --background */
+
+  --font-display: "Archivo Display", system-ui, sans-serif;
 
   /* ── Typography ─────────────────────────────────────────── */
   font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
@@ -63,4 +80,28 @@ button {
 img {
   max-width: 100%;
   display: block;
+}
+/* ── Rubriker ─────────────────────────────────────────────── */
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+/* ── Tangentbordsfokus ────────────────────────────────────── */
+
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--accent-ink);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

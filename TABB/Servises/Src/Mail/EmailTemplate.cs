@@ -34,7 +34,7 @@ public static class EmailTemplate
         Hej {name},
 
         Tack för att du har skickat en konsultationsförfrågan till Terrys Allbygg.
-        Vi har mottagit din förfrågan och återkommer inom 1–2 arbetsdagar.
+        Vi har mottagit din förfrågan och återkommer inom 24 timmar på vardagar.
 
         Med vänliga hälsningar,
         Terrys Allbygg
@@ -65,7 +65,7 @@ public static class EmailTemplate
         Hej {name},
 
         Tack för din förfrågan om ""{title}"" ({price:N0} kr).
-        Vi återkommer inom 24 timmar.
+        Vi återkommer inom 24 timmar på vardagar.
 
         Med vänliga hälsningar,
         Terrys Allbygg
