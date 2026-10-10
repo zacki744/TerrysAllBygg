@@ -46,6 +46,14 @@ for (const route of ROUTES) {
   let page = template;
   for (const re of OWNED_BY_PAGE) page = page.replace(re, "");
 
+  // Hero-bilden är startsidans största element (LCP): förladda den så att
+  // webbläsaren hämtar den direkt, innan CSS och JavaScript är klara.
+  if (route === "/") {
+    const hero = html.match(/<img[^>]*fetchPriority="high"[^>]*src="([^"]+)"|<img[^>]*src="([^"]+)"[^>]*fetchPriority="high"/i);
+    const src = hero?.[1] ?? hero?.[2];
+    if (src) headTags.unshift(`<link data-prerender rel="preload" as="image" href="${src}" fetchpriority="high"/>`);
+  }
+
   page = page
     .replace("</head>", `    ${headTags.join("\n    ")}\n  </head>`)
     .replace('<div id="root"></div>', `<div id="root">${html}</div>`);

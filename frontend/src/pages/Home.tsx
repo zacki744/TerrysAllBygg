@@ -37,6 +37,7 @@ export default function Home() {
       />
       <Navbar />
 
+      <main>
       <Hero />
 
       <ul className={styles.trustBar} aria-label="Därför Terrys Allbygg">
@@ -47,7 +48,7 @@ export default function Home() {
         ))}
       </ul>
 
-      <main className={styles.mainWide}>
+      <div className={styles.mainWide}>
 
         {/* ── Projekt ── */}
         <section className={styles.projectsSection} aria-labelledby="home-projects">
@@ -96,6 +97,7 @@ export default function Home() {
           </div>
         </div>
 
+      </div>
       </main>
 
       <Footer />

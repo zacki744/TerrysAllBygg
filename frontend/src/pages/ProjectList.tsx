@@ -38,7 +38,7 @@ export default function ProjectList() {
           <p className={styles.stateText}>Inga projekt publicerade än.</p>
         )}
         {!loading && !error && projects.map((p, i) => (
-          <ProjectCard key={p.id} {...p} priority={i < 3} />
+          <ProjectCard key={p.id} {...p} priority={i < 3} headingLevel={2} />
         ))}
       </div>
 

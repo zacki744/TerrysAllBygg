@@ -36,7 +36,7 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className={styles.navbar}>
+      <nav className={styles.navbar} aria-label="Huvudmeny">
         <div className={styles.navInner}>
           <Link to="/" className={styles.navBrand}>
             Terrys Allbygg

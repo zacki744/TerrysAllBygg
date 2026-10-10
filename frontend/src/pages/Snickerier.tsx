@@ -48,6 +48,7 @@ export default function Snickerier() {
               key={item.id}
               {...item}
               priority={i === 0}
+              headingLevel={2}
             />
           ))}
         </div>

@@ -10,6 +10,7 @@ interface Report {
   scanned: number;
   remaining: number;
   optimized: number;
+  converted: number;
   thumbnailsCreated: number;
   movedUnused: number;
   bytesBefore: number;
@@ -28,7 +29,7 @@ async function call(method: "GET" | "POST"): Promise<Report> {
 
 export default function ImageMaintenancePanel() {
   const [preview, setPreview] = useState<Report | null>(null);
-  const [result, setResult]   = useState<{ optimized: number; thumbs: number; moved: number; saved: number; errors: string[] } | null>(null);
+  const [result, setResult]   = useState<{ optimized: number; converted: number; thumbs: number; moved: number; saved: number; errors: string[] } | null>(null);
   const [busy, setBusy]       = useState(false);
   const [progress, setProgress] = useState("");
   const [error, setError]     = useState("");
@@ -46,13 +47,14 @@ export default function ImageMaintenancePanel() {
 
   const run = async () => {
     setBusy(true); setError("");
-    const total = { optimized: 0, thumbs: 0, moved: 0, saved: 0, errors: [] as string[] };
+    const total = { optimized: 0, converted: 0, thumbs: 0, moved: 0, saved: 0, errors: [] as string[] };
     try {
       // Backend arbetar i omgångar på ~40 s — fortsätt tills inget återstår
       for (let round = 1; round <= 50; round++) {
         setProgress(`Omgång ${round}…`);
         const r = await call("POST");
         total.optimized += r.optimized;
+        total.converted += r.converted;
         total.thumbs    += r.thumbnailsCreated;
         total.moved     += r.movedUnused;
         total.saved     += r.bytesBefore - r.bytesAfter;
@@ -70,7 +72,7 @@ export default function ImageMaintenancePanel() {
     }
   };
 
-  const nothingToDo = preview && preview.optimized + preview.thumbnailsCreated + preview.movedUnused === 0;
+  const nothingToDo = preview && preview.optimized + preview.converted + preview.thumbnailsCreated + preview.movedUnused === 0;
 
   return (
     <section className={styles.card} style={{ marginTop: "3rem" }} aria-labelledby="image-maintenance">
@@ -85,6 +87,7 @@ export default function ImageMaintenancePanel() {
       {preview && (
         <ul style={{ margin: "1rem 0", paddingLeft: "1.25rem", lineHeight: 1.8 }}>
           <li>{preview.scanned} bilder, totalt {mb(preview.bytesBefore)}</li>
+          <li>{preview.converted} äldre JPEG/PNG kan göras om till WebP</li>
           <li>{preview.optimized} behöver krympas</li>
           <li>{preview.thumbnailsCreated} saknar miniatyr</li>
           <li>{preview.movedUnused} används inte av något projekt eller snickeri</li>
@@ -93,7 +96,8 @@ export default function ImageMaintenancePanel() {
 
       {result && (
         <p style={{ margin: "1rem 0" }} role="status">
-          Klart: {result.optimized} bilder krympta, {result.thumbs} miniatyrer skapade,{" "}
+          Klart: {result.converted} bilder gjorda om till WebP, {result.optimized} krympta,{" "}
+          {result.thumbs} miniatyrer skapade,{" "}
           {result.moved} oanvända flyttade. Sparat {mb(result.saved)}.
         </p>
       )}

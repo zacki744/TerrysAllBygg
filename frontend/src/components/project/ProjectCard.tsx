@@ -9,7 +9,9 @@ interface ProjectCardProps {
   title: string;
   description: string;
   image: string;
-  priority?: boolean; // true för första 2 korten — laddas eager
+  priority?: boolean; // true för de första korten — laddas eager
+  /** Rubriknivå för titeln — 2 på sidor där korten ligger direkt under h1 */
+  headingLevel?: 2 | 3;
 }
 
 export default function ProjectCard({
@@ -18,7 +20,9 @@ export default function ProjectCard({
   description,
   image,
   priority = false,
+  headingLevel = 3,
 }: ProjectCardProps) {
+  const Heading = headingLevel === 2 ? "h2" : "h3";
   const [loaded, setLoaded] = useState(false);
   // Äldre bilder kan sakna miniatyr tills bildunderhållet körts — då används originalet
   const [thumbFailed, setThumbFailed] = useState(false);
@@ -44,7 +48,7 @@ export default function ProjectCard({
           />
         </div>
         <div className={styles.cardBody}>
-          <h3 className={styles.cardTitle}>{title}</h3>
+          <Heading className={styles.cardTitle}>{title}</Heading>
           <p className={styles.cardDescription}>{description}</p>
         </div>
       </div>

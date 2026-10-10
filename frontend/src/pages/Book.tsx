@@ -199,7 +199,7 @@ export default function Book() {
           )}
 
           <div className={styles.infoBox}>
-            <h3 className={styles.infoBoxTitle}>Kontaktinformation</h3>
+            <h2 className={styles.infoBoxTitle}>Kontaktinformation</h2>
             <div className={styles.infoBoxText}>
               <p className={styles.iconLine}><MapPin size={16} aria-hidden /> Österlen, Skåne</p>
               <p style={{ marginTop: "0.5rem" }}>Vi svarar normalt inom 24 timmar på vardagar.</p>

@@ -12,6 +12,8 @@ type SnickeriCardProps = {
   price: number;
   image: string;
   priority?: boolean;
+  /** Rubriknivå för titeln — 2 på sidor där korten ligger direkt under h1 */
+  headingLevel?: 2 | 3;
 };
 
 export default function SnickeriCard({
@@ -21,7 +23,9 @@ export default function SnickeriCard({
   price,
   image,
   priority = false,
+  headingLevel = 3,
 }: SnickeriCardProps) {
+  const Heading = headingLevel === 2 ? "h2" : "h3";
   const [loaded, setLoaded] = useState(false);
   const [thumbFailed, setThumbFailed] = useState(false);
 
@@ -44,7 +48,7 @@ export default function SnickeriCard({
         </div>
         <div className={styles.snickeriCardBody}>
           <div className={styles.snickeriCardTop}>
-            <h3 className={styles.snickeriCardTitle}>{title}</h3>
+            <Heading className={styles.snickeriCardTitle}>{title}</Heading>
             <p className={styles.snickeriCardDescription}>{description}</p>
           </div>
           <div className={styles.snickeriCardFooter}>

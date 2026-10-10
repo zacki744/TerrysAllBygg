@@ -7,8 +7,9 @@ namespace API.Helpers;
 
 /// <summary>
 /// Underhåll av uploads/projects:
-///   1. Krymper bilder som är större än 1600 px eller onödigt tunga
-///      (filnamnet behålls, eftersom databasen pekar på det)
+///   1. Krymper bilder som är större än 1600 px eller onödigt tunga.
+///      Äldre JPEG/PNG konverteras till WebP och databasens sökvägar
+///      uppdateras; WebP-filer krymps med filnamnet kvar.
 ///   2. Skapar miniatyrer som saknas
 ///   3. Flyttar bilder som inget projekt eller snickeri använder till
 ///      uploads/projects/.oanvanda — de raderas inte, så inget försvinner av misstag
@@ -39,6 +40,7 @@ public class ImageMaintenance(IDatabase db, IWebHostEnvironment env, ILogger<Ima
         int Scanned,
         int Remaining,
         int Optimized,
+        int Converted,
         int ThumbnailsCreated,
         int MovedUnused,
         long BytesBefore,
@@ -77,11 +79,14 @@ public class ImageMaintenance(IDatabase db, IWebHostEnvironment env, ILogger<Ima
     public async Task<Report> RunAsync(bool dryRun, CancellationToken ct)
     {
         var errors = new List<string>();
-        int scanned = 0, optimized = 0, thumbs = 0, moved = 0;
+        int scanned = 0, optimized = 0, converted = 0, thumbs = 0, moved = 0;
+
+        // Gamla filnamn → nya .webp-namn, uppdateras i databasen efter loopen
+        var renamed = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         long before = 0, after = 0;
 
         if (!Directory.Exists(ProjectsFolder))
-            return new Report(0, 0, 0, 0, 0, 0, 0, errors, dryRun);
+            return new Report(0, 0, 0, 0, 0, 0, 0, 0, errors, dryRun);
 
         var referenced = await GetReferencedFileNamesAsync(ct);
 
@@ -135,7 +140,13 @@ public class ImageMaintenance(IDatabase db, IWebHostEnvironment env, ILogger<Ima
                 var tooWide    = width > ImageProcessor.FullWidth;
                 var shrink     = tooWide || (needsThumb && size > OkBytes);
 
-                if (!needsThumb && !shrink)
+                // Äldre tunga JPEG/PNG blir WebP oavsett om miniatyren redan
+                // finns. Idempotent: originalet flyttas undan efteråt.
+                var ext      = Path.GetExtension(file).ToLowerInvariant();
+                var webpPath = Path.ChangeExtension(file, ".webp");
+                var convert  = ext != ".webp" && (tooWide || size > OkBytes) && !File.Exists(webpPath);
+
+                if (!needsThumb && !shrink && !convert)
                 {
                     after += size;
                     continue;
@@ -144,7 +155,8 @@ public class ImageMaintenance(IDatabase db, IWebHostEnvironment env, ILogger<Ima
                 // Provkörningen avkodar inget (tar för lång tid) — den räknar bara
                 if (dryRun)
                 {
-                    if (shrink) optimized++;
+                    if (convert) converted++;
+                    else if (shrink) optimized++;
                     if (needsThumb) thumbs++;
                     after += size;
                     continue;
@@ -153,7 +165,18 @@ public class ImageMaintenance(IDatabase db, IWebHostEnvironment env, ILogger<Ima
                 using var loaded = await SKBitmapHolder.LoadAsync(file, ct);
                 var newSize = size;
 
-                if (shrink)
+                if (convert)
+                {
+                    // Äldre JPEG/PNG → WebP under samma namn. Originalet ligger
+                    // kvar tills databasen pekar på den nya filen (se nedan).
+                    using var full = ImageProcessor.ResizeToWidth(loaded.Bitmap, ImageProcessor.FullWidth);
+                    var bytes = ImageProcessor.Encode(full, SkiaSharp.SKEncodedImageFormat.Webp, ImageProcessor.WebpQuality);
+                    await ImageProcessor.WriteAtomicAsync(webpPath, bytes, ct);
+                    renamed[name] = Path.GetFileName(webpPath);
+                    converted++;
+                    newSize = bytes.Length;
+                }
+                else if (shrink)
                 {
                     using var full = ImageProcessor.ResizeToWidth(loaded.Bitmap, ImageProcessor.FullWidth);
                     var (format, quality) = ImageProcessor.FormatFor(Path.GetExtension(file));
@@ -186,22 +209,81 @@ public class ImageMaintenance(IDatabase db, IWebHostEnvironment env, ILogger<Ima
             }
         }
 
-        logger.LogInformation(
-            "Bildunderhåll{Dry}: {Scanned} filer, {Optimized} krympta, {Thumbs} miniatyrer, {Moved} oanvända, {Before} → {After} byte",
-            dryRun ? " (provkörning)" : "", scanned, optimized, thumbs, moved, before, after);
+        // ── Peka om databasen till de konverterade filerna ─────────
+        // Först när det lyckats flyttas originalen undan. Misslyckas det
+        // ligger båda versionerna kvar och nästa körning försöker igen.
+        if (renamed.Count > 0)
+        {
+            try
+            {
+                await UpdateReferencesAsync(renamed, ct);
+                foreach (var oldName in renamed.Keys)
+                    MoveToUnused(Path.Combine(ProjectsFolder, oldName), deleteThumb: false);
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                errors.Add($"Kunde inte uppdatera databasen efter konvertering: {ex.Message}");
+                logger.LogError(ex, "Bildunderhåll: uppdatering av bildsökvägar misslyckades");
+            }
+        }
 
-        return new Report(scanned, remaining, optimized, thumbs, moved, before, after, errors, dryRun);
+        logger.LogInformation(
+            "Bildunderhåll{Dry}: {Scanned} filer, {Optimized} krympta, {Converted} till WebP, {Thumbs} miniatyrer, {Moved} oanvända, {Before} → {After} byte",
+            dryRun ? " (provkörning)" : "", scanned, optimized, converted, thumbs, moved, before, after);
+
+        return new Report(scanned, remaining, optimized, converted, thumbs, moved, before, after, errors, dryRun);
+    }
+
+    /// <summary>Byter filnamn i MainImage och Images (JSON) för projekt och snickerier.</summary>
+    private async Task UpdateReferencesAsync(IReadOnlyDictionary<string, string> renamed, CancellationToken ct)
+    {
+        string? Swap(string? path) =>
+            path is not null && renamed.TryGetValue(Path.GetFileName(path), out var newName)
+                ? path[..^Path.GetFileName(path).Length] + newName
+                : path;
+
+        (string? Main, string? Json, bool Changed) Rewrite(string? main, string? json)
+        {
+            var newMain = Swap(main);
+            var changed = newMain != main;
+
+            if (string.IsNullOrWhiteSpace(json)) return (newMain, json, changed);
+
+            List<string>? list;
+            try { list = JsonSerializer.Deserialize<List<string>>(json); }
+            catch (JsonException) { return (newMain, json, changed); }
+            if (list is null) return (newMain, json, changed);
+
+            var newList = list.Select(p => Swap(p) ?? p).ToList();
+            if (!newList.SequenceEqual(list)) changed = true;
+            return (newMain, changed ? JsonSerializer.Serialize(newList) : json, changed);
+        }
+
+        foreach (var p in await db.ReadAsync<ProjectDbDto>("projects", null, ct))
+        {
+            var (main, json, changed) = Rewrite(p.MainImage, p.Images);
+            if (changed)
+                await db.UpdateAsync("projects", new { Id = p.Id }, new { MainImage = main, Images = json }, ct);
+        }
+
+        foreach (var s in await db.ReadAsync<SnickeriDbDto>("snickerier", null, ct))
+        {
+            var (main, json, changed) = Rewrite(s.MainImage, s.Images);
+            if (changed)
+                await db.UpdateAsync("snickerier", new { Id = s.Id }, new { MainImage = main, Images = json }, ct);
+        }
     }
 
     /// <summary>Flyttar en bild till uploads/projects/.oanvanda och tar bort dess miniatyr.</summary>
-    public void MoveToUnused(string file)
+    /// <param name="deleteThumb">false när en konverterad .webp med samma namnstam använder miniatyren</param>
+    public void MoveToUnused(string file, bool deleteThumb = true)
     {
         var target = Path.Combine(ProjectsFolder, UnusedFolder);
         Directory.CreateDirectory(target);
         File.Move(file, Path.Combine(target, Path.GetFileName(file)), overwrite: true);
 
         var thumb = ImageProcessor.ThumbPathFor(file);
-        if (File.Exists(thumb))
+        if (deleteThumb && File.Exists(thumb))
             File.Delete(thumb);   // miniatyren kan alltid återskapas
     }
 
