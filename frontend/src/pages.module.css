@@ -626,12 +626,21 @@
   margin-bottom: 0;
 }
 
+/* Samma uttryck som sekundärlänken i hero: mörk text, tunn linje under */
 .sectionLink {
   font-size: 0.9375rem;
-  font-weight: 600;
-  color: var(--accent-ink);
-  text-decoration: underline;
-  text-underline-offset: 3px;
+  font-weight: 500;
+  color: var(--foreground);
+  text-decoration: none;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.15rem;
+  white-space: nowrap;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.sectionLink:hover {
+  color: var(--primary-ink);
+  border-bottom-color: var(--primary-ink);
 }
 
 /* ─── Tjänster på startsidan ──────────────────────────────── */

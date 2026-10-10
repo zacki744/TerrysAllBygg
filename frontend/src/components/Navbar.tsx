@@ -16,11 +16,17 @@ const isActive = (href: string, pathname: string) =>
   href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(href + "/");
 
 export default function Navbar() {
-  const [open, setOpen] = useState(false);
   const location = useLocation();
 
-  // Close menu on route change
-  useEffect(() => { setOpen(false); }, [location.pathname]);
+  // Menyn är öppen för den sida den öppnades på — byts sidan stängs den
+  // automatiskt, utan en effekt som återställer state.
+  const [openOn, setOpenOn] = useState<string | null>(null);
+  const open = openOn === location.pathname;
+  const setOpen = (value: boolean | ((prev: boolean) => boolean)) =>
+    setOpenOn((prev) => {
+      const next = typeof value === "function" ? value(prev === location.pathname) : value;
+      return next ? location.pathname : null;
+    });
 
   // Lock body scroll when menu is open
   useEffect(() => {

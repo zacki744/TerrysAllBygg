@@ -23,7 +23,7 @@ public class ProjectsService(IDatabase db) : IProjectsService
     }
 
     // Add this public method
-    public async Task<DetaildProject?> GetProjectByIdPublicAsync(Guid id, CancellationToken ct = default)
+    public async Task<DetailedProject?> GetProjectByIdPublicAsync(Guid id, CancellationToken ct = default)
     {
         return await GetProjectByIdAsync(id, ct);
     }
@@ -34,7 +34,7 @@ public class ProjectsService(IDatabase db) : IProjectsService
         return await GetOverviewInformationAsync(ct);
     }
 
-    public async Task<DetaildProject?> GetProjectByIdAsync(Guid id, CancellationToken ct = default)
+    public async Task<DetailedProject?> GetProjectByIdAsync(Guid id, CancellationToken ct = default)
     {
         var project = await _db.ReadSingleAsync<ProjectDbDto>(
             "projects",
@@ -64,7 +64,7 @@ public class ProjectsService(IDatabase db) : IProjectsService
             }
         }
 
-        return new DetaildProject
+        return new DetailedProject
         {
             Id = Guid.Parse(project.Id),
             Title = project.Title,

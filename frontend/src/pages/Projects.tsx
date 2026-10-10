@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -6,39 +5,25 @@ import ImageGallery from "../components/project/ImageGallery";
 import PageMeta from "../components/PageMeta";
 import NotFound from "./NotFound";
 import { projectPath } from "../lib/routes";
+import RetryError from "../components/RetryError";
+import { useFetch } from "../hooks/useFetch";
+import { API, isNotFound, type ProjectDetail } from "../lib/api";
 import styles from "../pages.module.css";
-
-interface Project {
-  title: string;
-  description: string;
-  images: string[];
-}
 
 export default function ProjectsPageContent() {
   const { id } = useParams();
-
-  const [project, setProject] = useState<Project | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (!id) return;
-    setLoading(true);
-    fetch(`/api/projects/details/${id}`)
-      .then((res) => { if (!res.ok) throw new Error(); return res.json(); })
-      .then(setProject)
-      .catch(() => setProject(null))
-      .finally(() => setLoading(false));
-  }, [id]);
+  const { data: project, error, loading, reload } =
+    useFetch<ProjectDetail>(id ? API.project(id) : null);
 
   // ── State views — share consistent shell ──────────────────
-  if (!id || (!loading && !project)) return <NotFound />;
+  if (!id || isNotFound(error)) return <NotFound />;
 
   if (loading || !project) {
     return (
       <div className={styles.page}>
         <Navbar />
         <main className={styles.mainWide}>
-          <p className={styles.stateText}>Laddar…</p>
+          {error ? <RetryError onRetry={reload} /> : <p className={styles.stateText}>Laddar…</p>}
         </main>
         <Footer />
       </div>

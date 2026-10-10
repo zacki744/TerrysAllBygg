@@ -175,7 +175,7 @@ TABB/
 │   ├── Project/
 │   └── Snickeri/
 │
-└── Servises/               # Affärslogik och infrastruktur
+└── Services/               # Affärslogik och infrastruktur
     └── Src/
         ├── Auth/
         ├── DB/
@@ -224,7 +224,7 @@ GlobalExceptionHandler
 
 **`ImageUploadHelper`** är en statisk hjälpklass som hanterar validering (magic bytes, filstorlek, tillåtna filändelser) och path-säkerhet — den lever i API-lagret eftersom den är tätt kopplad till `IFormFile`.
 
-### 5.2 Tjänstlager (`TABB/Servises`)
+### 5.2 Tjänstlager (`TABB/Services`)
 
 **Ansvar:** Affärslogik, databasoperationer, e-postutskick, autentiseringslogik.
 

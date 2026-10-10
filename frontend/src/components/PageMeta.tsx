@@ -4,6 +4,7 @@ import {
   absoluteUrl, breadcrumbSchema, businessSchema, productSchema, websiteSchema,
   type Crumb, type ProductInfo,
 } from "../lib/schema";
+import { clampDescription } from "../lib/meta";
 
 interface PageMetaProps {
   /** Sidans namn. Blir "<title> | Terrys Allbygg". Utelämna på startsidan. */
@@ -23,14 +24,6 @@ interface PageMetaProps {
 const DEFAULT_DESCRIPTION =
   "Terrys Allbygg är ett lokalt bygg- och snickeriföretag på Österlen. " +
   "Vi bygger bastuer, tillbyggnader, altaner, förråd och snickerier i hela Skåne.";
-
-// Google kortar utdrag vid ~160 tecken — korta i stället vid ordgräns
-function clampDescription(text: string, max = 158): string {
-  const clean = text.replace(/\s+/g, " ").trim();
-  if (clean.length <= max) return clean;
-  const cut = clean.slice(0, max - 1);
-  return cut.slice(0, cut.lastIndexOf(" ")).replace(/[,.;:–—-]$/, "") + "…";
-}
 
 // Sidor där hela företagsbeskrivningen (adress, tjänster, öppettider) hör hemma
 const BUSINESS_PAGES = ["/", "/about"];

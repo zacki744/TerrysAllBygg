@@ -1,11 +1,10 @@
 import { useState, Suspense } from "react";
+import { errorMessage } from "../../lib/errors";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 import styles from "../../pages.module.css";
-import PageMeta from "../../components/PageMeta";
 
-<PageMeta title="Admin" noIndex={true} />
 function ResetPasswordContent() {
   const [searchParams] = useSearchParams();
   const navigate       = useNavigate();
@@ -53,8 +52,8 @@ function ResetPasswordContent() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       setDone(true);
-    } catch (err: any) {
-      setError(err.message || "Något gick fel. Länken kan ha gått ut.");
+    } catch (err) {
+      setError(errorMessage(err, "Något gick fel. Länken kan ha gått ut."));
     } finally {
       setSubmitting(false);
     }

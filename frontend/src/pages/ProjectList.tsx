@@ -1,7 +1,6 @@
 // src/pages/ProjectList.tsx
 // ── /projekt — alla tidigare projekt ──
 
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import PageShell from "../components/PageShell";
 import PageMeta from "../components/PageMeta";
@@ -9,26 +8,13 @@ import ProjectCard from "../components/project/ProjectCard";
 import { ProjectCardSkeleton } from "../components/Skeletons";
 import RetryError from "../components/RetryError";
 import styles from "../pages.module.css";
+import { useFetch } from "../hooks/useFetch";
+import { API, type ProjectOverview } from "../lib/api";
 
-interface Project {
-  id: string;
-  title: string;
-  description: string;
-  image: string;
-}
 
 export default function ProjectList() {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading]   = useState(true);
-  const [error, setError]       = useState(false);
-
-  useEffect(() => {
-    fetch("/api/projects")
-      .then((res) => { if (!res.ok) throw new Error(); return res.json(); })
-      .then(setProjects)
-      .catch(() => setError(true))
-      .finally(() => setLoading(false));
-  }, []);
+  const { data, loading, error, reload } = useFetch<ProjectOverview[]>(API.projects);
+  const projects = data ?? [];
 
   return (
     <PageShell wide>
@@ -47,7 +33,7 @@ export default function ProjectList() {
 
       <div className={styles.projectGrid}>
         {loading && Array.from({ length: 6 }).map((_, i) => <ProjectCardSkeleton key={i} />)}
-        {!loading && error && <RetryError />}
+        {!!error && <RetryError onRetry={reload} />}
         {!loading && !error && projects.length === 0 && (
           <p className={styles.stateText}>Inga projekt publicerade än.</p>
         )}

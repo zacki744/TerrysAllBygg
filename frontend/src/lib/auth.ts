@@ -1,3 +1,4 @@
+import type { CreateProjectRequest, DetailedProject, UpdateProjectRequest } from "./project";
 // app/lib/auth.ts
 
 export interface Project {
@@ -91,13 +92,13 @@ export const AdminAPI = {
     return res.json();
   },
 
-  async getProject(id: string): Promise<any> {
+  async getProject(id: string): Promise<DetailedProject> {
     const res = await adminFetch(`/api/admin/projects/${id}`);
     if (!res.ok) throw new Error("Project not found");
     return res.json();
   },
 
-  async createProject(data: any): Promise<any> {
+  async createProject(data: CreateProjectRequest): Promise<{ id: string }> {
     const res = await adminFetch("/api/admin/projects", {
       method: "POST",
       body:   JSON.stringify(data),
@@ -106,7 +107,7 @@ export const AdminAPI = {
     return res.json();
   },
   
-  async updateProject(id: string, data: any): Promise<void> {
+  async updateProject(id: string, data: UpdateProjectRequest): Promise<void> {
     const res = await adminFetch(`/api/admin/projects/${id}`, {
       method: "PUT",
       body:   JSON.stringify(data),

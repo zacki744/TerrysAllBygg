@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { errorMessage } from "../../lib/errors";
 import Input from "../ui/Input";
 import Textarea from "../ui/Textarea";
 import Button from "../ui/Button";
@@ -68,8 +69,8 @@ export default function SnickeriForm({
         mainImage: images[0],
         additionalImages: images.slice(1),
       });
-    } catch (err: any) {
-      setError(err.message || "Kunde inte spara snickeri");
+    } catch (err) {
+      setError(errorMessage(err, "Kunde inte spara snickeri"));
     } finally {
       setLoading(false);
     }

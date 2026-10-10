@@ -34,23 +34,23 @@ export default function AdminDashboard() {
       navigate("/admin/login");
       return;
     }
+
+    const loadAll = async () => {
+      try {
+        const [projectData, snickeriData] = await Promise.all([
+          AdminAPI.getAllProjects(),
+          fetchSnickerier(),
+        ]);
+        setProjects(projectData);
+        setSnickerier(snickeriData);
+      } catch {
+        navigate("/admin/login");
+      } finally {
+        setLoading(false);
+      }
+    };
     loadAll();
   }, [navigate]);
-
-  const loadAll = async () => {
-    try {
-      const [projectData, snickeriData] = await Promise.all([
-        AdminAPI.getAllProjects(),
-        fetchSnickerier(),
-      ]);
-      setProjects(projectData);
-      setSnickerier(snickeriData);
-    } catch {
-      navigate("/admin/login");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleEditProject  = (id: string) => navigate(`/admin/projects/edit?id=${id}`);
   const handleEditSnickeri = (id: string) => navigate(`/admin/snickerier/edit?id=${id}`);

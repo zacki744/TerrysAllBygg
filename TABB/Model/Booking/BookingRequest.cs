@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
 
 namespace Models.Booking;
 public class BookingRequest
@@ -10,11 +9,9 @@ public class BookingRequest
     [Phone]
     public string? PhoneNumber { get; set; }   // optional — matches the frontend form
     public required string Placement { get; set; }
-    [JsonPropertyName("other1")]   // frontend skickar "other1"
-    public string? Otther1 { get; set; }
+    public string? Other1 { get; set; }
     public required string Project { get; set; }
-    [JsonPropertyName("other2")]   // frontend skickar "other2"
-    public string? Otther2 { get; set; }
+    public string? Other2 { get; set; }
     public required string Address { get; set; }
     public required string Description { get; set; }
 

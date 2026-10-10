@@ -1,6 +1,37 @@
-# Terrys AllBygg
+# Terrys Allbygg
 
-Hemsida för **Terrys AllBygg** — ett lokalt bygg- och snickeriföretag i Österlen, Skåne. Sidan låter besökare bläddra bland tidigare byggprojekt, utforska färdiga snickerier till fast pris och skicka konsultationsförfrågningar direkt till Terry.
+[![CI](https://github.com/zacki744/TerrysAllBygg/actions/workflows/ci.yml/badge.svg)](https://github.com/zacki744/TerrysAllBygg/actions/workflows/ci.yml)
+
+**[terrysallbygg.se](https://terrysallbygg.se)** — webbplats i produktion för ett lokalt bygg- och snickeriföretag på Österlen, Skåne. Besökare bläddrar bland tidigare byggprojekt, beställer färdiga snickerier och skickar konsultationsförfrågningar; företaget sköter innehållet själv i en egen adminpanel.
+
+<!-- Skärmdumpar: lägg desktop- och mobilbild i docs/ och avkommentera
+![Startsidan på desktop](docs/desktop.png) ![Startsidan på mobil](docs/mobil.png)
+-->
+
+## I korthet
+
+- **Fullstack:** React 19 + TypeScript (Vite) mot ett ASP.NET Core 8-API med Dapper och MySQL
+- **Säkerhet:** JWT i httpOnly-cookie, BCrypt, rate limiting per IP, säkerhetsheaders (CSP, HSTS), vitlistade tabellnamn, inbjudningsbaserade adminkonton
+- **SEO:** förrenderade sidor vid build, dynamisk sitemap från databasen, strukturerad data (schema.org), läsbara URL:er
+- **Bilder:** uppladdning direkt från mobilen (även HEIC), EXIF-rotation, WebP i två storlekar, GPS-data rensas
+- **GDPR:** integritetspolicy byggd från det faktiska dataflödet, maskerade e-postadresser i loggar, ingen spårning eller cookiebanner
+- **Tillgänglighet:** WCAG AA-kontrast, kopplade formuläretiketter, tangentbordsnavigering — kontrollerat med axe
+- **Kvalitet:** Vitest + Testing Library i frontend, xUnit i backend, CI på varje push
+
+```mermaid
+flowchart LR
+    B[Besökare] -->|HTML, förrenderad| IIS
+    A[Admin] -->|JWT-cookie| IIS
+    subgraph IIS[Simply.com · IIS]
+        API[ASP.NET Core 8 API]
+        SPA[React-bygget<br/>wwwroot/app]
+        UP[(uploads/<br/>WebP + miniatyrer)]
+    end
+    API --> SPA
+    API --> UP
+    API --> DB[(MySQL)]
+    API -->|SMTP| M[E-post till kund<br/>och företaget]
+```
 
 ---
 
@@ -30,11 +61,16 @@ Terrys AllBygg erbjuder skräddarsydda byggprojekt (bastuer, tillbyggnader, alta
 
 | Sida | Beskrivning |
 |---|---|
-| **Hem** (`/`) | Hero-sektion + katalog av tidigare byggprojekt med bildgalleri |
-| **Snickerier** (`/snickerier`) | Lista med färdiga snickerier, pris och bild |
-| **Snickeri-detalj** (`/snickeri?id=...`) | Fullständig produktvy med bildgalleri + förfrågningsformulär |
-| **Om Oss** (`/about`) | Företagspresentation, tjänster och kontaktinfo |
-| **Boka konsultation** (`/book`) | Formulär för att boka ett kostnadsfritt konsultationsmöte |
+| **Hem** (`/`) | Hero, ett urval av projekt, tjänster och kontaktvägar |
+| **Projekt** (`/projekt`) | Alla tidigare byggprojekt |
+| **Projektdetalj** (`/projekt/<id>/<slug>`) | Bildgalleri och beskrivning |
+| **Snickerier** (`/snickerier`) | Färdiga snickerier med pris och bild |
+| **Snickeri-detalj** (`/snickerier/<id>/<slug>`) | Produktvy med bildgalleri och förfrågningsformulär |
+| **Om oss** (`/about`) | Företagspresentation, tjänster och kontaktinfo |
+| **Boka konsultation** (`/book`) | Formulär för kostnadsfri konsultation |
+| **Integritetspolicy** (`/integritetspolicy`) | Hur personuppgifter från formulären hanteras |
+
+Gamla adresser (`/projects?id=…`, `/snickeri?id=…`) omdirigeras till de nya.
 
 ### E-postflöden
 
@@ -46,7 +82,8 @@ Terrys AllBygg erbjuder skräddarsydda byggprojekt (bastuer, tillbyggnader, alta
 - Inloggning via JWT-cookie (httpOnly, Secure, SameSite=Strict)
 - CRUD för projekt (titel, beskrivning, bilder)
 - CRUD för snickerier (titel, beskrivning, pris, bilder)
-- Bilduppladdning med automatisk komprimering (SkiaSharp + Magick.NET för HEIC)
+- Bilduppladdning: WebP i 1600 px + miniatyr i 640 px (SkiaSharp, Magick.NET för HEIC)
+- Bildunderhåll: krymper äldre bilder, skapar saknade miniatyrer och flyttar undan oanvända
 - Användarhantering: bjud in nya admins via e-post, återställ lösenord, radera konton
 
 ---
@@ -89,7 +126,9 @@ TerrysAllBygg/
 │   ├── src/
 │   │   ├── components/        # Navbar, Footer, Hero, kort, skelett, UI-primitiver
 │   │   ├── pages/             # Publika sidor + admin-sidor
-│   │   ├── lib/               # auth.ts, project.ts, contact.ts, formatPrice
+│   │   ├── hooks/             # useFetch
+│   │   ├── lib/               # api, routes, schema, images, contact, privacy …
+│   ├── scripts/prerender.mjs  # Förrenderar fasta sidor efter build
 │   │   └── index.css          # Globala CSS-variabler och reset
 │   ├── deploy-backend.sh      # Bygger och kopierar dist → wwwroot/app
 │   └── vite.config.ts         # Dev-proxy → .NET på port 7026
@@ -99,12 +138,13 @@ TerrysAllBygg/
     │   ├── Controllers/       # BookingController, ProjectsController, SnickeriController
     │   │   └── Admin/         # Auth, Projects, Snickeri, Image, UserManagement
     │   ├── Extensions/        # RateLimitingExtensions
-    │   ├── Helpers/           # ImageUploadHelper (validering + path-säkerhet)
-    │   ├── Middleware/        # GlobalExceptionHandler
+    │   ├── Helpers/           # ImageProcessor, ImageMaintenance, ImageUploadHelper
+    │   ├── Middleware/        # GlobalExceptionHandler, SecurityHeadersMiddleware
     │   ├── Program.cs         # App-konfiguration, middleware-pipeline
     │   └── wwwroot/app/       # Genererat (React-bygget)
     ├── Model/                 # DTOs och request-modeller
-    └── Servises/              # Tjänstlager
+    ├── Tests/                 # xUnit
+    └── Services/              # Tjänstlager
         └── Src/
             ├── Auth/          # AuthService, UserManagementService
             ├── DB/            # MySqlDatabase (generisk CRUD), IDbConnectionFactory
@@ -144,6 +184,15 @@ npm run dev
 # Dev-server på http://localhost:5173
 # API-anrop proxas automatiskt till :7026
 ```
+
+### Tester
+
+```bash
+cd frontend && npm test          # Vitest + Testing Library
+cd TABB/Tests && dotnet test     # xUnit
+```
+
+Båda körs automatiskt i GitHub Actions vid varje push (`.github/workflows/ci.yml`), tillsammans med lint och build.
 
 ### Bygga och deployera frontend till backend
 
@@ -187,12 +236,15 @@ Projektet deployas till Simply.com via FTP.
 # 1. Bygg och kopiera React-bygget till wwwroot
 cd frontend && npm run deploy:backend
 
-# 2. Publicera .NET-appen och ladda upp via FTP
+# 2. Publicera .NET-appen
 cd TABB/API && dotnet publish -c Release
-# (GitHub Actions hanterar FTP-synken automatiskt vid push till main)
 ```
 
-`uploads/` och `logs/` är exkluderade från FTP-synken och bevaras på servern.
+3. Ladda upp `app_offline.htm` till sajtens rot (IIS stänger appen och släpper DLL-filerna).
+4. Synka publiceringsmappen via FTP med borttagning av gamla filer, men **exkludera `uploads/`, `logs/` och konfigurationen med hemligheter**.
+5. Ta bort `app_offline.htm`.
+
+`uploads/` rörs aldrig vid deploy.
 
 ---
 
@@ -208,6 +260,7 @@ cd TABB/API && dotnet publish -c Release
 | `GET` | `/api/snickerier/details/{id}` | Snickeri-detalj med alla bilder |
 | `POST` | `/api/snickerier/inquire` | Skicka förfrågan om ett snickeri |
 | `POST` | `/api/Booking/create` | Skicka konsultationsförfrågan |
+| `GET` | `/sitemap.xml` | Sitemap med alla sidor, projekt och snickerier |
 
 ### Admin-endpoints (kräver `[Authorize(Roles = "Admin")]`)
 
@@ -219,7 +272,8 @@ cd TABB/API && dotnet publish -c Release
 | `GET/POST/PUT/DELETE` | `/api/admin/projects` | Hantera projekt |
 | `GET/POST/PUT/DELETE` | `/api/admin/snickerier` | Hantera snickerier |
 | `POST` | `/api/admin/image/upload` | Ladda upp och komprimera bild |
-| `DELETE` | `/api/admin/image/delete` | Radera bild |
+| `DELETE` | `/api/admin/image/delete` | Flytta undan en bild som inte längre används |
+| `GET/POST` | `/api/admin/image/maintenance` | Bildunderhåll (GET = provkörning) |
 | `GET` | `/api/admin/users` | Lista admin-användare |
 | `POST` | `/api/admin/users/invite` | Bjud in ny admin |
 | `DELETE` | `/api/admin/users/{id}` | Radera admin-konto |

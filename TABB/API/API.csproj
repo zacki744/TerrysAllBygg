@@ -21,11 +21,16 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Model\Models.csproj" />
-    <ProjectReference Include="..\Servises\Services.csproj" />
+    <ProjectReference Include="..\Services\Services.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="wwwroot\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Låter testprojektet nå internal-metoder, t.ex. SitemapController.Slugify -->
+    <InternalsVisibleTo Include="Tests" />
   </ItemGroup>
 
 </Project>

@@ -5,9 +5,7 @@ import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 import styles from "../../admin.module.css";
 import { Link } from "react-router-dom";
-import PageMeta from "../../components/PageMeta";
 
-<PageMeta title="Admin" noIndex={true} />
 export default function AdminLogin() {
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: "", password: "" });

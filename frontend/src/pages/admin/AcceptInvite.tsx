@@ -1,11 +1,10 @@
 import { useEffect, useState, Suspense } from "react";
+import { errorMessage } from "../../lib/errors";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 import styles from "../../pages.module.css";
-import PageMeta from "../../components/PageMeta";
 
-<PageMeta title="Admin" noIndex={true} />
 function AcceptInviteContent() {
   const [searchParams] = useSearchParams();
   const navigate     =  useNavigate();
@@ -59,8 +58,8 @@ function AcceptInviteContent() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       setDone(true);
-    } catch (err: any) {
-      setError(err.message || "Något gick fel. Försök igen.");
+    } catch (err) {
+      setError(errorMessage(err, "Något gick fel. Försök igen."));
     } finally {
       setSubmitting(false);
     }

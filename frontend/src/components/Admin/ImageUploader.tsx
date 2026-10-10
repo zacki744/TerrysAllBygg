@@ -56,7 +56,7 @@ export default function ImageUploader({
             body: formData,
           });
 
-          let data: any = {};
+          let data: { success?: boolean; path?: string; error?: string } = {};
           try {
             data = await response.json();
           } catch {
@@ -72,8 +72,8 @@ export default function ImageUploader({
             continue;
           }
 
-          uploadedPaths.push(data.path);
-        } catch (err) {
+          if (data.path) uploadedPaths.push(data.path);
+        } catch {
           errorMessages.push(`${file.name}: Nätverksfel / timeout`);
         }
       }

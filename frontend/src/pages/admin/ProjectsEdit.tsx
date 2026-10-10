@@ -5,9 +5,7 @@ import ProjectForm from "../../components/Admin/ProjectForm";
 import { AdminAPI } from "../../lib/auth";
 import { type UpdateProjectRequest, type DetailedProject } from "../../lib/project";
 import styles from "../../admin.module.css";
-import PageMeta from "../../components/PageMeta";
 
-<PageMeta title="Admin" noIndex={true} />
 export default function EditProjectContent() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -18,25 +16,23 @@ export default function EditProjectContent() {
 
   useEffect(() => {
     if (!id) {
-      alert("No project ID provided");
+      alert("Inget projekt valt");
       navigate("/admin");
       return;
     }
-    loadProject();
-  }, [id]);
 
-  const loadProject = async () => {
-    if (!id) return;
-    try {
-      const data = await AdminAPI.getProject(id);
-      setProject(data);
-    } catch {
-      alert("Project not found");
-      navigate("/admin");
-    } finally {
-      setLoading(false);
-    }
-  };
+    const loadProject = async () => {
+      try {
+        setProject(await AdminAPI.getProject(id));
+      } catch {
+        alert("Projektet hittades inte");
+        navigate("/admin");
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadProject();
+  }, [id, navigate]);
 
   const handleSubmit = async (data: UpdateProjectRequest) => {
     if (!id) return;

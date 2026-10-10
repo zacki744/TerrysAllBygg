@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "./../components/Navbar";
 import Footer from "./../components/Footer";
@@ -8,6 +7,8 @@ import { ProjectCardSkeleton } from "./../components/Skeletons";
 import RetryError from "./../components/RetryError";
 import PageMeta from "./../components/PageMeta";
 import styles from "./../pages.module.css";
+import { useFetch } from "../hooks/useFetch";
+import { API, type ProjectOverview } from "../lib/api";
 import { Check } from "lucide-react";
 import { CONTACT } from "../lib/contact";
 import { SERVICES } from "../lib/services";
@@ -23,25 +24,10 @@ const TRUST_ITEMS = [
   CONTACT.trust.insured && "Ansvarsförsäkrad",
 ].filter((t): t is string => Boolean(t));
 
-interface Project {
-  id: string;
-  title: string;
-  description: string;
-  image: string;
-}
 
 export default function Home() {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading]   = useState(true);
-  const [error, setError]       = useState(false);
-
-  useEffect(() => {
-    fetch("/api/projects")
-      .then((res) => { if (!res.ok) throw new Error(); return res.json(); })
-      .then((data: Project[]) => setProjects(data))
-      .catch(() => setError(true))
-      .finally(() => setLoading(false));
-  }, []);
+  const { data, loading, error, reload } = useFetch<ProjectOverview[]>(API.projects);
+  const projects = data ?? [];
 
   return (
     <div className={styles.page}>
@@ -67,11 +53,13 @@ export default function Home() {
         <section className={styles.projectsSection} aria-labelledby="home-projects">
           <div className={styles.sectionHeader}>
             <h2 id="home-projects" className={styles.sectionTitle}>Tidigare projekt</h2>
-            <Link to="/projekt" className={styles.sectionLink}>Alla projekt</Link>
+            <Link to="/projekt" className={styles.sectionLink}>
+              {projects.length > HOME_PROJECT_COUNT ? `Se alla ${projects.length} projekt` : "Se alla projekt"}
+            </Link>
           </div>
           <div className={styles.projectGrid}>
             {loading && Array.from({ length: HOME_PROJECT_COUNT }).map((_, i) => <ProjectCardSkeleton key={i} />)}
-            {!loading && error && <RetryError />}
+            {!!error && <RetryError onRetry={reload} />}
             {!loading && !error && projects.slice(0, HOME_PROJECT_COUNT).map((p, i) => (
               <ProjectCard key={p.id} {...p} priority={i < 3} />
             ))}

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { CircleCheck } from "lucide-react";
 import Navbar from "../components/Navbar";
@@ -11,16 +11,11 @@ import PageMeta from "../components/PageMeta";
 import PrivacyNotice from "../components/PrivacyNotice";
 import NotFound from "./NotFound";
 import { snickeriPath } from "../lib/routes";
+import RetryError from "../components/RetryError";
+import { useFetch } from "../hooks/useFetch";
+import { API, isNotFound, type SnickeriDetail } from "../lib/api";
 import { formatPrice } from "../lib/formatPrice";
 import styles from "../pages.module.css";
-
-interface Snickeri {
-  id: string;
-  title: string;
-  description: string;
-  price: number;
-  images: string[];
-}
 
 interface InquiryForm {
   name: string;
@@ -36,23 +31,13 @@ const EMPTY_FORM: InquiryForm = {
 export default function SnickeriPageContent() {
   const { id } = useParams();
 
-  const [snickeri, setSnickeri] = useState<Snickeri | null>(null);
-  const [loading, setLoading]   = useState(true);
+  const { data: snickeri, error, loading, reload } =
+    useFetch<SnickeriDetail>(id ? API.snickeri(id) : null);
   const [form, setForm]         = useState<InquiryForm>(EMPTY_FORM);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted]   = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
-
-  useEffect(() => {
-    if (!id) return;
-    setLoading(true);
-    fetch(`/api/snickerier/details/${id}`)
-      .then((res) => { if (!res.ok) throw new Error("Not found"); return res.json(); })
-      .then(setSnickeri)
-      .catch(() => setSnickeri(null))
-      .finally(() => setLoading(false));
-  }, [id]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -87,14 +72,14 @@ export default function SnickeriPageContent() {
   };
 
   // ── Early returns ───────────────────────────────────────────
-  if (!id || (!loading && !snickeri)) return <NotFound />;
+  if (!id || isNotFound(error)) return <NotFound />;
 
   if (loading || !snickeri) {
     return (
       <div className={styles.page}>
         <Navbar />
         <main className={styles.mainWide}>
-          <p className={styles.stateText}>Laddar…</p>
+          {error ? <RetryError onRetry={reload} /> : <p className={styles.stateText}>Laddar…</p>}
         </main>
         <Footer />
       </div>

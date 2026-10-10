@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { errorMessage } from "../../lib/errors";
 import { useNavigate } from "react-router-dom";
 import { Mail, Trash2, KeyRound } from "lucide-react";
 import AdminNavbar from "../../components/Admin/AdminNavbar";
@@ -54,8 +55,8 @@ export default function AdminUsersPage() {
       if (!res.ok) throw new Error(data.error);
       setMessage({ text: data.message, ok: true });
       setInviteEmail("");
-    } catch (err: any) {
-      setMessage({ text: err.message || "Kunde inte skicka inbjudan", ok: false });
+    } catch (err) {
+      setMessage({ text: errorMessage(err, "Kunde inte skicka inbjudan"), ok: false });
     } finally {
       setInviting(false);
     }
@@ -71,8 +72,8 @@ export default function AdminUsersPage() {
       if (!res.ok) throw new Error(data.error);
       setUsers((prev) => prev.filter((u) => u.id !== id));
       setMessage({ text: "Konto raderat", ok: true });
-    } catch (err: any) {
-      setMessage({ text: err.message || "Kunde inte radera konto", ok: false });
+    } catch (err) {
+      setMessage({ text: errorMessage(err, "Kunde inte radera konto"), ok: false });
     }
   };
 
@@ -85,8 +86,8 @@ export default function AdminUsersPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       setMessage({ text: data.message, ok: true });
-    } catch (err: any) {
-      setMessage({ text: err.message || "Kunde inte skicka länk", ok: false });
+    } catch (err) {
+      setMessage({ text: errorMessage(err, "Kunde inte skicka länk"), ok: false });
     }
   };
 

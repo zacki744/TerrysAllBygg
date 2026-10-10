@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import Navbar from "./../components/Navbar";
 import Footer from "./../components/Footer";
 import SnickeriCard from "./../components/SnickeriCard";
@@ -6,27 +5,13 @@ import { SnickeriCardSkeleton } from "./../components/Skeletons";
 import RetryError from "./../components/RetryError";
 import PageMeta from "./../components/PageMeta";
 import styles from "./../pages.module.css";
+import { useFetch } from "../hooks/useFetch";
+import { API, type SnickeriOverview } from "../lib/api";
 
-interface SnickeriItem {
-  id: string;
-  title: string;
-  description: string;
-  price: number;
-  image: string;
-}
 
 export default function Snickerier() {
-  const [items, setItems]     = useState<SnickeriItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError]     = useState(false);
-
-  useEffect(() => {
-    fetch("/api/snickerier")
-      .then((res) => { if (!res.ok) throw new Error(); return res.json(); })
-      .then(setItems)
-      .catch(() => setError(true))
-      .finally(() => setLoading(false));
-  }, []);
+  const { data, loading, error, reload } = useFetch<SnickeriOverview[]>(API.snickerier);
+  const items = data ?? [];
 
   return (
     <div className={styles.page}>
@@ -50,8 +35,8 @@ export default function Snickerier() {
             <SnickeriCardSkeleton key={i} />
           ))}
 
-          {!loading && error && (
-            <RetryError/>
+          {!!error && (
+            <RetryError onRetry={reload} />
           )}
 
           {!loading && !error && items.length === 0 && (

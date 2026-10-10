@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { errorMessage } from "../../lib/errors";
 import Input from "../ui/Input";
 import Textarea from "../ui/Textarea";
 import Button from "../ui/Button";
@@ -51,8 +52,8 @@ export default function ProjectForm({
         mainImage:        images[0],
         additionalImages: images.slice(1),
       });
-    } catch (err: any) {
-      setError(err.message || "Kunde inte spara projekt");
+    } catch (err) {
+      setError(errorMessage(err, "Kunde inte spara projekt"));
     } finally {
       setLoading(false);
     }

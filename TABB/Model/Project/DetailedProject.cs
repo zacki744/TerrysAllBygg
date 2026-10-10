@@ -1,5 +1,5 @@
 ﻿namespace Models.Project;
-public class DetaildProject
+public class DetailedProject
 {
     public required Guid Id { get; init; } = Guid.NewGuid();
     public required string Title { get; init; }

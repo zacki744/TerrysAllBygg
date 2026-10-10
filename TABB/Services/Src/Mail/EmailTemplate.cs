@@ -20,8 +20,8 @@ public static class EmailTemplate
         Namn:        {b.Name}
         E-post:      {b.Email}
         Telefon:     {b.PhoneNumber ?? "–"}
-        Plats:       {b.Placement}{(string.IsNullOrWhiteSpace(b.Otther1) ? "" : $" – {b.Otther1}")}
-        Projekt:     {b.Project}{(string.IsNullOrWhiteSpace(b.Otther2) ? "" : $" – {b.Otther2}")}
+        Plats:       {b.Placement}{(string.IsNullOrWhiteSpace(b.Other1) ? "" : $" – {b.Other1}")}
+        Projekt:     {b.Project}{(string.IsNullOrWhiteSpace(b.Other2) ? "" : $" – {b.Other2}")}
         Adress:      {b.Address}
 
         Beskrivning:

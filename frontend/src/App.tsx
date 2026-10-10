@@ -2,6 +2,7 @@ import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthService } from "./lib/auth";
 import ScrollToTop from "./components/ScrollToTop";
+import PageMeta from "./components/PageMeta";
 import LegacyRedirect from "./components/LegacyRedirect";
 import { projectPath, snickeriPath } from "./lib/routes";
 
@@ -37,7 +38,12 @@ function RequireAuth({ children }: { children: React.ReactNode }) {
 
 // ── Gemensam Suspense-wrapper för admin ────────────────────
 function AdminPage({ children }: { children: React.ReactNode }) {
-  return <Suspense fallback={null}>{children}</Suspense>;
+  return (
+    <Suspense fallback={null}>
+      <PageMeta title="Admin" noIndex />
+      {children}
+    </Suspense>
+  );
 }
 
 // Rutterna utan router — används av både webbläsaren (BrowserRouter nedan)
