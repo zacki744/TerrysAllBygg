@@ -44,8 +44,9 @@ export default function Footer() {
           <p className={styles.footerHeading}>Navigering</p>
           <nav className={styles.footerNav}>
             <Link to="/"           className={styles.footerLink}>Hem</Link>
+            <Link to="/projekt"    className={styles.footerLink}>Projekt</Link>
             <Link to="/snickerier" className={styles.footerLink}>Snickerier</Link>
-            <Link to="/about"      className={styles.footerLink}>Om Oss</Link>
+            <Link to="/about"      className={styles.footerLink}>Om oss</Link>
             <Link to="/book"       className={styles.footerLink}>Boka konsultation</Link>
           </nav>
         </div>

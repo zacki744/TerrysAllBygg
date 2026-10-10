@@ -67,8 +67,8 @@ export default function Book() {
   return (
     <div className={styles.page}>
       <PageMeta
-        title="Boka Konsultation"
-        description="Boka en kostnadsfri konsultation med Terrys Allbygg. Vi återkommer inom 24 timmar."
+        title="Boka kostnadsfri konsultation"
+        description="Berätta om ditt byggprojekt på Österlen – bastu, altan, tillbyggnad eller förråd. Konsultationen är kostnadsfri och vi svarar inom 24 timmar på vardagar."
         canonical="/book"
       />
 
@@ -78,7 +78,7 @@ export default function Book() {
         <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
 
           <header>
-            <h1 className={styles.pageTitle}>Boka Konsultation</h1>
+            <h1 className={styles.pageTitle}>Boka kostnadsfri konsultation</h1>
             <p className={styles.pageSubtitle}>
               Fyll i formuläret nedan så återkommer vi till dig inom 24 timmar.
             </p>

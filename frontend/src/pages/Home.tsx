@@ -10,6 +10,9 @@ import PageMeta from "./../components/PageMeta";
 import styles from "./../pages.module.css";
 import { Check } from "lucide-react";
 import { CONTACT } from "../lib/contact";
+import { SERVICES } from "../lib/services";
+
+const HOME_PROJECT_COUNT = 6;
 
 // Punkter som styrs av inställningar i contact.ts visas bara när de stämmer
 const TRUST_ITEMS = [
@@ -58,7 +61,7 @@ export default function Home() {
     <div className={styles.page}>
       <PageMeta
         canonical="/"
-        description="Terrys Allbygg — lokalt byggföretag i Österlen, Skåne. Vi bygger bastuer, tillbyggnader, förråd, altaner och skräddarsydda snickerier med fokus på kvalitet och hållbarhet."
+        description="Lokalt bygg- och snickeriföretag på Österlen. Vi bygger bastuer, tillbyggnader, altaner, förråd och trädgårdsstudios i Simrishamn, Tomelilla, Ystad och Skåne."
       />
       <Navbar />
 
@@ -75,15 +78,35 @@ export default function Home() {
       <main className={styles.mainWide}>
 
         {/* ── Projekt ── */}
-        <section className={styles.projectsSection}>
-          <h2 className={styles.sectionTitle}>Tidigare projekt</h2>
+        <section className={styles.projectsSection} aria-labelledby="home-projects">
+          <div className={styles.sectionHeader}>
+            <h2 id="home-projects" className={styles.sectionTitle}>Tidigare projekt</h2>
+            <Link to="/projekt" className={styles.sectionLink}>Alla projekt</Link>
+          </div>
           <div className={styles.projectGrid}>
-            {loading && Array.from({ length: 6 }).map((_, i) => <ProjectCardSkeleton key={i} />)}
+            {loading && Array.from({ length: HOME_PROJECT_COUNT }).map((_, i) => <ProjectCardSkeleton key={i} />)}
             {!loading && error && <RetryError />}
-            {!loading && !error && projects.map((p, i) => (
+            {!loading && !error && projects.slice(0, HOME_PROJECT_COUNT).map((p, i) => (
               <ProjectCard key={p.id} {...p} priority={i < 3} />
             ))}
           </div>
+        </section>
+
+        {/* ── Tjänster ── */}
+        <section className={styles.servicesSection} aria-labelledby="home-services">
+          <h2 id="home-services" className={styles.sectionTitle}>Det här bygger vi</h2>
+          <p className={styles.servicesLead}>
+            Vi tar oss an byggprojekt i hela {CONTACT.areaServed.slice(0, -1).join(", ")} och
+            resten av Skåne, från första skiss till färdigt bygge.
+          </p>
+          <ul className={styles.servicesList}>
+            {SERVICES.map((s) => (
+              <li key={s.name}>
+                <span className={styles.servicesName}>{s.name}</span>
+                {s.detail && <span className={styles.servicesDetail}> {s.detail}</span>}
+              </li>
+            ))}
+          </ul>
         </section>
 
         {/* ── CTA ── */}

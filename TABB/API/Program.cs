@@ -165,9 +165,12 @@ try
     // ── Frontend static files ──────────────────────────────
     var frontendPath = Path.Combine(app.Environment.ContentRootPath, "wwwroot", "app");
 
+    // Förrenderade sidor ligger som /about/index.html osv. Utan omdirigering
+    // till "/about/" så att URL:en stämmer med canonical.
     app.UseDefaultFiles(new DefaultFilesOptions
     {
-        FileProvider = new PhysicalFileProvider(frontendPath)
+        FileProvider = new PhysicalFileProvider(frontendPath),
+        RedirectToAppendTrailingSlash = false,
     });
 
     // Vite-bygget: JS/CSS har hash i filnamnet → lång cache.
@@ -237,7 +240,7 @@ try
         var spaPath = context.Request.Path.Value?.TrimEnd('/') ?? "";
         if (spaPath.Length == 0) spaPath = "/";
 
-        string[] exactRoutes  = ["/", "/about", "/book", "/snickerier", "/integritetspolicy",
+        string[] exactRoutes  = ["/", "/about", "/book", "/snickerier", "/projekt", "/integritetspolicy",
                                  "/snickeri", "/projects"];          // gamla URL:er → omdirigeras i React
         string[] prefixRoutes = ["/snickerier/", "/projekt/", "/admin"];
 
@@ -247,8 +250,12 @@ try
         if (!isKnownRoute)
             context.Response.StatusCode = 404;
 
-        var indexPath = Path.Combine(frontendPath, "index.html");
-        context.Response.ContentType = "text/html";
+        // index.spa.html är den tomma SPA-mallen (skapas av scripts/prerender.mjs).
+        // index.html är förrenderad startsida och får inte serveras för andra sidor.
+        var spaTemplate = Path.Combine(frontendPath, "index.spa.html");
+        var indexPath = File.Exists(spaTemplate) ? spaTemplate : Path.Combine(frontendPath, "index.html");
+        context.Response.ContentType = "text/html; charset=utf-8";
+        context.Response.Headers.CacheControl = "no-cache, no-store, must-revalidate";
         return context.Response.SendFileAsync(indexPath);
     });
 

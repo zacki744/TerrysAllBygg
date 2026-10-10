@@ -615,3 +615,83 @@
   gap: 0.5rem;
   color: inherit;
 }
+
+/* ─── Listsidor och sektionslänkar ────────────────────────── */
+
+.listHeader {
+  margin-bottom: 2.5rem;
+}
+
+.sectionHeader .sectionTitle {
+  margin-bottom: 0;
+}
+
+.sectionLink {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--accent-ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ─── Tjänster på startsidan ──────────────────────────────── */
+
+.servicesSection {
+  margin-top: 4.5rem;
+  padding-top: 3rem;
+  border-top: 1px solid var(--border);
+  display: grid;
+  gap: 1rem 3rem;
+}
+
+.servicesLead {
+  max-width: 48ch;
+  line-height: 1.7;
+  color: color-mix(in srgb, var(--foreground) 72%, transparent);
+}
+
+.servicesList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  border-top: 1px solid var(--border);
+}
+
+.servicesList li {
+  padding: 0.875rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.servicesName {
+  font-family: var(--font-display);
+  font-weight: 650;
+  font-size: 1.125rem;
+  color: var(--foreground);
+}
+
+.servicesDetail {
+  color: color-mix(in srgb, var(--foreground) 65%, transparent);
+}
+
+@media (min-width: 900px) {
+  .servicesSection {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+    grid-template-rows: auto 1fr;
+    align-items: start;
+    row-gap: 0;
+  }
+
+  .servicesSection .sectionTitle,
+  .servicesLead {
+    grid-column: 1;
+  }
+
+  .servicesList {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 2rem;
+  }
+}

@@ -13,7 +13,7 @@ export default function Select({
   return (
     <div className={styles.selectWrapper}>
       <select
-        defaultValue=""
+        {...(props.value === undefined ? { defaultValue: "" } : {})}
         className={`${styles.select} ${className}`}
         {...props}
       >

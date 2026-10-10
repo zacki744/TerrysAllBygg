@@ -3,24 +3,16 @@ import { Mail, Phone } from "lucide-react";
 import PageShell from "../components/PageShell";
 import PageMeta from "../components/PageMeta";
 import { CONTACT } from "../lib/contact";
+import { SERVICES } from "../lib/services";
 import styles from "../pages.module.css";
 
-const SERVICES = [
-  "Bastuer — utomhus och inomhus",
-  "Tillbyggnader och ombyggnationer",
-  "Altaner och uteplatser",
-  "Förråd och garage",
-  "Trädgårdsstudios och gästhus",
-  "Skräddarsydda snickerier — framförallt utomhusmöbler",
-  "Renoveringar",
-];
 
 export default function About() {
   return (
     <PageShell>
       <PageMeta
-        title="Om Oss"
-        description="Lär känna Terrys Allbygg — ett lokalt hantverksföretag i Österlen med passion för kvalitet."
+        title="Om oss"
+        description="Terrys Allbygg är ett lokalt hantverksföretag på Österlen som bygger bastuer, tillbyggnader och snickerier. Läs om oss och hur vi arbetar tillsammans med kunden."
         canonical="/about"
       />
 
@@ -49,7 +41,7 @@ export default function About() {
         <h2 className={styles.aboutTitle}>Vad vi bygger</h2>
         <p className={styles.aboutBody}>Vi tar oss an de flesta typer av byggprojekt — stora som små:</p>
         <ul className={styles.aboutList}>
-          {SERVICES.map((s) => <li key={s}>{s}</li>)}
+          {SERVICES.map((s) => <li key={s.name}>{s.name}{s.detail && ` — ${s.detail}`}</li>)}
         </ul>
       </section>
 

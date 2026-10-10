@@ -65,7 +65,7 @@ export default function ImageGallery({ images, title }: Props) {
 
         <img
           src={images[index]}
-          alt={`${title} bild ${index + 1}`}
+          alt={images.length > 1 ? `${title} – bild ${index + 1} av ${images.length}` : title}
           className={`${styles.galleryImage} ${loaded[index] ? styles.cardImageLoaded : styles.cardImageHidden}`}
           onClick={() => setLightboxOpen(true)}
           onLoad={() => markLoaded(index)}
@@ -84,11 +84,13 @@ export default function ImageGallery({ images, title }: Props) {
 
             <div className={styles.galleryDots}>
               {images.map((_, i) => (
-                <span
+                <button
+                  type="button"
                   key={i}
                   className={`${styles.dot} ${i === index ? styles.dotActive : ""}`}
                   onClick={() => setIndex(i)}
-                  style={{ cursor: "pointer" }}
+                  aria-label={`Visa bild ${i + 1}`}
+                  aria-current={i === index ? "true" : undefined}
                 />
               ))}
             </div>
@@ -102,7 +104,7 @@ export default function ImageGallery({ images, title }: Props) {
           <div className={styles.lightboxInner} onClick={(e) => e.stopPropagation()}>
             <img
               src={images[index]}
-              alt={`${title} bild ${index + 1}`}
+              alt={images.length > 1 ? `${title} – bild ${index + 1} av ${images.length}` : title}
               className={styles.lightboxImage}
             />
           </div>

@@ -51,6 +51,10 @@ export default function ProjectsPageContent() {
         title={project.title}
         description={project.description}
         canonical={projectPath(id, project.title)}
+        breadcrumbs={[
+          { name: "Projekt", path: "/projekt" },
+          { name: project.title, path: projectPath(id, project.title) },
+        ]}
         ogImage={project.images[0]}
       />
       <Navbar />
@@ -77,7 +81,7 @@ export default function ProjectsPageContent() {
 
           <div style={{ marginTop: "1.5rem" }}>
             <div>
-                <Link to="/" className={styles.btnGhost}>← Tillbaka till projekt</Link>
+                <Link to="/projekt" className={styles.btnGhost}>← Alla projekt</Link>
             </div>
           </div>
         </div>

@@ -107,6 +107,10 @@ export default function SnickeriPageContent() {
         title={snickeri.title}
         description={snickeri.description}
         canonical={snickeriPath(id, snickeri.title)}
+        breadcrumbs={[
+          { name: "Snickerier", path: "/snickerier" },
+          { name: snickeri.title, path: snickeriPath(id, snickeri.title) },
+        ]}
         ogImage={snickeri.images[0]}
         product={{
           name:        snickeri.title,

@@ -13,6 +13,7 @@ import Snickerier from "./pages/Snickerier";
 import Snickeri   from "./pages/Snickeri";
 import Projects   from "./pages/Projects";
 import Privacy    from "./pages/Privacy";
+import ProjectList from "./pages/ProjectList";
 import NotFound   from "./pages/NotFound";
 
 // ── Admin pages — lazy loaded (aldrig behövda av publika besökare) ──
@@ -39,9 +40,11 @@ function AdminPage({ children }: { children: React.ReactNode }) {
   return <Suspense fallback={null}>{children}</Suspense>;
 }
 
-export default function App() {
+// Rutterna utan router — används av både webbläsaren (BrowserRouter nedan)
+// och förrenderingen vid build (StaticRouter i entry-server.tsx).
+export function AppRoutes() {
   return (
-    <BrowserRouter>
+    <>
       <ScrollToTop />
       <Routes>
 
@@ -51,6 +54,7 @@ export default function App() {
         <Route path="/book"       element={<Book />} />
         <Route path="/snickerier" element={<Snickerier />} />
         <Route path="/snickerier/:id/:slug?" element={<Snickeri />} />
+        <Route path="/projekt"               element={<ProjectList />} />
         <Route path="/projekt/:id/:slug?"    element={<Projects />} />
 
         {/* ── Gamla URL:er → nya (redan delade/indexerade länkar) ── */}
@@ -87,6 +91,14 @@ export default function App() {
         <Route path="*" element={<NotFound />} />
 
       </Routes>
+    </>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AppRoutes />
     </BrowserRouter>
   );
 }
