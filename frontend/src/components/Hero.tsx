@@ -12,6 +12,9 @@ export default function Hero() {
             alt="Terrys Allbygg — byggprojekt i Österlen"
             className={styles.heroBgImage}
             fetchPriority="high"
+            width={1080}
+            height={731}
+            decoding="async"
           />
         </div>
         <div className={styles.heroBgOverlay} aria-hidden />
