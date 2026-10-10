@@ -1033,3 +1033,21 @@
     height: 10rem;
   }
 }
+
+/* ─── Footer: juridisk rad ────────────────────────────────── */
+
+.footerLegal {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.25rem 1rem;
+  font-size: 0.8125rem;
+  color: color-mix(in srgb, var(--foreground) 55%, transparent);
+}
+
+.footerLegal a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}

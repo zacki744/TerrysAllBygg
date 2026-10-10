@@ -8,6 +8,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "../pages.module.css";
 import PageMeta from "../components/PageMeta";
+import PrivacyNotice from "../components/PrivacyNotice";
 
 export default function Book() {
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ export default function Book() {
     address: "",
     description: "",
   });
+  const [privacyAccepted, setPrivacyAccepted] = useState(false);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -37,11 +39,11 @@ export default function Book() {
       const res = await fetch("/api/Booking/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, privacyAccepted }),
       });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-      const data = await res.json();
-      alert(data.Message || "Förfrågan skickad!");
+      alert("Förfrågan skickad!");
       navigate("/");
     } catch (err) {
       console.error(err);
@@ -148,6 +150,13 @@ export default function Book() {
                 required
               />
             </div>
+
+            {/* Integritetsinfo + bekräftelse — full width */}
+            <PrivacyNotice
+              id="book-privacy"
+              checked={privacyAccepted}
+              onChange={setPrivacyAccepted}
+            />
 
             {/* Submit — full width */}
             <div className={styles.formFieldFull}>

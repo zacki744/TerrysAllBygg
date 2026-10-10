@@ -7,6 +7,7 @@ import Input from "../components/ui/Input";
 import Textarea from "../components/ui/Textarea";
 import Button from "../components/ui/Button";
 import PageMeta from "../components/PageMeta";
+import PrivacyNotice from "../components/PrivacyNotice";
 import { formatPrice } from "../lib/formatPrice";
 import styles from "../pages.module.css";
 
@@ -39,6 +40,7 @@ export default function SnickeriPageContent() {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted]   = useState(false);
   const [submitError, setSubmitError] = useState("");
+  const [privacyAccepted, setPrivacyAccepted] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -70,6 +72,7 @@ export default function SnickeriPageContent() {
           snickeriTitle: snickeri.title,
           snickeriPrice: snickeri.price,
           ...form,
+          privacyAccepted,
         }),
       });
       if (!res.ok) throw new Error("Något gick fel");
@@ -164,6 +167,12 @@ export default function SnickeriPageContent() {
                   onChange={handleChange}
                 />
               </div>
+
+              <PrivacyNotice
+                id="snickeri-privacy"
+                checked={privacyAccepted}
+                onChange={setPrivacyAccepted}
+              />
 
               {submitError && (
                 <div className={`${styles.snickeriInquiryError} ${styles.formFieldFull}`}>

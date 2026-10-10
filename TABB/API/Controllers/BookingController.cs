@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Models.Booking;
+using Services.Src.Logging;
 using Services.Src.Mail;
 
 namespace API.Controllers;
@@ -28,7 +29,7 @@ public class BookingController(IEmailService emailService, ILogger<BookingContro
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to process booking request from {Email}", request.Email);
+            _logger.LogError(ex, "Failed to process booking request from {Email}", PiiMask.Email(request.Email));
             return StatusCode(500, new { error = "Failed to send booking email" });
         }
     }

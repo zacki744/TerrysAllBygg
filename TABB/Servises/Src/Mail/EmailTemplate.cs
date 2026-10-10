@@ -5,6 +5,13 @@ namespace Services.Src.Mail;
 
 public static class EmailTemplate
 {
+    private const string PrivacyUrl = "https://terrysallbygg.se/integritetspolicy";
+
+    private const string PrivacyFooter = $@"
+        Dina uppgifter används bara för att besvara din förfrågan.
+        Läs mer om hur vi hanterar dem och om dina rättigheter:
+        {PrivacyUrl}";
+
     // ── Booking ────────────────────────────────────────────
 
     public static string BookingAdmin(BookingRequest b) => $@"
@@ -13,7 +20,8 @@ public static class EmailTemplate
         Namn:        {b.Name}
         E-post:      {b.Email}
         Telefon:     {b.PhoneNumber ?? "–"}
-        Projekt:     {b.Project}
+        Plats:       {b.Placement}{(string.IsNullOrWhiteSpace(b.Otther1) ? "" : $" – {b.Otther1}")}
+        Projekt:     {b.Project}{(string.IsNullOrWhiteSpace(b.Otther2) ? "" : $" – {b.Otther2}")}
         Adress:      {b.Address}
 
         Beskrivning:
@@ -31,6 +39,7 @@ public static class EmailTemplate
         Med vänliga hälsningar,
         Terrys All Bygg
         E-post: info@terrysallbygg.se
+        {PrivacyFooter}
     ";
 
     // ── Snickeri inquiry ───────────────────────────────────
@@ -60,6 +69,7 @@ public static class EmailTemplate
 
         Med vänliga hälsningar,
         Terrys All Bygg
+        {PrivacyFooter}
     ";
 
     // ── Admin invite ───────────────────────────────────────

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using Models.Booking;
 using Models.Mail;
 using Models.Snickeri;
+using Services.Src.Logging;
 
 namespace Services.Src.Mail;
 
@@ -76,7 +77,7 @@ public class EmailService : IEmailService
         {
             _logger.LogError(ex,
                 "Misslyckades att skicka e-post till {Recipient} med ämne '{Subject}'",
-                to, subject);
+                PiiMask.Email(to), subject);
         }
     }
 }

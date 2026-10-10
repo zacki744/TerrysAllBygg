@@ -175,8 +175,14 @@ try
         OnPrepareResponse = ctx =>
         {
             var headers = ctx.Context.Response.Headers;
-            if (ctx.File.Name.EndsWith(".html", StringComparison.OrdinalIgnoreCase))
+            var name = ctx.File.Name;
+            if (name.EndsWith(".html", StringComparison.OrdinalIgnoreCase))
                 headers.CacheControl = "no-cache, no-store, must-revalidate";
+            // robots.txt, sitemap.xml, site.webmanifest saknar hash → kort cache
+            else if (name.EndsWith(".txt", StringComparison.OrdinalIgnoreCase) ||
+                     name.EndsWith(".xml", StringComparison.OrdinalIgnoreCase) ||
+                     name.EndsWith(".webmanifest", StringComparison.OrdinalIgnoreCase))
+                headers.CacheControl = "public, max-age=3600";
             else
                 headers.CacheControl = "public, max-age=31536000, immutable";
         }

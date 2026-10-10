@@ -33,5 +33,12 @@
     <priority>0.7</priority>
     <xhtml:link rel="alternate" hreflang="sv" href="https://terrysallbygg.se/book"/>
   </url>
+    <url>
+    <loc>https://terrysallbygg.se/integritetspolicy</loc>
+    <lastmod>2026-10-10</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="sv" href="https://terrysallbygg.se/integritetspolicy"/>
+  </url>
 
 </urlset>

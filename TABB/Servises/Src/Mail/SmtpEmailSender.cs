@@ -3,6 +3,7 @@ using System.Net.Mail;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Models.Mail;
+using Services.Src.Logging;
 
 namespace Services.Src.Mail;
 
@@ -38,11 +39,11 @@ internal class SmtpEmailSender(IOptions<SmtpSettings> smtpOptions, ILogger<SmtpE
         try
         {
             await client.SendMailAsync(mail);
-            _logger.LogInformation("Email sent to {Recipient} — subject: '{Subject}'", to, subject);
+            _logger.LogInformation("Email sent to {Recipient} — subject: '{Subject}'", PiiMask.Email(to), subject);
         }
         catch (SmtpException ex)
         {
-            _logger.LogError(ex, "SMTP error sending to {Recipient} — subject: '{Subject}'", to, subject);
+            _logger.LogError(ex, "SMTP error sending to {Recipient} — subject: '{Subject}'", PiiMask.Email(to), subject);
             throw; // rethrow so EmailService.TrySendAsync can log it at the right level
         }
     }

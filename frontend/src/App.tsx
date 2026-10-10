@@ -10,6 +10,7 @@ import Book       from "./pages/Book";
 import Snickerier from "./pages/Snickerier";
 import Snickeri   from "./pages/Snickeri";
 import Projects   from "./pages/Projects";
+import Privacy    from "./pages/Privacy";
 import NotFound   from "./pages/NotFound";
 
 // ── Admin pages — lazy loaded (aldrig behövda av publika besökare) ──
@@ -49,6 +50,7 @@ export default function App() {
         <Route path="/snickerier" element={<Snickerier />} />
         <Route path="/snickeri"   element={<Snickeri />} />
         <Route path="/projects"   element={<Projects />} />
+        <Route path="/integritetspolicy" element={<Privacy />} />
 
         {/* ── Admin — public ── */}
         <Route path="/admin/login"         element={<AdminPage><AdminLogin /></AdminPage>} />

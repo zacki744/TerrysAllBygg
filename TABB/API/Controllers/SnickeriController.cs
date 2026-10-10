@@ -2,6 +2,7 @@ using API.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Models.Snickeri;
+using Services.Src.Logging;
 using Services.Src.Mail;
 using Services.Src.Snickerier;
 
@@ -54,7 +55,7 @@ public class SnickeriController(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to process snickeri inquiry from {Email}", request.Email);
+            _logger.LogError(ex, "Failed to process snickeri inquiry from {Email}", PiiMask.Email(request.Email));
             return StatusCode(500, new { error = "Kunde inte skicka förfrågan" });
         }
     }

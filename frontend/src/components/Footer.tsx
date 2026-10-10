@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { CONTACT } from "../lib/contact";
+import { PRIVACY } from "../lib/privacy";
 import styles from "./components.module.css";
 
 export default function Footer() {
@@ -66,6 +67,11 @@ export default function Footer() {
         <p className={styles.footerCopy}>
           © {year} {CONTACT.companyName}. Alla rättigheter förbehållna.
         </p>
+        <div className={styles.footerLegal}>
+          {CONTACT.orgNumber && <span>Org.nr {CONTACT.orgNumber}</span>}
+          {CONTACT.address && <span>{CONTACT.address}</span>}
+          <Link to={PRIVACY.path}>Integritetspolicy</Link>
+        </div>
       </div>
     </footer>
   );

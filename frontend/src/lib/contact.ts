@@ -11,6 +11,11 @@ export const CONTACT = {
   email:       "terrysallbygg@gmail.com",
   emailHref:   "mailto:terrysallbygg@gmail.com",
 
+  // Företagsuppgifter — krävs enligt e-handelslagen (8 §) och visas i
+  // sidfoten och integritetspolicyn. Fyll i innan driftsättning;
+  // tomma fält döljs automatiskt.
+  orgNumber:   "570303939501",
+  address:     "",   // TODO: "Gatuadress, Postnr Ort"
 
   // Sociala medier — lägg till om de finns
   social: {
