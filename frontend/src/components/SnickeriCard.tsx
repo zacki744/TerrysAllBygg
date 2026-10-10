@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import styles from "./components.module.css";
 import { formatPrice } from "../lib/formatPrice";
+import { snickeriPath } from "../lib/routes";
 
 type SnickeriCardProps = {
   id: string;
@@ -23,7 +24,7 @@ export default function SnickeriCard({
   const [loaded, setLoaded] = useState(false);
 
   return (
-    <Link to={`/snickeri?id=${id}`} className={styles.snickeriCardLink}>
+    <Link to={snickeriPath(id, title)} className={styles.snickeriCardLink}>
       <div className={styles.snickeriCard}>
         <div className={styles.snickeriCardImageWrapper}>
           {!loaded && <div className={styles.snickeriCardImagePlaceholder} />}

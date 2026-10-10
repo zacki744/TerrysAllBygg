@@ -2,6 +2,8 @@ import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthService } from "./lib/auth";
 import ScrollToTop from "./components/ScrollToTop";
+import LegacyRedirect from "./components/LegacyRedirect";
+import { projectPath, snickeriPath } from "./lib/routes";
 
 // ── Public pages ───────────────────────────────────────────
 import Home       from "./pages/Home";
@@ -48,8 +50,12 @@ export default function App() {
         <Route path="/about"      element={<About />} />
         <Route path="/book"       element={<Book />} />
         <Route path="/snickerier" element={<Snickerier />} />
-        <Route path="/snickeri"   element={<Snickeri />} />
-        <Route path="/projects"   element={<Projects />} />
+        <Route path="/snickerier/:id/:slug?" element={<Snickeri />} />
+        <Route path="/projekt/:id/:slug?"    element={<Projects />} />
+
+        {/* ── Gamla URL:er → nya (redan delade/indexerade länkar) ── */}
+        <Route path="/snickeri" element={<LegacyRedirect toPath={snickeriPath} />} />
+        <Route path="/projects" element={<LegacyRedirect toPath={projectPath} />} />
         <Route path="/integritetspolicy" element={<Privacy />} />
 
         {/* ── Admin — public ── */}

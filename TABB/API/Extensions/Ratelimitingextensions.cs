@@ -87,18 +87,12 @@ public static class RateLimitingExtensions
         return services;
     }
 
-    // Prefer X-Forwarded-For (set by reverse proxies) over RemoteIpAddress
-    // Falls back to "unknown" if neither is available
+    // Använder anslutningens IP. X-Forwarded-For läses medvetet INTE:
+    // sajten ligger direkt på Simply.com utan reverse proxy, så headern
+    // sätts av klienten själv och skulle låta vem som helst kringgå
+    // gränserna genom att skicka en ny IP i varje anrop.
+    // Om en proxy (t.ex. Cloudflare) läggs till framöver: konfigurera
+    // UseForwardedHeaders med KnownProxies i Program.cs i stället.
     private static string GetClientIp(HttpContext context)
-    {
-        var forwarded = context.Request.Headers["X-Forwarded-For"].FirstOrDefault();
-        if (!string.IsNullOrEmpty(forwarded))
-        {
-            // X-Forwarded-For can be a comma-separated list — take the first (client) IP
-            var ip = forwarded.Split(',')[0].Trim();
-            if (!string.IsNullOrEmpty(ip)) return ip;
-        }
-
-        return context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
-    }
+        => context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
 }

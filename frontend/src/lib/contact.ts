@@ -14,7 +14,8 @@ export const CONTACT = {
   // Företagsuppgifter — krävs enligt e-handelslagen (8 §) och visas i
   // sidfoten och integritetspolicyn. Fyll i innan driftsättning;
   // tomma fält döljs automatiskt.
-  orgNumber:   "570303939501",
+  orgNumber:   "570303-9395",
+  vatNumber:   "SE570303939501",   // momsreg.nr = SE + org.nr + 01
   address:     "",   // TODO: "Gatuadress, Postnr Ort"
 
   // Sociala medier — lägg till om de finns
@@ -25,6 +26,6 @@ export const CONTACT = {
 
   // SEO
   baseUrl:   "https://terrysallbygg.se",
-  ogImage:   "https://terrysallbygg.se/og-image.ico",
+  ogImage:   "https://terrysallbygg.se/og-image.jpg",   // 1200×630, används vid delning
   areaServed: ["Österlen", "Simrishamn", "Tomelilla", "Ystad", "Skåne"],
 } as const;

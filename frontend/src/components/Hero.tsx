@@ -24,7 +24,7 @@ export default function Hero() {
           </h1>
 
           <p className={styles.heroLead}>
-            Terrys All Bygg är ditt lokala bygg och snickeri företag på
+            Terrys Allbygg är ditt lokala bygg- och snickeriföretag på
             Österlen, Skåne. Vi designar och uppför byggprojekt tillsammans
             med kunden såsom bastuer, tillbyggnader, förråd och andra
             specialanpassade lösningar.

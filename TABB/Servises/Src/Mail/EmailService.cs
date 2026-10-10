@@ -53,7 +53,7 @@ public class EmailService : IEmailService
     {
         await TrySendAsync(
             toEmail,
-            "Inbjudan till Terrys All Bygg Admin",
+            "Inbjudan till Terrys Allbygg Admin",
             EmailTemplate.AdminInvite(inviteLink)
         );
     }
@@ -62,7 +62,7 @@ public class EmailService : IEmailService
     {
         await TrySendAsync(
             toEmail,
-            "Återställ ditt lösenord – Terrys All Bygg",
+            "Återställ ditt lösenord – Terrys Allbygg",
             EmailTemplate.PasswordReset(resetLink)
         );
     }

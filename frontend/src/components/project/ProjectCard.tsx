@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import styles from "./../components.module.css";
+import { projectPath } from "../../lib/routes";
 
 interface ProjectCardProps {
   id: string;
@@ -20,7 +21,7 @@ export default function ProjectCard({
   const [loaded, setLoaded] = useState(false);
 
   return (
-    <Link to={`/projects?id=${id}`} className={styles.cardLink}>
+    <Link to={projectPath(id, title)} className={styles.cardLink}>
       <div className={styles.card}>
         <div className={styles.cardImageWrapper}>
           {/* Placeholder visas tills bilden laddats */}

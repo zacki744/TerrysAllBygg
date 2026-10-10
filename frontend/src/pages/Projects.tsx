@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
-import { useSearchParams, Link } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import ImageGallery from "../components/project/ImageGallery";
 import PageMeta from "../components/PageMeta";
+import NotFound from "./NotFound";
+import { projectPath } from "../lib/routes";
 import styles from "../pages.module.css";
 
 interface Project {
@@ -13,8 +15,7 @@ interface Project {
 }
 
 export default function ProjectsPageContent() {
-  const [searchParams] = useSearchParams();
-  const id = searchParams.get("id");
+  const { id } = useParams();
 
   const [project, setProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
@@ -30,13 +31,14 @@ export default function ProjectsPageContent() {
   }, [id]);
 
   // ── State views — share consistent shell ──────────────────
-  if (!id || loading || !project) {
-    const msg = !id ? "Inget projekt valt." : loading ? "Laddar…" : "Projektet hittades inte.";
+  if (!id || (!loading && !project)) return <NotFound />;
+
+  if (loading || !project) {
     return (
       <div className={styles.page}>
         <Navbar />
         <main className={styles.mainWide}>
-          <p className={styles.stateText}>{msg}</p>
+          <p className={styles.stateText}>Laddar…</p>
         </main>
         <Footer />
       </div>
@@ -45,9 +47,12 @@ export default function ProjectsPageContent() {
 
   return (
     <div className={styles.page}>
-      {project && (
-        <PageMeta title={project.title} description={project.description} canonical="/projects" />
-      )}
+      <PageMeta
+        title={project.title}
+        description={project.description}
+        canonical={projectPath(id, project.title)}
+        ogImage={project.images[0]}
+      />
       <Navbar />
 
       {/*

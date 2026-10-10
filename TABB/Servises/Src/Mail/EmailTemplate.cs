@@ -15,7 +15,7 @@ public static class EmailTemplate
     // ── Booking ────────────────────────────────────────────
 
     public static string BookingAdmin(BookingRequest b) => $@"
-        Ny konsultationsförfrågan – Terrys All Bygg
+        Ny konsultationsförfrågan – Terrys Allbygg
 
         Namn:        {b.Name}
         E-post:      {b.Email}
@@ -33,11 +33,11 @@ public static class EmailTemplate
     public static string BookingConfirmation(string name) => $@"
         Hej {name},
 
-        Tack för att du har skickat en konsultationsförfrågan till Terrys All Bygg.
+        Tack för att du har skickat en konsultationsförfrågan till Terrys Allbygg.
         Vi har mottagit din förfrågan och återkommer inom 1–2 arbetsdagar.
 
         Med vänliga hälsningar,
-        Terrys All Bygg
+        Terrys Allbygg
         E-post: info@terrysallbygg.se
         {PrivacyFooter}
     ";
@@ -45,7 +45,7 @@ public static class EmailTemplate
     // ── Snickeri inquiry ───────────────────────────────────
 
     public static string SnickeriInquiryAdmin(SnickeriInquiryRequest r) => $@"
-        Ny förfrågan om snickeri – Terrys All Bygg
+        Ny förfrågan om snickeri – Terrys Allbygg
 
         Titel:   {r.SnickeriTitle}
         Pris:    {r.SnickeriPrice:N0} kr
@@ -68,7 +68,7 @@ public static class EmailTemplate
         Vi återkommer inom 24 timmar.
 
         Med vänliga hälsningar,
-        Terrys All Bygg
+        Terrys Allbygg
         {PrivacyFooter}
     ";
 
@@ -77,7 +77,7 @@ public static class EmailTemplate
     public static string AdminInvite(string inviteLink) => $@"
         Hej,
 
-        Du har bjudits in som administratör för Terrys All Bygg.
+        Du har bjudits in som administratör för Terrys Allbygg.
 
         Klicka på länken nedan för att skapa ditt konto.
         Länken är giltig i 1 timme.
@@ -87,7 +87,7 @@ public static class EmailTemplate
         Om du inte känner igen denna inbjudan kan du ignorera detta mail.
 
         Med vänliga hälsningar,
-        Terrys All Bygg
+        Terrys Allbygg
     ";
 
     // ── Password reset ─────────────────────────────────────
@@ -95,7 +95,7 @@ public static class EmailTemplate
     public static string PasswordReset(string resetLink) => $@"
         Hej,
 
-        En begäran om lösenordsåterställning har gjorts för ditt admin-konto på Terrys All Bygg.
+        En begäran om lösenordsåterställning har gjorts för ditt admin-konto på Terrys Allbygg.
 
         Klicka på länken nedan för att sätta ett nytt lösenord.
         Länken är giltig i 24 timmar.
@@ -105,6 +105,6 @@ public static class EmailTemplate
         Om du inte begärt detta kan du ignorera detta mail — ditt lösenord ändras inte.
 
         Med vänliga hälsningar,
-        Terrys All Bygg
+        Terrys Allbygg
     ";
 }

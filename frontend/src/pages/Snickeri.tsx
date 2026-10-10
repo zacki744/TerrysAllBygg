@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useSearchParams, Link } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import ImageGallery from "../components/project/ImageGallery";
@@ -8,6 +8,8 @@ import Textarea from "../components/ui/Textarea";
 import Button from "../components/ui/Button";
 import PageMeta from "../components/PageMeta";
 import PrivacyNotice from "../components/PrivacyNotice";
+import NotFound from "./NotFound";
+import { snickeriPath } from "../lib/routes";
 import { formatPrice } from "../lib/formatPrice";
 import styles from "../pages.module.css";
 
@@ -31,8 +33,7 @@ const EMPTY_FORM: InquiryForm = {
 };
 
 export default function SnickeriPageContent() {
-  const [searchParams] = useSearchParams();
-  const id = searchParams.get("id");
+  const { id } = useParams();
 
   const [snickeri, setSnickeri] = useState<Snickeri | null>(null);
   const [loading, setLoading]   = useState(true);
@@ -85,13 +86,14 @@ export default function SnickeriPageContent() {
   };
 
   // ── Early returns ───────────────────────────────────────────
-  if (!id || loading || !snickeri) {
-    const msg = !id ? "Inget snickeri valt." : loading ? "Laddar…" : "Snickeriet hittades inte.";
+  if (!id || (!loading && !snickeri)) return <NotFound />;
+
+  if (loading || !snickeri) {
     return (
       <div className={styles.page}>
         <Navbar />
         <main className={styles.mainWide}>
-          <p className={styles.stateText}>{msg}</p>
+          <p className={styles.stateText}>Laddar…</p>
         </main>
         <Footer />
       </div>
@@ -103,7 +105,8 @@ export default function SnickeriPageContent() {
       <PageMeta
         title={snickeri.title}
         description={snickeri.description}
-        canonical="/snickeri"
+        canonical={snickeriPath(id, snickeri.title)}
+        ogImage={snickeri.images[0]}
         product={{
           name:        snickeri.title,
           description: snickeri.description,

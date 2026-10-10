@@ -19,7 +19,7 @@ Log.Logger = new LoggerConfiguration()
 
 try
 {
-    Log.Information("=== Terrys All Bygg API startar ===");
+    Log.Information("=== Terrys Allbygg API startar ===");
 
     var builder = WebApplication.CreateBuilder(args);
 
@@ -227,6 +227,22 @@ try
             context.Response.StatusCode = 404;
             return Task.CompletedTask;
         }
+
+        // Okända sökvägar får index.html (React visar 404-sidan) men med
+        // statuskod 404, så att sökmotorer inte indexerar dem som riktiga
+        // sidor ("soft 404"). Håll listan i synk med <Routes> i App.tsx.
+        var spaPath = context.Request.Path.Value?.TrimEnd('/') ?? "";
+        if (spaPath.Length == 0) spaPath = "/";
+
+        string[] exactRoutes  = ["/", "/about", "/book", "/snickerier", "/integritetspolicy",
+                                 "/snickeri", "/projects"];          // gamla URL:er → omdirigeras i React
+        string[] prefixRoutes = ["/snickerier/", "/projekt/", "/admin"];
+
+        var isKnownRoute = exactRoutes.Contains(spaPath, StringComparer.OrdinalIgnoreCase) ||
+                    prefixRoutes.Any(prefix => spaPath.StartsWith(prefix, StringComparison.OrdinalIgnoreCase));
+
+        if (!isKnownRoute)
+            context.Response.StatusCode = 404;
 
         var indexPath = Path.Combine(frontendPath, "index.html");
         context.Response.ContentType = "text/html";

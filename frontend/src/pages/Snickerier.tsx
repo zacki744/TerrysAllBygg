@@ -32,7 +32,7 @@ export default function Snickerier() {
     <div className={styles.page}>
       <PageMeta
         title="Snickerier"
-        description="Handgjorda snickerier från Terrys AllBygg — stolar, bord, hyllor och mer. Färdiga att beställa i Österlen, Skåne."
+        description="Handgjorda snickerier från Terrys Allbygg — stolar, bord, hyllor och mer. Färdiga att beställa i Österlen, Skåne."
         canonical="/snickerier"
       />
       <Navbar />

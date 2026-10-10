@@ -61,6 +61,9 @@ export default function PageMeta({
     ? `${title} | ${CONTACT.companyName}`
     : `${CONTACT.companyName} — Byggföretag i Österlen, Skåne`;
   const canonicalUrl = `${CONTACT.baseUrl}${canonical}`;
+  // Sociala medier kräver absoluta bild-URL:er
+  const ogImageUrl   = ogImage.startsWith("http") ? ogImage : `${CONTACT.baseUrl}${ogImage}`;
+  const isDefaultOg  = ogImage === CONTACT.ogImage;
 
   const productSchema = product ? {
     "@context": "https://schema.org",
@@ -104,14 +107,14 @@ export default function PageMeta({
       <meta property="og:title"        content={fullTitle} />
       <meta property="og:description"  content={description} />
       <meta property="og:url"          content={canonicalUrl} />
-      <meta property="og:image"        content={ogImage} />
-      <meta property="og:image:width"  content="1200" />
-      <meta property="og:image:height" content="630" />
+      <meta property="og:image"        content={ogImageUrl} />
+      {isDefaultOg && <meta property="og:image:width"  content="1200" />}
+      {isDefaultOg && <meta property="og:image:height" content="630" />}
 
       <meta name="twitter:card"        content="summary_large_image" />
       <meta name="twitter:title"       content={fullTitle} />
       <meta name="twitter:description" content={description} />
-      <meta name="twitter:image"       content={ogImage} />
+      <meta name="twitter:image"       content={ogImageUrl} />
 
       <script type="application/ld+json">{JSON.stringify(localBusinessSchema)}</script>
       {productSchema    && <script type="application/ld+json">{JSON.stringify(productSchema)}</script>}

@@ -69,6 +69,7 @@ export default function Footer() {
         </p>
         <div className={styles.footerLegal}>
           {CONTACT.orgNumber && <span>Org.nr {CONTACT.orgNumber}</span>}
+          {CONTACT.vatNumber && <span>Momsreg.nr {CONTACT.vatNumber}</span>}
           {CONTACT.address && <span>{CONTACT.address}</span>}
           <Link to={PRIVACY.path}>Integritetspolicy</Link>
         </div>

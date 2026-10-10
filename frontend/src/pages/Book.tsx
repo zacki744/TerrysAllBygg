@@ -5,13 +5,15 @@ import Select from "../components/ui/Select";
 import Textarea from "../components/ui/Textarea";
 import Button from "../components/ui/Button";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import styles from "../pages.module.css";
 import PageMeta from "../components/PageMeta";
 import PrivacyNotice from "../components/PrivacyNotice";
+import { CONTACT } from "../lib/contact";
+
+type Status = "idle" | "sending" | "sent" | "error";
 
 export default function Book() {
-  const navigate = useNavigate();
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -24,6 +26,8 @@ export default function Book() {
     description: "",
   });
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
+  const [status, setStatus] = useState<Status>("idle");
+  const [errorMsg, setErrorMsg] = useState("");
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -33,7 +37,9 @@ export default function Book() {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!confirm("Är du säker på att du vill skicka denna förfrågan?")) return;
+    if (status === "sending") return;
+    setStatus("sending");
+    setErrorMsg("");
 
     try {
       const res = await fetch("/api/Booking/create", {
@@ -41,13 +47,19 @@ export default function Book() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...form, privacyAccepted }),
       });
+      if (res.status === 429) {
+        setErrorMsg("Du har skickat flera förfrågningar på kort tid. Vänta en stund eller ring oss direkt.");
+        setStatus("error");
+        return;
+      }
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-      alert("Förfrågan skickad!");
-      navigate("/");
+      setStatus("sent");
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
       console.error(err);
-      alert("Något gick fel. Vänligen försök igen.");
+      setErrorMsg("Förfrågan kunde inte skickas. Försök igen, eller ring oss direkt.");
+      setStatus("error");
     }
   };
 
@@ -57,7 +69,6 @@ export default function Book() {
         title="Boka Konsultation"
         description="Boka en kostnadsfri konsultation med Terrys Allbygg. Vi återkommer inom 24 timmar."
         canonical="/book"
-        noIndex={true}
       />
 
       <Navbar />
@@ -72,6 +83,18 @@ export default function Book() {
             </p>
           </header>
 
+          {status === "sent" ? (
+            <div className={styles.infoBox} role="status">
+              <p className={styles.infoBoxTitle}>✓ Tack, din förfrågan är skickad!</p>
+              <p className={styles.infoBoxText}>
+                Vi har skickat en bekräftelse till {form.email}. Vi hör av oss inom 24 timmar
+                på vardagar. Brådskande? Ring <a href={CONTACT.phoneHref}>{CONTACT.phone}</a>.
+              </p>
+              <div className={styles.formSuccessActions}>
+                <Link to="/" className={styles.btnGhost}>Till startsidan</Link>
+              </div>
+            </div>
+          ) : (
           <form className={styles.bookForm} onSubmit={handleSubmit}>
 
             {/* Row 1: Namn + E-post */}
@@ -158,14 +181,21 @@ export default function Book() {
               onChange={setPrivacyAccepted}
             />
 
+            {status === "error" && (
+              <div className={`${styles.snickeriInquiryError} ${styles.formFieldFull}`} role="alert">
+                {errorMsg} <a href={CONTACT.phoneHref}>{CONTACT.phone}</a>
+              </div>
+            )}
+
             {/* Submit — full width */}
             <div className={styles.formFieldFull}>
-              <Button type="submit" className="w-full">
-                Skicka förfrågan
+              <Button type="submit" className="w-full" disabled={status === "sending"}>
+                {status === "sending" ? "Skickar…" : "Skicka förfrågan"}
               </Button>
             </div>
 
           </form>
+          )}
 
           <div className={styles.infoBox}>
             <h3 className={styles.infoBoxTitle}>Kontaktinformation</h3>
