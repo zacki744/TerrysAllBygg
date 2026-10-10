@@ -153,7 +153,10 @@ try
         };
     });
 
-    // ── Exception handler — FIRST in pipeline ──────────────
+    // ── Säkerhetsheaders — först, så att även felsvar får dem ──
+    app.UseMiddleware<SecurityHeadersMiddleware>();
+
+    // ── Exception handler ──────────────────────────────────
     app.UseMiddleware<GlobalExceptionHandler>();
 
     app.UseHttpsRedirection();

@@ -51,12 +51,12 @@ public class SnickeriController(
         try
         {
             await _emailService.SendSnickeriInquiryAsync(request);
-            return Ok(new { message = "Förfrågan skickad!" });
+            return Ok(new { message = "FÃ¶rfrÃ¥gan skickad!" });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to process snickeri inquiry from {Email}", PiiMask.Email(request.Email));
-            return StatusCode(500, new { error = "Kunde inte skicka förfrågan" });
+            return StatusCode(500, new { error = "Kunde inte skicka fÃ¶rfrÃ¥gan" });
         }
     }
 }
