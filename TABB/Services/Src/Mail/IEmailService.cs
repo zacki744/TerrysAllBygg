@@ -10,6 +10,6 @@ public interface IEmailService
     // Kastar om mejlet till admin inte går iväg — då ska kunden få ett fel och
     // uppmanas ringa, i stället för ett "Skickat!" som ingen läser.
     Task SendSnickeriInquiryAsync(SnickeriInquiryRequest inquiry, DetailedSnickeri snickeri);
-    Task SendInviteEmailAsync(string toEmail, string inviteLink);
-    Task SendPasswordResetEmailAsync(string toEmail, string resetLink);
+    Task SendInviteEmailAsync(string toEmail, string inviteLink, int validHours);
+    Task SendPasswordResetEmailAsync(string toEmail, string resetLink, int validHours);
 }

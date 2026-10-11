@@ -77,6 +77,8 @@ Gamla adresser (`/projects?id=…`, `/snickeri?id=…`) omdirigeras till de nya.
 - **Konsultationsförfrågan** — skickar bekräftelse till kunden + notifiering till Terry
 - **Snickeri-förfrågan** — kunden anger namn, e-post och ev. önskemål; Terry meddelas med snickeriets titel och pris
 
+Alla mejl skickas som HTML i sajtens stil (logga, färger, sidfot) med en textversion bredvid (`multipart/alternative`). Innehållet i varje mejl beskrivs i `EmailTemplate.cs` som block (rubrik, stycken, fält, knappar), och `EmailLayout.cs` gör om samma block till både HTML och text. Mejlen till Terry har kunden som svarsadress och knappar för att svara eller ringa.
+
 ### Admin-panel (`/admin`)
 
 - Inloggning via JWT-cookie (httpOnly, Secure, SameSite=Strict)
@@ -245,6 +247,16 @@ cd TABB/API && dotnet publish -c Release
 5. Ta bort `app_offline.htm`.
 
 `uploads/` rörs aldrig vid deploy.
+
+**Uppladdningsgräns (engångsinställning):** IIS släpper som standard bara igenom ca 30 MB per anrop. Lägg in gränsen i serverns `web.config`, inuti `<system.webServer>`, så att stora mobilbilder går att ladda upp:
+
+```xml
+<security>
+  <requestFiltering>
+    <requestLimits maxAllowedContentLength="52428800" />
+  </requestFiltering>
+</security>
+```
 
 ---
 

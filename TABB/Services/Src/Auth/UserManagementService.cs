@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Models.Admin;
 using Services.Src.DB;
+using Services.Src.Logging;
 using Services.Src.Mail;
 
 namespace Services.Src.Auth;
@@ -14,7 +15,7 @@ public class UserManagementService : IUserManagementService
     private readonly ILogger<UserManagementService> _logger;
 
     private const int InviteExpiryHours = 1;
-    private const int ResetExpiryHours = 24;
+    private const int ResetExpiryHours = 2;
 
     public UserManagementService(
         IDatabase db,
@@ -57,8 +58,16 @@ public class UserManagementService : IUserManagementService
 
     // ── Invite flow ────────────────────────────────────────
 
-    public async Task InviteAdminAsync(string email, CancellationToken ct = default)
+    public async Task<bool> InviteAdminAsync(string email, CancellationToken ct = default)
     {
+        // email är UNIQUE i admin_users — en inbjudan till en befintlig admin
+        // skulle annars krascha först när den accepteras.
+        if (await _db.ReadSingleAsync<AdminUser>("admin_users", new { Email = email }, ct) != null)
+        {
+            _logger.LogWarning("Inbjudan stoppad — {Email} är redan admin", PiiMask.Email(email));
+            return false;
+        }
+
         // Delete any existing invitation for this email
         await _db.DeleteAsync("admin_invitations", new { Email = email }, ct);
 
@@ -67,7 +76,7 @@ public class UserManagementService : IUserManagementService
         {
             Id = Guid.NewGuid().ToString(),
             Email = email,
-            Token = token,
+            Token = HashToken(token),   // bara hashen sparas — den riktiga token finns bara i mejlet
             ExpiresAt = DateTime.UtcNow.AddHours(InviteExpiryHours)
         };
 
@@ -76,15 +85,16 @@ public class UserManagementService : IUserManagementService
         var baseUrl = _config["App:BaseUrl"] ?? "https://terrysallbygg.se";
         var link = $"{baseUrl}/admin/accept-invite?token={token}";
 
-        await _email.SendInviteEmailAsync(email, link);
-        _logger.LogInformation("Inbjudan skickad till {Email}", email);
+        await _email.SendInviteEmailAsync(email, link, InviteExpiryHours);
+        _logger.LogInformation("Inbjudan skickad till {Email}", PiiMask.Email(email));
+        return true;
     }
 
     public async Task<AdminInvitation?> GetInvitationByTokenAsync(string token, CancellationToken ct = default)
     {
         var invitation = await _db.ReadSingleAsync<AdminInvitation>(
             "admin_invitations",
-            new { Token = token },
+            new { Token = HashToken(token) },
             ct
         );
 
@@ -103,6 +113,14 @@ public class UserManagementService : IUserManagementService
             return false;
         }
 
+        // Kontot kan ha skapats via en tidigare inbjudan (email är UNIQUE)
+        if (await _db.ReadSingleAsync<AdminUser>("admin_users", new { invitation.Email }, ct) != null)
+        {
+            await _db.DeleteAsync("admin_invitations", new { invitation.Id }, ct);
+            _logger.LogWarning("Inbjudan för befintlig admin {Email} ignorerad", PiiMask.Email(invitation.Email));
+            return false;
+        }
+
         // Create the admin user
         var newUser = new
         {
@@ -115,9 +133,9 @@ public class UserManagementService : IUserManagementService
         await _db.InsertAsync("admin_users", newUser, ct);
 
         // Delete the used invitation
-        await _db.DeleteAsync("admin_invitations", new { Token = token }, ct);
+        await _db.DeleteAsync("admin_invitations", new { invitation.Id }, ct);
 
-        _logger.LogInformation("Nytt admin-konto skapat för {Email}", invitation.Email);
+        _logger.LogInformation("Nytt admin-konto skapat för {Email}", PiiMask.Email(invitation.Email));
         return true;
     }
 
@@ -134,7 +152,7 @@ public class UserManagementService : IUserManagementService
         if (user == null)
         {
             // Don't reveal whether the email exists
-            _logger.LogWarning("Återställning begärd för okänd e-post {Email}", email);
+            _logger.LogWarning("Återställning begärd för okänd e-post {Email}", PiiMask.Email(email));
             return true; // return true to avoid email enumeration
         }
 
@@ -146,7 +164,7 @@ public class UserManagementService : IUserManagementService
         {
             Id = Guid.NewGuid().ToString(),
             AdminUserId = user.Id,
-            Token = token,
+            Token = HashToken(token),
             ExpiresAt = DateTime.UtcNow.AddHours(ResetExpiryHours)
         };
 
@@ -155,8 +173,8 @@ public class UserManagementService : IUserManagementService
         var baseUrl = _config["App:BaseUrl"] ?? "https://terrysallbygg.se";
         var link = $"{baseUrl}/admin/reset-password?token={token}";
 
-        await _email.SendPasswordResetEmailAsync(email, link);
-        _logger.LogInformation("Återställningslänk skickad till {Email}", email);
+        await _email.SendPasswordResetEmailAsync(email, link, ResetExpiryHours);
+        _logger.LogInformation("Återställningslänk skickad till {Email}", PiiMask.Email(email));
         return true;
     }
 
@@ -164,7 +182,7 @@ public class UserManagementService : IUserManagementService
     {
         var resetToken = await _db.ReadSingleAsync<PasswordResetToken>(
             "password_reset_tokens",
-            new { Token = token },
+            new { Token = HashToken(token) },
             ct
         );
 
@@ -184,13 +202,22 @@ public class UserManagementService : IUserManagementService
         );
 
         // Delete the used token
-        await _db.DeleteAsync("password_reset_tokens", new { Token = token }, ct);
+        await _db.DeleteAsync("password_reset_tokens", new { resetToken.Id }, ct);
 
         _logger.LogInformation("Lösenord återställt för admin {UserId}", resetToken.AdminUserId);
         return true;
     }
 
     // ── Helpers ────────────────────────────────────────────
+
+    /// <summary>
+    /// SHA-256 av token, hex (64 tecken). Token är 48 slumpmässiga byte, så ett
+    /// snabbt hash räcker (ingen BCrypt behövs). Läcker databasen kan ingen
+    /// använda de sparade värdena för att ta över ett konto.
+    /// </summary>
+    public static string HashToken(string token) =>
+        Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(
+            System.Text.Encoding.UTF8.GetBytes(token)));
 
     private static string GenerateSecureToken()
     {

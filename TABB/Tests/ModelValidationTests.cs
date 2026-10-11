@@ -61,13 +61,17 @@ public class ModelValidationTests
 
         var mail = EmailTemplate.BookingAdmin(booking);
 
-        Assert.Contains("annat – Bakom ladan", mail);
-        Assert.Contains("annat – Hönshus", mail);
+        Assert.Contains("annat – Bakom ladan", mail.Text);
+        Assert.Contains("annat – Hönshus", mail.Html);
     }
 
     [Fact]
     public void Bekräftelsemejlet_länkar_till_integritetspolicyn()
-        => Assert.Contains("https://terrysallbygg.se/integritetspolicy", EmailTemplate.BookingConfirmation("Anna"));
+    {
+        var mail = EmailTemplate.BookingConfirmation("Anna");
+        Assert.Contains("https://terrysallbygg.se/integritetspolicy", mail.Text);
+        Assert.Contains("https://terrysallbygg.se/integritetspolicy", mail.Html);
+    }
 
     [Fact]
     public void För_långa_fält_i_bokningen_är_ogiltiga()

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Models.Admin;
 using Services.Src.Auth;
+using Services.Src.Logging;
 
 namespace API.Controllers.Admin;
 
@@ -34,12 +35,13 @@ public class UserManagementController(
 
         try
         {
-            await _userService.InviteAdminAsync(request.Email, ct);
+            if (!await _userService.InviteAdminAsync(request.Email, ct))
+                return Conflict(new { error = "Det finns redan ett admin-konto med den e-postadressen" });
             return Ok(new { message = $"Inbjudan skickad till {request.Email}" });
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Fel vid inbjudan av {Email}", request.Email);
+            _logger.LogError(ex, "Fel vid inbjudan av {Email}", PiiMask.Email(request.Email));
             return StatusCode(500, new { error = "Kunde inte skicka inbjudan" });
         }
     }

@@ -47,32 +47,24 @@ public class EmailService : IEmailService
             EmailTemplate.SnickeriInquiryAdmin(inquiry, snickeri), replyTo: inquiry.Email);
 
         await TrySendAsync(inquiry.Email, "Vi har mottagit din förfrågan",
-            EmailTemplate.SnickeriInquiryConfirmation(inquiry.Name, snickeri.Title, snickeri.Price));
+            EmailTemplate.SnickeriInquiryConfirmation(inquiry.Name, snickeri));
     }
 
-    public async Task SendInviteEmailAsync(string toEmail, string inviteLink)
-    {
-        await TrySendAsync(
-            toEmail,
-            "Inbjudan till Terrys Allbygg Admin",
-            EmailTemplate.AdminInvite(inviteLink)
-        );
-    }
+    // Inbjudan och återställning skickas utan TrySend: misslyckas de ska admin
+    // se ett fel i stället för "skickad" när inget mejl kom fram.
+    public Task SendInviteEmailAsync(string toEmail, string inviteLink, int validHours) =>
+        _sender.SendAsync(toEmail, "Inbjudan till Terrys Allbygg Admin",
+            EmailTemplate.AdminInvite(inviteLink, validHours));
 
-    public async Task SendPasswordResetEmailAsync(string toEmail, string resetLink)
-    {
-        await TrySendAsync(
-            toEmail,
-            "Återställ ditt lösenord – Terrys Allbygg",
-            EmailTemplate.PasswordReset(resetLink)
-        );
-    }
+    public Task SendPasswordResetEmailAsync(string toEmail, string resetLink, int validHours) =>
+        _sender.SendAsync(toEmail, "Återställ ditt lösenord – Terrys Allbygg",
+            EmailTemplate.PasswordReset(resetLink, validHours));
 
-    private async Task TrySendAsync(string to, string subject, string body)
+    private async Task TrySendAsync(string to, string subject, MailContent content)
     {
         try
         {
-            await _sender.SendAsync(to, subject, body);
+            await _sender.SendAsync(to, subject, content);
         }
         catch (Exception ex)
         {

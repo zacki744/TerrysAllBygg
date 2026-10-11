@@ -8,7 +8,7 @@ public interface IUserManagementService
     Task<bool> DeleteAdminAsync(string id, CancellationToken ct = default);
 
     // Invite flow
-    Task InviteAdminAsync(string email, CancellationToken ct = default);
+    Task<bool> InviteAdminAsync(string email, CancellationToken ct = default);   // false = redan admin
     Task<bool> AcceptInviteAsync(string token, string password, CancellationToken ct = default);
     Task<AdminInvitation?> GetInvitationByTokenAsync(string token, CancellationToken ct = default);
 

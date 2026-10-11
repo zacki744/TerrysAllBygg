@@ -1,5 +1,7 @@
 ﻿using System.Net;
 using System.Net.Mail;
+using System.Net.Mime;
+using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Models.Mail;
@@ -12,7 +14,7 @@ internal class SmtpEmailSender(IOptions<SmtpSettings> smtpOptions, ILogger<SmtpE
     private readonly SmtpSettings _smtp = smtpOptions.Value;
     private readonly ILogger<SmtpEmailSender> _logger = logger;
 
-    public async Task SendAsync(string to, string subject, string body, bool isHtml = false, string? replyTo = null)
+    public async Task SendAsync(string to, string subject, MailContent content, string? replyTo = null)
     {
         if (string.IsNullOrEmpty(to))
             throw new ArgumentException("Recipient email address is required", nameof(to));
@@ -26,13 +28,20 @@ internal class SmtpEmailSender(IOptions<SmtpSettings> smtpOptions, ILogger<SmtpE
             Credentials = new NetworkCredential(_smtp.UserName, _smtp.Password)
         };
 
+        // Textversionen är huvuddelen och HTML läggs till som alternativ vy.
+        // Det ger multipart/alternative: klienter som visar HTML visar den
+        // stylade versionen, övriga (och spamfilter) har en ren text att läsa.
         using var mail = new MailMessage
         {
-            From = new MailAddress(_smtp.From),
+            From = new MailAddress(_smtp.From, "Terrys Allbygg"),
             Subject = subject,
-            Body = body,
-            IsBodyHtml = isHtml
+            SubjectEncoding = Encoding.UTF8,
+            Body = content.Text,
+            BodyEncoding = Encoding.UTF8,
+            IsBodyHtml = false
         };
+        mail.AlternateViews.Add(
+            AlternateView.CreateAlternateViewFromString(content.Html, Encoding.UTF8, MediaTypeNames.Text.Html));
 
         mail.To.Add(to);
         if (!string.IsNullOrWhiteSpace(replyTo))

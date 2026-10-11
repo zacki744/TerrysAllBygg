@@ -376,7 +376,7 @@ Bilder lagras som sökvägar i databasen — **inte som binärdata**. Filer spar
 
 ```
 Admin → POST /api/admin/users/invite { email }
-  → Generera URL-säker base64-token (48 bytes)
+  → Generera URL-säker base64-token (48 bytes); bara SHA-256-hashen sparas i databasen
   → Spara i admin_invitations med ExpiresAt = UtcNow + 1h
   → Skicka e-post med länk: {baseUrl}/admin/accept-invite?token=...
 

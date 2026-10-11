@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Models.Admin;
 using Services.Src.Auth;
+using Services.Src.Logging;
 
 namespace API.Controllers.Admin;
 
@@ -27,7 +28,7 @@ public class AuthController(IAuthService authService, ILogger<AuthController> lo
             var response = await _authService.LoginAsync(request);
             if (response == null)
             {
-                _logger.LogWarning("Misslyckat inloggningsförsök för {Email}", request.Email);
+                _logger.LogWarning("Misslyckat inloggningsförsök för {Email}", PiiMask.Email(request.Email));
                 return Unauthorized(new { error = "Fel e-post eller lösenord" });
             }
 
@@ -40,14 +41,14 @@ public class AuthController(IAuthService authService, ILogger<AuthController> lo
                 Path = "/"
             });
 
-            _logger.LogInformation("Inloggning lyckades för {Email}", request.Email);
+            _logger.LogInformation("Inloggning lyckades för {Email}", PiiMask.Email(request.Email));
 
             // Return email (not token) for display purposes
             return Ok(new { email = response.Email });
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Fel vid inloggning för {Email}", request.Email);
+            _logger.LogError(ex, "Fel vid inloggning för {Email}", PiiMask.Email(request.Email));
             return StatusCode(500, new { error = "Inloggning misslyckades" });
         }
     }

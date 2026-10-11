@@ -118,6 +118,16 @@ try
                 if (context.Request.Cookies.ContainsKey("auth_token"))
                     context.Token = context.Request.Cookies["auth_token"];
                 return Task.CompletedTask;
+            },
+
+            // En JWT är giltig tills den går ut. Kontrollera därför att kontot
+            // fortfarande finns, så att en raderad admin blir utelåst direkt.
+            OnTokenValidated = async context =>
+            {
+                var userId = context.Principal?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                var auth = context.HttpContext.RequestServices.GetRequiredService<Services.Src.Auth.IAuthService>();
+                if (userId == null || !await auth.UserExistsAsync(userId, context.HttpContext.RequestAborted))
+                    context.Fail("Kontot finns inte längre");
             }
         };
     });
@@ -129,10 +139,16 @@ try
     builder.Services.AddControllers();
     builder.Services.AddHealthChecks();
 
-    // ── Kestrel — tillåt 50 MB uploads ────────────────────
+    // ── Uppladdningsgräns 50 MB ───────────────────────────
+    // Kestrel gäller lokalt. På Simply.com körs appen i IIS (in-process) och
+    // då gäller IISServerOptions — plus requestLimits i web.config, se README.
     builder.Services.Configure<Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServerOptions>(options =>
     {
         options.Limits.MaxRequestBodySize = 52_428_800; // 50 MB
+    });
+    builder.Services.Configure<Microsoft.AspNetCore.Builder.IISServerOptions>(options =>
+    {
+        options.MaxRequestBodySize = 52_428_800;
     });
 
     var app = builder.Build();
