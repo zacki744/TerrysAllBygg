@@ -17,6 +17,8 @@ import Projects   from "./pages/Projects";
 import Privacy    from "./pages/Privacy";
 import ProjectList from "./pages/ProjectList";
 import NotFound   from "./pages/NotFound";
+import Services   from "./pages/Services";
+import Service    from "./pages/Service";
 
 // ── Admin pages — lazy loaded (aldrig behövda av publika besökare) ──
 const AdminLogin   = lazy(() => import("./pages/admin/AdminLogin"));
@@ -65,6 +67,8 @@ export function AppRoutes() {
         <Route path="/snickerier/:id/:slug?" element={<Snickeri />} />
         <Route path="/projekt"               element={<ProjectList />} />
         <Route path="/projekt/:id/:slug?"    element={<Projects />} />
+        <Route path="/tjanster"              element={<Services />} />
+        <Route path="/tjanster/:slug"        element={<Service />} />
 
         {/* ── Gamla URL:er → nya (redan delade/indexerade länkar) ── */}
         <Route path="/snickeri" element={<LegacyRedirect toPath={snickeriPath} />} />

@@ -48,6 +48,7 @@ export default function Footer() {
           <p className={styles.footerHeading}>Navigering</p>
           <nav className={styles.footerNav} aria-label="Sidfot">
             <Link to="/"           className={styles.footerLink}>Hem</Link>
+            <Link to="/tjanster"   className={styles.footerLink}>Tjänster</Link>
             <Link to="/projekt"    className={styles.footerLink}>Projekt</Link>
             <Link to="/snickerier" className={styles.footerLink}>Snickerier</Link>
             <Link to="/about"      className={styles.footerLink}>Om oss</Link>

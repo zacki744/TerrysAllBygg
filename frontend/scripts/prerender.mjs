@@ -14,8 +14,9 @@ const root    = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..")
 const distDir = path.join(root, "dist");
 const ssrDir  = path.join(root, "dist-ssr");
 
-// Håll i synk med StaticPaths i TABB/API/Controllers/SitemapController.cs
-const ROUTES = ["/", "/projekt", "/snickerier", "/about", "/book", "/integritetspolicy"];
+// Fasta sidor. Sitemapen (SitemapController) läser vilka sidor som
+// förrenderats, så nya sidor här hamnar där automatiskt.
+const STATIC_ROUTES = ["/", "/projekt", "/snickerier", "/about", "/book", "/integritetspolicy"];
 
 // ── Webbplatsinställningar ────────────────────────────────
 // Hämtas från den publicerade sajten så att förrenderad HTML visar det Terry
@@ -50,7 +51,8 @@ const template = fs.readFileSync(path.join(distDir, "index.html"), "utf-8")
   .replace("</body>", `${settingsTag}</body>`);
 fs.writeFileSync(path.join(distDir, "index.spa.html"), template);
 
-const { render } = await import(pathToFileURL(path.join(ssrDir, "entry-server.js")).href);
+const { render, serviceRoutes } = await import(pathToFileURL(path.join(ssrDir, "entry-server.js")).href);
+const ROUTES = [...STATIC_ROUTES, ...serviceRoutes];
 
 // Taggar i index.html som sidan själv sätter via <PageMeta> tas bort ur mallen
 const OWNED_BY_PAGE = [

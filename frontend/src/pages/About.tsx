@@ -3,7 +3,7 @@ import { Mail, Phone } from "lucide-react";
 import PageShell from "../components/PageShell";
 import PageMeta from "../components/PageMeta";
 import { CONTACT } from "../lib/contact";
-import { SERVICES } from "../lib/services";
+import { SERVICES, servicePath } from "../lib/services";
 import styles from "../pages.module.css";
 import { useSettings } from "../lib/settingsContext";
 import { paragraphs } from "../lib/settings";
@@ -38,7 +38,9 @@ export default function About() {
         <h2 className={styles.aboutTitle}>Vad vi bygger</h2>
         <p className={styles.aboutBody}>Vi tar oss an de flesta typer av byggprojekt — stora som små:</p>
         <ul className={styles.aboutList}>
-          {SERVICES.map((s) => <li key={s.name}>{s.name}{s.detail && ` — ${s.detail}`}</li>)}
+          {SERVICES.map((s) => (
+            <li key={s.slug}><Link to={servicePath(s.slug)}>{s.name}</Link>{s.detail && ` – ${s.detail}`}</li>
+          ))}
         </ul>
       </section>
 

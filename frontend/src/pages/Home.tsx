@@ -13,7 +13,7 @@ import { Check, Star } from "lucide-react";
 import { useSettings } from "../lib/settingsContext";
 import { trustItems, reviewsUrl } from "../lib/settings";
 import { CONTACT } from "../lib/contact";
-import { SERVICES } from "../lib/services";
+import { SERVICES, SERVICES_PATH, servicePath } from "../lib/services";
 
 const HOME_PROJECT_COUNT = 6;
 
@@ -72,12 +72,15 @@ export default function Home() {
           </p>
           <ul className={styles.servicesList}>
             {SERVICES.map((s) => (
-              <li key={s.name}>
-                <span className={styles.servicesName}>{s.name}</span>
-                {s.detail && <span className={styles.servicesDetail}> {s.detail}</span>}
+              <li key={s.slug}>
+                <Link to={servicePath(s.slug)} className={styles.servicesLink}>
+                  <span className={styles.servicesName}>{s.name}</span>
+                  {s.detail && <span className={styles.servicesDetail}> {s.detail}</span>}
+                </Link>
               </li>
             ))}
           </ul>
+          <Link to={SERVICES_PATH} className={`${styles.sectionLink} ${styles.servicesMore}`}>Läs mer om våra tjänster</Link>
         </section>
 
         {/* ── Omdömen (slås på i admin → Inställningar) ── */}

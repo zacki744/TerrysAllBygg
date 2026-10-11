@@ -8,6 +8,8 @@ import { projectPath, bookPathFor } from "../lib/routes";
 import { Phone } from "lucide-react";
 import ProjectCard from "../components/project/ProjectCard";
 import { CONTACT } from "../lib/contact";
+import { paragraphs } from "../lib/settings";
+import { serviceForProject, servicePath } from "../lib/services";
 import RetryError from "../components/RetryError";
 import { useFetch } from "../hooks/useFetch";
 import { API, isNotFound, type ProjectDetail, type ProjectOverview } from "../lib/api";
@@ -35,6 +37,8 @@ export default function ProjectsPageContent() {
       </div>
     );
   }
+
+  const service = serviceForProject(project.title, project.description);
 
   return (
     <div className={styles.page}>
@@ -67,7 +71,14 @@ export default function ProjectsPageContent() {
         <div className={styles.projectDetailMain}>
           <section className={styles.descriptionSection}>
             <h2 className={styles.descriptionTitle}>Beskrivning</h2>
-            <p className={styles.descriptionText}>{project.description}</p>
+            {paragraphs(project.description).map((p, i) => (
+              <p key={i} className={styles.descriptionText}>{p}</p>
+            ))}
+            {service && (
+              <p className={styles.descriptionText}>
+                Läs mer om <Link to={servicePath(service.slug)}>{service.name.toLowerCase()}</Link> och hur vi arbetar.
+              </p>
+            )}
           </section>
 
           {/* Nästa steg för den som gillar projektet */}

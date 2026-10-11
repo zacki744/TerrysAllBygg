@@ -19,6 +19,7 @@ import { useFetch } from "../hooks/useFetch";
 import { API, isNotFound, type SnickeriDetail } from "../lib/api";
 import { formatPrice } from "../lib/formatPrice";
 import styles from "../pages.module.css";
+import { paragraphs } from "../lib/settings";
 
 interface InquiryForm {
   name: string;
@@ -125,7 +126,9 @@ export default function SnickeriPageContent() {
 
         <section className={styles.descriptionSection}>
           <h2 className={styles.descriptionTitle}>Beskrivning</h2>
-          <p className={styles.descriptionText}>{snickeri.description}</p>
+          {paragraphs(snickeri.description).map((p, i) => (
+            <p key={i} className={styles.descriptionText}>{p}</p>
+          ))}
         </section>
 
         <section className={styles.descriptionSection}>

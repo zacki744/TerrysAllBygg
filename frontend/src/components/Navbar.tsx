@@ -5,6 +5,7 @@ import styles from "./components.module.css";
 
 const links = [
   { href: "/",           label: "Hem" },
+  { href: "/tjanster",   label: "Tjänster" },
   { href: "/projekt",    label: "Projekt" },
   { href: "/snickerier", label: "Snickerier" },
   { href: "/about",      label: "Om oss" },

@@ -22,14 +22,16 @@ namespace API.Controllers;
 public class SitemapController(
     IProjectsService projectsService,
     ISnickeriService snickeriService,
+    IWebHostEnvironment environment,
     IConfiguration config) : ControllerBase
 {
     private static readonly XNamespace Ns = "http://www.sitemaps.org/schemas/sitemap/0.9";
     private static readonly XNamespace ImageNs = "http://www.google.com/schemas/sitemap-image/1.1";
 
-    // Fasta sidor som ska indexeras — håll i synk med App.tsx
+    // Reserv om det förrenderade bygget saknas (t.ex. lokalt utan frontend-bygge).
+    // I drift hämtas listan från de förrenderade sidorna, se PrerenderedPaths.
     private static readonly string[] StaticPaths =
-        ["/", "/projekt", "/snickerier", "/about", "/book", "/integritetspolicy"];
+        ["/", "/tjanster", "/projekt", "/snickerier", "/about", "/book", "/integritetspolicy"];
 
     [HttpGet("/sitemap.xml")]
     [ResponseCache(Duration = 3600)]
@@ -42,7 +44,9 @@ public class SitemapController(
 
         var urls = new List<XElement>();
 
-        urls.AddRange(StaticPaths.Select(path => Url(baseUrl + path)));
+        var frontend = Path.Combine(environment.ContentRootPath, "wwwroot", "app");
+        var pages = PrerenderedPaths(frontend);
+        urls.AddRange((pages.Count > 0 ? pages : StaticPaths).Select(path => Url(baseUrl + path)));
 
         urls.AddRange(projects.Select(p =>
             Url($"{baseUrl}/projekt/{p.Id}/{Slugify(p.Title)}", AbsoluteImage(baseUrl, p.Image))));
@@ -57,6 +61,23 @@ public class SitemapController(
                 urls));
 
         return Content(doc.Declaration + "\n" + doc.Root, "application/xml", Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Sidorna som förrenderats vid bygget (scripts/prerender.mjs): varje mapp
+    /// med en index.html blir en URL, t.ex. tjanster/bastu/index.html →
+    /// /tjanster/bastu. Nya fasta sidor hamnar då i sitemapen automatiskt.
+    /// </summary>
+    internal static List<string> PrerenderedPaths(string frontendRoot)
+    {
+        if (!Directory.Exists(frontendRoot)) return [];
+
+        return Directory.EnumerateFiles(frontendRoot, "index.html", SearchOption.AllDirectories)
+            .Select(file => Path.GetRelativePath(frontendRoot, Path.GetDirectoryName(file)!))
+            .Where(dir => !dir.Split(Path.DirectorySeparatorChar).Any(part => part.StartsWith('.') && part != "."))
+            .Select(dir => dir == "." ? "/" : "/" + dir.Replace(Path.DirectorySeparatorChar, '/'))
+            .OrderBy(path => path == "/" ? "" : path, StringComparer.Ordinal)
+            .ToList();
     }
 
     private static XElement Url(string loc, string? image = null)

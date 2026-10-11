@@ -17,6 +17,26 @@ import { FORM_LIMITS } from "../lib/formLimits";
 
 type Status = "idle" | "sending" | "sent" | "error";
 
+// Värdena skickas till servern och syns i mejlet till Terry.
+// Tjänstesidorna länkar hit med ?typ=<värde> (se bookType i lib/services.ts).
+const PROJECT_TYPES = [
+  { value: "altan",       label: "Altan" },
+  { value: "garage",      label: "Garage" },
+  { value: "friggebod",   label: "Friggebod" },
+  { value: "pool",        label: "Pool" },
+  { value: "bastu",       label: "Bastu" },
+  { value: "tillbyggnad", label: "Tillbyggnad" },
+  { value: "forrad",      label: "Förråd" },
+  { value: "studio",      label: "Trädgårdsstudio" },
+  { value: "renovering",  label: "Renovering" },
+  { value: "annat",       label: "Annat" },
+] as const;
+
+const typeFromUrl = (params: URLSearchParams) => {
+  const typ = params.get("typ");
+  return PROJECT_TYPES.some((t) => t.value === typ) ? typ! : "";
+};
+
 export default function Book() {
   // Från "Vill du ha något liknande?" på en projektsida
   const [searchParams] = useSearchParams();
@@ -28,7 +48,7 @@ export default function Book() {
     phoneNumber: "",
     placement: "",
     other1: "",
-    project: "",
+    project: typeFromUrl(searchParams),
     other2: "",
     address: "",
     description: reference ? referenceDescription(reference) : "",
@@ -153,16 +173,7 @@ export default function Book() {
             <div className={styles.formField}>
               <label htmlFor="book-project" className={styles.formLabel}>Typ av projekt *</label>
               <Select id="book-project" name="project" value={form.project} onChange={handleChange} required placeholder="Välj typ av byggprojekt">
-                <option value="altan">Altan</option>
-                <option value="garage">Garage</option>
-                <option value="friggebod">Friggebod</option>
-                <option value="pool">Pool</option>
-                <option value="bastu">Bastu</option>
-                <option value="tillbyggnad">Tillbyggnad</option>
-                <option value="forrad">Förråd</option>
-                <option value="studio">Trädgårdsstudio</option>
-                <option value="renovering">Renovering</option>
-                <option value="annat">Annat</option>
+                {PROJECT_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
               </Select>
             </div>
 

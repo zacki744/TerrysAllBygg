@@ -5,6 +5,8 @@ import Textarea from "../ui/Textarea";
 import Button from "../ui/Button";
 import ImageUploader from "./ImageUploader";
 import { useUnsavedChanges } from "../../hooks/useUnsavedChanges";
+import ProjectWritingHelp from "./ProjectWritingHelp";
+import { hasPlaceholders } from "../../lib/projectText";
 import type { UpdateProjectRequest, CreateProjectRequest } from "../../lib/project";
 import styles from "../../admin.module.css";
 
@@ -40,6 +42,11 @@ export default function ProjectForm({
 
     if (images.length === 0) {
       setError("Vänligen ladda upp minst en bild");
+      return;
+    }
+
+    if (hasPlaceholders(formData.description)) {
+      setError("Byt ut texten inom [hakparenteser] i beskrivningen innan du sparar.");
       return;
     }
 
@@ -91,8 +98,16 @@ export default function ProjectForm({
           value={formData.description}
           onChange={(e) => handleChange("description", e.target.value)}
           placeholder="Beskriv projektet..."
-          rows={4}
+          rows={8}
+          maxLength={4000}
+          aria-describedby="project-description-help"
           required
+        />
+        <ProjectWritingHelp
+          id="project-description-help"
+          title={formData.title}
+          description={formData.description}
+          onUseTemplate={(text) => handleChange("description", text)}
         />
       </div>
 

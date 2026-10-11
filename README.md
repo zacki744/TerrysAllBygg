@@ -72,6 +72,10 @@ Terrys AllBygg erbjuder skräddarsydda byggprojekt (bastuer, tillbyggnader, alta
 
 Gamla adresser (`/projects?id=…`, `/snickeri?id=…`) omdirigeras till de nya.
 
+### Tjänstesidor (`/tjanster`)
+
+En sida per tjänst (bastu, tillbyggnad, altaner, förråd och garage, trädgårdsstudio, snickerier, renovering) med egen text, "Bra att veta" om bygglov, arbetsgång, exempel från projekten och en bokningsknapp som väljer rätt projekttyp (`/book?typ=bastu`). All text finns i `frontend/src/lib/services.ts`. Sidorna förrenderas automatiskt och hamnar i sitemapen, som läser vilka sidor som förrenderats. Projekt kopplas till en tjänst via nyckelord i titel och beskrivning.
+
 ### E-postflöden
 
 - **Konsultationsförfrågan** — skickar bekräftelse till kunden + notifiering till Terry
@@ -87,6 +91,7 @@ Alla mejl skickas som HTML i sajtens stil (logga, färger, sidfot) med en textve
 - Bilduppladdning: WebP i 1600 px + miniatyr i 640 px (SkiaSharp, Magick.NET för HEIC)
 - Bildunderhåll: krymper äldre bilder, skapar saknade miniatyrer och flyttar undan oanvända
 - Användarhantering: bjud in nya admins via e-post, återställ lösenord, radera konton
+- Skrivhjälp för projekttexter: ordräknare, tips om ort och tjänst, och en mall att fylla i
 - Inställningar (`/admin/installningar`): hero-bild och texter på startsidan, förtroenderad (ROT, F-skatt, försäkring), omdömen på/av, adress, sociala medier och Om oss-texten — utan ny deploy
 
 ---

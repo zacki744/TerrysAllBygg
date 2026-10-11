@@ -80,3 +80,15 @@ describe("bokning från en projektsida", () => {
     expect(screen.getByLabelText(/^Projektbeskrivning/)).toHaveValue("");
   });
 });
+
+describe("bokning från en tjänstesida", () => {
+  it("väljer projekttyp från ?typ=", () => {
+    renderBook("/book?typ=bastu");
+    expect(screen.getByLabelText(/^Typ av projekt/)).toHaveValue("bastu");
+  });
+
+  it("ignorerar okända typer", () => {
+    renderBook("/book?typ=slott");
+    expect(screen.getByLabelText(/^Typ av projekt/)).toHaveValue("");
+  });
+});

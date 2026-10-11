@@ -1,11 +1,13 @@
 import { Helmet } from "react-helmet-async";
 import { CONTACT } from "../lib/contact";
 import {
-  absoluteUrl, breadcrumbSchema, businessSchema, productSchema, websiteSchema,
+  absoluteUrl, breadcrumbSchema, businessSchema, productSchema,
+  serviceSchema, websiteSchema,
   type Crumb, type ProductInfo,
 } from "../lib/schema";
 import { clampDescription } from "../lib/meta";
 import { useSettings } from "../lib/settingsContext";
+import type { Service } from "../lib/services";
 
 interface PageMetaProps {
   /** Sidans namn. Blir "<title> | Terrys Allbygg". Utelämna på startsidan. */
@@ -20,6 +22,8 @@ interface PageMetaProps {
   /** Brödsmulor efter "Hem". Standard: en nivå med sidans titel. */
   breadcrumbs?: Crumb[];
   product?: Omit<ProductInfo, "url">;
+  /** Tjänstesida → schema.org/Service */
+  service?: Service;
 }
 
 const DEFAULT_DESCRIPTION =
@@ -38,6 +42,7 @@ export default function PageMeta({
   ogType = "website",
   breadcrumbs,
   product,
+  service,
 }: PageMetaProps) {
   const settings     = useSettings();
   description        = clampDescription(description);
@@ -56,6 +61,7 @@ export default function PageMeta({
     schemas.push(breadcrumbSchema(breadcrumbs ?? [{ name: title ?? "Sida", path: canonical }]));
   }
   if (product) schemas.push(productSchema({ ...product, url: canonical }));
+  if (service) schemas.push(serviceSchema(service));
 
   return (
     <Helmet>
