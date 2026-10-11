@@ -3,8 +3,10 @@
 // material och vad som byggdes hjälper både kunder och Google
 // ("altan i Simrishamn"), så formuläret visar vad som saknas.
 
-export const WORDS_MIN = 80;
-export const WORDS_MAX = 200;
+// Projekten på sajten är ofta gallerier per typ av arbete ("Grindar", "Golv"),
+// så målet är några meningar, inte en hel artikel.
+export const WORDS_MIN = 40;
+export const WORDS_MAX = 150;
 
 /** Orter på och kring Österlen. Används bara för tipset "nämn orten". */
 const PLACES = [
@@ -16,9 +18,9 @@ const PLACES = [
 const PLACE_RE = new RegExp(`(^|[^\\p{L}])(${PLACES.map((p) => p.replace(".", "\\.")).join("|")})(?![\\p{L}])`, "iu");
 
 export const TEMPLATE =
-  "[Vad byggde vi – t.ex. en altan med pergola] i [ort]. [Vad ville kunden ha, och hur skulle det användas?]\n\n" +
-  "Vi byggde i [material] och valde det för att [varför]. Arbetet tog [hur lång tid].\n\n" +
-  "[Vad var speciellt med projektet – en utmaning, ett önskemål eller en detalj du är extra nöjd med?]";
+  "[Vad visar bilderna – t.ex. grindar och staket vi har byggt] i [orter, t.ex. Simrishamn och Kivik]. " +
+  "[Vad brukar kunderna vilja ha, och hur används det?]\n\n" +
+  "Vi arbetar oftast i [material] eftersom [varför]. [Något du är extra nöjd med, eller ett exempel på ett uppdrag.]";
 
 export const wordCount = (text: string) => (text.trim() ? text.trim().split(/\s+/).length : 0);
 

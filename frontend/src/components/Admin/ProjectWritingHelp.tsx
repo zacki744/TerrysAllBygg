@@ -72,14 +72,14 @@ export default function ProjectWritingHelp({ id, title, description, onUseTempla
 
       <details className={styles.writingTips}>
         <summary>Tips för en bra projekttext</summary>
-        <p>Skriv som om du berättade för en granne. Svara gärna på:</p>
+        <p>Några meningar räcker. Skriv som om du berättade för en granne:</p>
         <ul>
+          <li><strong>Vad?</strong> Vad visar bilderna – ett projekt eller en typ av arbete?</li>
           <li><strong>Var?</strong> Ort eller område.</li>
-          <li><strong>Vad?</strong> Vad byggdes, och hur skulle det användas?</li>
           <li><strong>Hur?</strong> Material, och varför de valdes.</li>
-          <li><strong>Hur länge?</strong> Ungefär hur lång tid arbetet tog.</li>
-          <li><strong>Det speciella:</strong> en utmaning, ett önskemål eller en detalj du är nöjd med.</li>
+          <li><strong>Det speciella:</strong> ett önskemål, en utmaning eller en detalj du är nöjd med.</li>
         </ul>
+        <p>Titeln syns överallt: skriv ut den ("Förråd och bodar" i stället för "Förråd o dyl").</p>
         <p>Tom rad mellan stycken blir nytt stycke på sajten.</p>
         <button type="button" className={styles.btnGhost} onClick={useTemplate}>
           <Wand2 size={16} aria-hidden /> Använd mall

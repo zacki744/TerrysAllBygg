@@ -41,3 +41,31 @@ describe("tjänster", () => {
     expect(findService("finns-inte")).toBeUndefined();
   });
 });
+
+describe("dagens projektkategorier på sajten", () => {
+  // Titlarna som finns i databasen hösten 2026 — alla utom "Lite blandat" ska få en tjänst
+  it.each([
+    ["Däck", "altaner"],
+    ["Förråd o dyl", "forrad-och-garage"],
+    ["Grindar", "snickerier"],
+    ["Staket mm", "snickerier"],
+    ["Utemöbler", "snickerier"],
+    ["Utedusch med planteringsbord", "snickerier"],
+    ["Fönster o dörrar", "renovering"],
+    ["Golv", "renovering"],
+    ["Tak", "renovering"],
+    ["Målning", "renovering"],
+    ["Reperationer och Renoveringar", "renovering"],
+  ])("%s → %s", (title, slug) => {
+    expect(serviceForProject(title, title)?.slug).toBe(slug);
+  });
+
+  it("Lite blandat kopplas inte till någon tjänst", () => {
+    expect(serviceForProject("Lite blandat", "Lite blandat")).toBeUndefined();
+  });
+
+  it("\"tak\" i andra ord räknas inte som takarbete", () => {
+    expect(serviceForProject("Altan med skärmtak")?.slug).toBe("altaner");
+    expect(serviceForProject("Takstolar")).toBeUndefined();
+  });
+});
