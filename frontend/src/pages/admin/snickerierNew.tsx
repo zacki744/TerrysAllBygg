@@ -3,6 +3,7 @@ import AdminNavbar from "../../components/Admin/AdminNavbar";
 import SnickeriForm, { type SnickeriFormData } from "../../components/Admin/SnickeriForm";
 import PageMeta from "../../components/PageMeta";
 import styles from "../../admin.module.css";
+import { notify } from "../../lib/notify";
 
 async function createSnickeri(data: SnickeriFormData): Promise<void> {
   const res = await fetch("/api/admin/snickerier", {
@@ -28,6 +29,7 @@ export default function NewSnickeri() {
 
   const handleSubmit = async (data: SnickeriFormData) => {
     await createSnickeri(data);
+    notify.success(`"${data.title}" är skapat och syns på sajten`);
     navigate("/admin");
   };
 

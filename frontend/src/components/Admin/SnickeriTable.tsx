@@ -1,5 +1,4 @@
-"use client";
-
+import { thumbUrl } from "../../lib/images";
 import styles from "../../admin.module.css";
 import { Pencil, Trash2 } from "lucide-react";
 import { formatPrice } from "../../lib/formatPrice";
@@ -9,12 +8,13 @@ interface SnickeriItem {
   title: string;
   description: string;
   price: number;
+  image: string;
 }
 
 interface SnickeriTableProps {
   items: SnickeriItem[];
   onEdit: (id: string) => void;
-  onDelete: (id: string) => void;
+  onDelete: (id: string, title: string) => void;
 }
 
 export default function SnickeriTable({ items, onEdit, onDelete }: SnickeriTableProps) {
@@ -32,8 +32,16 @@ export default function SnickeriTable({ items, onEdit, onDelete }: SnickeriTable
           {items.map((item) => (
             <tr key={item.id} className={styles.tableRow}>
               <td className={styles.tableCell}>
-                <div className={styles.tablePrimary}>{item.title}</div>
-                <div className={styles.tableSecondary}>{item.description}</div>
+                <div className={styles.tableTitleCell}>
+                  {item.image
+                    ? <img src={thumbUrl(item.image)} alt="" className={styles.tableThumb} loading="lazy"
+                        onError={(e) => { if (e.currentTarget.src !== item.image) e.currentTarget.src = item.image; }} />
+                    : <span className={styles.tableThumb} aria-hidden />}
+                  <div>
+                    <div className={styles.tablePrimary}>{item.title}</div>
+                    <div className={styles.tableSecondary}>{item.description}</div>
+                  </div>
+                </div>
               </td>
               <td className={styles.tableCell}>
                 <span className={styles.tablePrimary}>
@@ -44,15 +52,15 @@ export default function SnickeriTable({ items, onEdit, onDelete }: SnickeriTable
                 <button
                   onClick={() => onEdit(item.id)}
                   className={styles.tableActionEdit}
-                  aria-label="Redigera"
+                  aria-label={`Redigera ${item.title}`}
                   title="Redigera"
                 >
                   <Pencil size={16} strokeWidth={1.75} />
                 </button>
                 <button
-                  onClick={() => onDelete(item.id)}
+                  onClick={() => onDelete(item.id, item.title)}
                   className={styles.tableActionDelete}
-                  aria-label="Radera"
+                  aria-label={`Radera ${item.title}`}
                   title="Radera"
                 >
                   <Trash2 size={16} strokeWidth={1.75} />

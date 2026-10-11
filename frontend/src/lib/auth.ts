@@ -80,7 +80,7 @@ async function adminFetch(url: string, options: RequestInit = {}): Promise<Respo
   if (res.status === 401) {
     sessionStorage.removeItem("admin_email");
     window.location.href = "/admin/login";
-    throw new Error("Session expired");
+    throw new Error("Inloggningen har gått ut");
   }
 
   return res;
@@ -135,13 +135,13 @@ export const SettingsAPI = {
 export const AdminAPI = {
   async getAllProjects(): Promise<Project[]> {
     const res = await adminFetch("/api/admin/projects");
-    if (!res.ok) throw new Error("Failed to load projects");
+    if (!res.ok) throw new Error("Kunde inte läsa projekten");
     return res.json();
   },
 
   async getProject(id: string): Promise<DetailedProject> {
     const res = await adminFetch(`/api/admin/projects/${id}`);
-    if (!res.ok) throw new Error("Project not found");
+    if (!res.ok) throw new Error("Projektet hittades inte");
     return res.json();
   },
 
@@ -150,7 +150,7 @@ export const AdminAPI = {
       method: "POST",
       body:   JSON.stringify(data),
     });
-    if (!res.ok) throw new Error("Failed to create project");
+    if (!res.ok) throw await apiError(res, "Kunde inte skapa projektet");
     return res.json();
   },
   
@@ -159,13 +159,13 @@ export const AdminAPI = {
       method: "PUT",
       body:   JSON.stringify(data),
     });
-    if (!res.ok) throw new Error("Failed to update project");
+    if (!res.ok) throw await apiError(res, "Kunde inte spara projektet");
   },
 
   async deleteProject(id: string): Promise<void> {
     const res = await adminFetch(`/api/admin/projects/${id}`, {
       method: "DELETE",
     });
-    if (!res.ok) throw new Error("Failed to delete project");
+    if (!res.ok) throw new Error("Kunde inte radera projektet");
   },
 };

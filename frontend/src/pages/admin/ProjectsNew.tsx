@@ -6,6 +6,7 @@ import { AdminAPI } from "../../lib/auth";
 import { type CreateProjectRequest, type UpdateProjectRequest } from "../../lib/project";
 import styles from "../../admin.module.css";
 import PageMeta from "../../components/PageMeta";
+import { notify } from "../../lib/notify";
 
 export default function NewProject() {
   const navigate = useNavigate();
@@ -15,9 +16,9 @@ export default function NewProject() {
     setSubmitting(true);
     try {
       await AdminAPI.createProject(data as CreateProjectRequest);
+      notify.success(`"${data.title}" är skapat och syns på sajten`);
       navigate("/admin");
     } catch (error) {
-      console.error("Failed to create project:", error);
       setSubmitting(false);
       throw error;
     }

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Mail, Trash2, KeyRound } from "lucide-react";
 import AdminNavbar from "../../components/Admin/AdminNavbar";
 import { AuthService } from "../../lib/auth";
+import { confirmAction } from "../../lib/notify";
 import styles from "../../admin.module.css";
 
 interface AdminUser {
@@ -63,7 +64,13 @@ export default function AdminUsersPage() {
   };
 
   const handleDelete = async (id: string, email: string) => {
-    if (!confirm(`Är du säker på att du vill radera ${email}?`)) return;
+    const ok = await confirmAction({
+      title: `Radera kontot ${email}?`,
+      message: "Personen loggas ut direkt och kan inte längre logga in i admin.",
+      confirmLabel: "Radera kontot",
+      danger: true,
+    });
+    if (!ok) return;
     try {
       const res = await fetch(`/api/admin/users/${id}`, {
         method: "DELETE", credentials: "include",
@@ -78,7 +85,12 @@ export default function AdminUsersPage() {
   };
 
   const handleReset = async (id: string, email: string) => {
-    if (!confirm(`Skicka återställningslänk till ${email}?`)) return;
+    const ok = await confirmAction({
+      title: "Skicka återställningslänk?",
+      message: `${email} får ett mejl med en länk för att välja nytt lösenord. Länken gäller i 2 timmar.`,
+      confirmLabel: "Skicka länk",
+    });
+    if (!ok) return;
     try {
       const res = await fetch(`/api/admin/users/${id}/reset-password`, {
         method: "POST", credentials: "include",
@@ -94,7 +106,7 @@ export default function AdminUsersPage() {
   if (loading) {
     return (
       <div className={styles.pageCenter}>
-        <p className={styles.loadingText}>Laddar...</p>
+        <p className={styles.loadingText}>Laddar…</p>
       </div>
     );
   }

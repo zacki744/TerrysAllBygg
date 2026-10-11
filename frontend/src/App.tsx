@@ -4,6 +4,7 @@ import { AuthService } from "./lib/auth";
 import ScrollToTop from "./components/ScrollToTop";
 import PageMeta from "./components/PageMeta";
 import LegacyRedirect from "./components/LegacyRedirect";
+import Notifier from "./components/Admin/Notifier";
 import { projectPath, snickeriPath } from "./lib/routes";
 
 // ── Public pages ───────────────────────────────────────────
@@ -43,6 +44,7 @@ function AdminPage({ children }: { children: React.ReactNode }) {
     <Suspense fallback={null}>
       <PageMeta title="Admin" noIndex />
       {children}
+      <Notifier />
     </Suspense>
   );
 }

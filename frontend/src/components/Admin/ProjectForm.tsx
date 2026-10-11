@@ -4,6 +4,7 @@ import Input from "../ui/Input";
 import Textarea from "../ui/Textarea";
 import Button from "../ui/Button";
 import ImageUploader from "./ImageUploader";
+import { useUnsavedChanges } from "../../hooks/useUnsavedChanges";
 import type { UpdateProjectRequest, CreateProjectRequest } from "../../lib/project";
 import styles from "../../admin.module.css";
 
@@ -59,6 +60,10 @@ export default function ProjectForm({
     }
   };
 
+  const initialJson = useState(() => JSON.stringify({ ...formData, images }))[0];
+  const dirty = JSON.stringify({ ...formData, images }) !== initialJson;
+  const guardLeave = useUnsavedChanges(dirty && !loading);
+
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
@@ -67,9 +72,11 @@ export default function ProjectForm({
     <form onSubmit={handleSubmit} className={styles.form}>
 
       <div className={styles.formField}>
-        <label className={styles.formLabel}>Titel</label>
+        <label htmlFor="project-title" className={styles.formLabel}>Titel</label>
         <Input
+          id="project-title"
           type="text"
+          maxLength={200}
           value={formData.title}
           onChange={(e) => handleChange("title", e.target.value)}
           placeholder="t.ex. Utomhusbastu"
@@ -78,8 +85,9 @@ export default function ProjectForm({
       </div>
 
       <div className={styles.formField}>
-        <label className={styles.formLabel}>Beskrivning</label>
+        <label htmlFor="project-description" className={styles.formLabel}>Beskrivning</label>
         <Textarea
+          id="project-description"
           value={formData.description}
           onChange={(e) => handleChange("description", e.target.value)}
           placeholder="Beskriv projektet..."
@@ -95,18 +103,15 @@ export default function ProjectForm({
           label="Projektbilder"
           maxImages={10}
         />
-        <p className={styles.formHint} style={{ marginTop: "0.5rem" }}>
-          📌 Den första bilden används som huvudbild.
-        </p>
       </div>
 
-      {error && <div className={styles.errorBox}>{error}</div>}
+      {error && <div className={styles.errorBox} role="alert">{error}</div>}
 
       <div className={styles.formActions}>
         <Button type="submit" disabled={loading}>
-          {loading ? "Sparar..." : isEdit ? "Uppdatera projekt" : "Skapa projekt"}
+          {loading ? "Sparar…" : isEdit ? "Spara ändringar" : "Skapa projekt"}
         </Button>
-        <button type="button" onClick={onCancel} className={styles.btnGhost}>
+        <button type="button" onClick={() => guardLeave(onCancel)} className={styles.btnGhost}>
           Avbryt
         </button>
       </div>

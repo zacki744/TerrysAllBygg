@@ -7,6 +7,8 @@ import SnickeriTable from "./../../components/Admin/SnickeriTable";
 import ImageMaintenancePanel from "./../../components/Admin/ImageMaintenancePanel";
 import PageMeta from "../../components/PageMeta";
 import { AuthService, AdminAPI, type Project } from "../../lib/auth";
+import { confirmAction, notify } from "../../lib/notify";
+import { errorMessage } from "../../lib/errors";
 import styles from "./../../admin.module.css";
 
 interface SnickeriItem {
@@ -19,7 +21,7 @@ interface SnickeriItem {
 
 async function fetchSnickerier(): Promise<SnickeriItem[]> {
   const res = await fetch("/api/admin/snickerier", { credentials: "include" });
-  if (!res.ok) throw new Error("Failed to load snickerier");
+  if (!res.ok) throw new Error("Kunde inte läsa snickerierna");
   return res.json();
 }
 
@@ -28,6 +30,8 @@ export default function AdminDashboard() {
   const [projects, setProjects]     = useState<Project[]>([]);
   const [snickerier, setSnickerier] = useState<SnickeriItem[]>([]);
   const [loading, setLoading]       = useState(true);
+  const [loadError, setLoadError]   = useState("");
+  const [attempt, setAttempt]       = useState(0);   // ökas av "Försök igen"
 
   useEffect(() => {
     if (!AuthService.isAuthenticated()) {
@@ -35,7 +39,10 @@ export default function AdminDashboard() {
       return;
     }
 
+    // Utgången inloggning (401) skickas till inloggningen av adminFetch.
+    // Andra fel (nätverk, server) visas här i stället för att logga ut.
     const loadAll = async () => {
+      setLoadError("");
       try {
         const [projectData, snickeriData] = await Promise.all([
           AdminAPI.getAllProjects(),
@@ -43,45 +50,79 @@ export default function AdminDashboard() {
         ]);
         setProjects(projectData);
         setSnickerier(snickeriData);
-      } catch {
-        navigate("/admin/login");
+      } catch (err) {
+        setLoadError(errorMessage(err, "Kunde inte läsa projekt och snickerier"));
       } finally {
         setLoading(false);
       }
     };
     loadAll();
-  }, [navigate]);
+  }, [navigate, attempt]);
 
   const handleEditProject  = (id: string) => navigate(`/admin/projects/edit?id=${id}`);
   const handleEditSnickeri = (id: string) => navigate(`/admin/snickerier/edit?id=${id}`);
 
-  const handleDeleteProject = async (id: string) => {
-    if (!confirm("Är du säker på att du vill radera detta projekt?")) return;
+  const handleDeleteProject = async (id: string, title: string) => {
+    const ok = await confirmAction({
+      title: `Radera "${title}"?`,
+      message: "Projektet försvinner från sajten. Det går inte att ångra.",
+      confirmLabel: "Radera projektet",
+      danger: true,
+    });
+    if (!ok) return;
     try {
       await AdminAPI.deleteProject(id);
       setProjects((prev) => prev.filter((p) => p.id !== id));
+      notify.success(`"${title}" är raderat`);
     } catch {
-      alert("Kunde inte radera projekt");
+      notify.error("Kunde inte radera projektet. Försök igen.");
     }
   };
 
-  const handleDeleteSnickeri = async (id: string) => {
-    if (!confirm("Är du säker på att du vill radera detta snickeri?")) return;
+  const handleDeleteSnickeri = async (id: string, title: string) => {
+    const ok = await confirmAction({
+      title: `Radera "${title}"?`,
+      message: "Snickeriet försvinner från sajten. Det går inte att ångra.",
+      confirmLabel: "Radera snickeriet",
+      danger: true,
+    });
+    if (!ok) return;
     try {
       const res = await fetch(`/api/admin/snickerier/${id}`, {
         method: "DELETE", credentials: "include",
       });
       if (!res.ok) throw new Error();
       setSnickerier((prev) => prev.filter((s) => s.id !== id));
+      notify.success(`"${title}" är raderat`);
     } catch {
-      alert("Kunde inte radera snickeri");
+      notify.error("Kunde inte radera snickeriet. Försök igen.");
     }
   };
 
   if (loading) {
     return (
-      <div className={styles.pageCenter}>
-        <p className={styles.loadingText}>Laddar...</p>
+      <div className={styles.page}>
+        <AdminNavbar />
+        <main className={styles.main}>
+          <p className={styles.loadingText}>Laddar…</p>
+        </main>
+      </div>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <div className={styles.page}>
+        <AdminNavbar />
+        <main className={styles.main}>
+          <div className={styles.errorBox} role="alert">
+            {loadError}.{" "}
+            <button type="button" className={styles.inlineLinkButton}
+              onClick={() => { setLoading(true); setAttempt((n) => n + 1); }}>
+              Försök igen
+            </button>
+          </div>
+        </main>
       </div>
     );
   }

@@ -1,5 +1,3 @@
-"use client";
-
 import { useNavigate, useLocation } from "react-router-dom";
 import { AuthService } from "../../lib/auth";
 import styles from "../../admin.module.css";

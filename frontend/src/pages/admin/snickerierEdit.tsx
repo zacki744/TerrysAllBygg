@@ -4,6 +4,7 @@ import AdminNavbar from "../../components/Admin/AdminNavbar";
 import SnickeriForm, { type SnickeriFormData } from "../../components/Admin/SnickeriForm";
 import PageMeta from "../../components/PageMeta";
 import styles from "../../admin.module.css";
+import { notify } from "../../lib/notify";
 
 interface DetailedSnickeri {
   id: string;
@@ -56,7 +57,7 @@ export default function EditSnickeri() {
     fetchSnickeri(id)
       .then(setSnickeri)
       .catch(() => {
-        alert("Snickeri hittades inte");
+        notify.error("Snickeriet hittades inte. Det kan ha raderats.");
         navigate("/admin");
       })
       .finally(() => setLoading(false));
@@ -65,18 +66,29 @@ export default function EditSnickeri() {
   const handleSubmit = async (data: SnickeriFormData) => {
     if (!id) return;
     await updateSnickeri(id, data);
-    navigate("/admin");             // ← /admin not /admin/snickerier
+    notify.success(`"${data.title}" är sparat`);
+    navigate("/admin");
   };
 
   if (loading) {
     return (
       <div className={styles.pageCenter}>
-        <p className={styles.loadingText}>Laddar...</p>
+        <p className={styles.loadingText}>Laddar…</p>
       </div>
     );
   }
 
-  if (!snickeri) return null;
+  // Hämtningen misslyckades — notisen visas och vi skickas tillbaka till översikten
+  if (!snickeri) {
+    return (
+      <div className={styles.page}>
+        <AdminNavbar />
+        <main className={styles.main}>
+          <p className={styles.loadingText}>Snickeriet kunde inte hämtas.</p>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.page}>

@@ -232,6 +232,10 @@
 /* ─── Ghost / secondary button ────────────────────────────── */
 
 .btnGhost {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
   padding: 0.75rem 1.5rem;
   border-radius: 9999px;
   border: 1px solid var(--border);
@@ -354,7 +358,7 @@
 
 .tableSecondary {
   font-size: 0.8125rem;
-  color: color-mix(in srgb, var(--foreground) 55%, transparent);
+  color: color-mix(in srgb, var(--foreground) 72%, transparent);
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 1;
@@ -432,11 +436,14 @@
 
 .uploaderCount {
   font-size: 0.875rem;
-  color: color-mix(in srgb, var(--foreground) 50%, transparent);
+  color: color-mix(in srgb, var(--foreground) 72%, transparent);
 }
 
 /* Image grid */
 .imageGrid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
@@ -451,131 +458,118 @@
 }
 
 .imageTile {
-  position: relative;
-  aspect-ratio: 1;
   border-radius: 0.75rem;
   overflow: hidden;
   border: 2px solid var(--border);
-  background-color: var(--background);
-  transition: border-color 0.2s;
+  background-color: #fff;
+  transition: border-color 0.15s, opacity 0.15s, transform 0.15s;
+  cursor: grab;
 }
 
-.imageTile:hover {
-  border-color: var(--accent);
+.imageTile:hover { border-color: color-mix(in srgb, var(--accent-ink) 50%, var(--border)); }
+.imageTile:active { cursor: grabbing; }
+.imageTileDragging { opacity: 0.4; }
+.imageTileDropTarget {
+  border-color: var(--primary-ink);
+  border-style: dashed;
+  transform: scale(1.02);
 }
 
-.imageTile:hover .imageTileOverlay {
-  opacity: 1;
+.tileMedia {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background: var(--border);
 }
 
 .tileImg {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
 
-.tileBadgeOrder {
-  position: absolute;
-  top: 0.5rem;
-  left: 0.5rem;
-  background-color: var(--accent);
-  color: #fff;
-  font-size: 0.75rem;
-  font-weight: 700;
-  padding: 0.2rem 0.6rem;
-  border-radius: 9999px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-}
-
+.tileBadgeOrder,
 .tileBadgeMain {
   position: absolute;
   top: 0.5rem;
-  right: 0.5rem;
-  background-color: var(--primary-ink);
+  left: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
   color: #fff;
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;
   padding: 0.2rem 0.6rem;
   border-radius: 9999px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
-.imageTileOverlay {
+.tileBadgeOrder { background-color: rgba(28, 22, 12, 0.72); }
+.tileBadgeMain  { background-color: var(--primary-ink); }
+
+.tileGrip {
   position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.35) 50%, transparent 100%);
-  opacity: 0;
-  transition: opacity 0.2s;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-}
-
-/* On touch devices the overlay is always visible since there's no hover */
-@media (hover: none) {
-  .imageTileOverlay { opacity: 1; }
-}
-
-.tileNavButtons {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.tileNavBtn {
-  background-color: rgba(255, 255, 255, 0.92);
-  color: #1a1a1a;
-  border: none;
-  border-radius: 0.5rem;
-  width: 2.5rem;
-  height: 2.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 1rem;
-  cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-  transition: transform 0.15s, background-color 0.15s;
-}
-
-.tileNavBtn:hover {
-  background-color: #fff;
-  transform: scale(1.1);
-}
-
-.tileRemoveBtn {
-  background-color: #dc2626;
+  top: 0.5rem;
+  right: 0.5rem;
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 0.375rem;
   color: #fff;
-  border: none;
-  border-radius: 0.5rem;
-  padding: 0.4rem 1rem;
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-  transition: transform 0.15rem, background-color 0.15s;
+  background: rgba(28, 22, 12, 0.6);
 }
 
-.tileRemoveBtn:hover {
-  background-color: #b91c1c;
-  transform: scale(1.05);
+@media (hover: none) {
+  .tileGrip { display: none; }   /* dra-och-släpp finns inte på pekskärm — pilarna gäller */
+  .imageTile { cursor: default; }
 }
+
+.tileBar {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.375rem;
+  border-top: 1px solid var(--border);
+}
+
+.tileBtn {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  min-height: 2.25rem;
+  border: 1px solid transparent;
+  border-radius: 0.5rem;
+  background: none;
+  color: var(--foreground);
+  cursor: pointer;
+}
+
+.tileBtn:hover { background: color-mix(in srgb, var(--foreground) 7%, transparent); }
+.tileBtn:focus-visible { outline: 2px solid var(--accent-ink); outline-offset: 1px; }
+.tileBtn[aria-disabled="true"] { opacity: 0.3; cursor: default; }
+.tileBtn[aria-disabled="true"]:hover { background: none; }
+
+.tileBtnDanger { color: #b91c1c; }
+.tileBtnDanger:hover { background: color-mix(in srgb, #b91c1c 10%, transparent); }
 
 /* Upload drop zone */
 .uploadZone {
+  position: relative;
   border: 2px dashed var(--border);
   border-radius: 0.75rem;
-  padding: 2rem;
   text-align: center;
   background-color: var(--background);
-  cursor: pointer;
   transition: border-color 0.2s, background-color 0.2s;
 }
 
-.uploadZone:hover {
-  border-color: var(--accent);
+.uploadZone:focus-within {
+  outline: 2px solid var(--accent-ink);
+  outline-offset: 2px;
+}
+
+.uploadZone:hover,
+.uploadZoneActive {
+  border-color: var(--accent-ink);
   background-color: color-mix(in srgb, var(--accent) 4%, var(--background));
 }
 
@@ -586,6 +580,8 @@
 }
 
 .uploadZoneInner {
+  padding: 2rem;
+  cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -593,9 +589,9 @@
 }
 
 .uploadIcon {
-  width: 3rem;
-  height: 3rem;
-  color: var(--accent);
+  width: 2.5rem;
+  height: 2.5rem;
+  color: var(--accent-ink);
 }
 
 .uploadTitle {
@@ -606,12 +602,12 @@
 
 .uploadSub {
   font-size: 0.875rem;
-  color: color-mix(in srgb, var(--foreground) 55%, transparent);
+  color: color-mix(in srgb, var(--foreground) 75%, transparent);
 }
 
 .uploadMeta {
   font-size: 0.75rem;
-  color: color-mix(in srgb, var(--foreground) 40%, transparent);
+  color: color-mix(in srgb, var(--foreground) 72%, transparent);
 }
 
 /* Spinner */
@@ -806,4 +802,147 @@
 .saveBarButtons button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* ─── Notiser och bekräftelse (components/Admin/Notifier) ── */
+
+.toastRegion {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  left: 1rem;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+  pointer-events: none;
+}
+
+.toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  width: min(26rem, 100%);
+  padding: 0.85rem 0.75rem 0.85rem 1rem;
+  border-radius: 0.75rem;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-left-width: 4px;
+  box-shadow: 0 8px 24px rgba(44, 36, 22, 0.16);
+  font-size: 0.9rem;
+  color: var(--foreground);
+  animation: toastIn 0.2s ease-out;
+}
+
+.toast_success { border-left-color: #15803d; }
+.toast_success .toastIcon { color: #15803d; }
+.toast_error   { border-left-color: #b91c1c; }
+.toast_error   .toastIcon { color: #b91c1c; }
+.toast_info    { border-left-color: var(--accent-ink); }
+.toast_info    .toastIcon { color: var(--accent-ink); }
+
+.toastIcon { flex-shrink: 0; margin-top: 0.1rem; }
+.toastText { flex: 1; line-height: 1.45; }
+
+.toastClose {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 0;
+  border-radius: 9999px;
+  background: none;
+  color: var(--foreground);
+  cursor: pointer;
+}
+.toastClose:hover { background: var(--border); }
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(0.5rem); }
+  to   { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toast { animation: none; }
+}
+
+.confirmDialog {
+  width: min(28rem, calc(100vw - 2rem));
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background: var(--background);
+  color: var(--foreground);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.25);
+}
+
+.confirmDialog::backdrop { background: rgba(28, 22, 12, 0.45); }
+
+.confirmBody { padding: 1.5rem; }
+
+.confirmTitle {
+  margin: 0 0 0.5rem;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+}
+
+.confirmMessage {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--foreground) 80%, transparent);
+}
+
+.confirmActions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.dangerButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1.1rem;
+  border-radius: 9999px;
+  border: none;
+  background-color: #b91c1c;
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.dangerButton:hover { background-color: #991b1b; }
+
+/* Miniatyr i projekt-/snickeritabellen */
+.tableTitleCell {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+}
+
+.tableThumb {
+  flex-shrink: 0;
+  width: 3.5rem;
+  height: 2.625rem;
+  border-radius: 0.375rem;
+  object-fit: cover;
+  background: var(--border);
+  display: block;
+}
+
+.inlineLinkButton {
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 600;
+  color: inherit;
+  text-decoration: underline;
+  cursor: pointer;
 }

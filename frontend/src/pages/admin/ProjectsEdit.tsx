@@ -5,6 +5,7 @@ import ProjectForm from "../../components/Admin/ProjectForm";
 import { AdminAPI } from "../../lib/auth";
 import { type UpdateProjectRequest, type DetailedProject } from "../../lib/project";
 import styles from "../../admin.module.css";
+import { notify } from "../../lib/notify";
 
 export default function EditProjectContent() {
   const navigate = useNavigate();
@@ -16,7 +17,7 @@ export default function EditProjectContent() {
 
   useEffect(() => {
     if (!id) {
-      alert("Inget projekt valt");
+      notify.error("Inget projekt valt");
       navigate("/admin");
       return;
     }
@@ -25,7 +26,7 @@ export default function EditProjectContent() {
       try {
         setProject(await AdminAPI.getProject(id));
       } catch {
-        alert("Projektet hittades inte");
+        notify.error("Projektet hittades inte. Det kan ha raderats.");
         navigate("/admin");
       } finally {
         setLoading(false);
@@ -37,18 +38,29 @@ export default function EditProjectContent() {
   const handleSubmit = async (data: UpdateProjectRequest) => {
     if (!id) return;
     await AdminAPI.updateProject(id, data);
+    notify.success(`"${data.title}" är sparat`);
     navigate("/admin");
   };
 
   if (loading) {
     return (
       <div className={styles.pageCenter}>
-        <p className={styles.loadingText}>Loading...</p>
+        <p className={styles.loadingText}>Laddar…</p>
       </div>
     );
   }
 
-  if (!project) return null;
+  // Hämtningen misslyckades — notisen visas och vi skickas tillbaka till översikten
+  if (!project) {
+    return (
+      <div className={styles.page}>
+        <AdminNavbar />
+        <main className={styles.main}>
+          <p className={styles.loadingText}>Projektet kunde inte hämtas.</p>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.page}>
@@ -56,7 +68,7 @@ export default function EditProjectContent() {
 
       <main className={styles.main}>
         <h1 className={styles.pageTitle} style={{ marginBottom: "2rem" }}>
-          Edit Project
+          Redigera projekt
         </h1>
         <ProjectForm
           initialData={{
