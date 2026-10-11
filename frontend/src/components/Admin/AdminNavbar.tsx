@@ -22,6 +22,7 @@ export default function AdminNavbar() {
     <nav className={styles.navbar}>
       <div className={styles.navLinks}>
         <Link to="/admin"       className={isActive("/admin")}>Översikt</Link>
+        <Link to="/admin/tjanster" className={isActive("/admin/tjanster")}>Tjänster</Link>
         <Link to="/admin/installningar" className={isActive("/admin/installningar")}>Inställningar</Link>
         <Link to="/admin/users" className={isActive("/admin/users")}>Användare</Link>
         <Link to="/"            className={styles.navLink}>Visa sida</Link>

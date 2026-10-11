@@ -52,7 +52,8 @@ const template = fs.readFileSync(path.join(distDir, "index.html"), "utf-8")
 fs.writeFileSync(path.join(distDir, "index.spa.html"), template);
 
 const { render, serviceRoutes } = await import(pathToFileURL(path.join(ssrDir, "entry-server.js")).href);
-const ROUTES = [...STATIC_ROUTES, ...serviceRoutes];
+const ROUTES = [...STATIC_ROUTES, ...serviceRoutes(settings)];
+
 
 // Taggar i index.html som sidan själv sätter via <PageMeta> tas bort ur mallen
 const OWNED_BY_PAGE = [

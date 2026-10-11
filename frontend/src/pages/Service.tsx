@@ -8,22 +8,22 @@ import NotFound from "./NotFound";
 import { useFetch } from "../hooks/useFetch";
 import { API, type ProjectOverview } from "../lib/api";
 import { CONTACT } from "../lib/contact";
-import {
-  SERVICES, SERVICES_PATH, PROCESS, AREA_TEXT,
-  findService, projectsForService, servicePath,
-} from "../lib/services";
+import { SERVICES_PATH, PROCESS, AREA_TEXT, findService, projectsForService, servicePath } from "../lib/services";
+import { paragraphs } from "../lib/settings";
+import { useSettings } from "../lib/settingsContext";
 import styles from "../pages.module.css";
 
 export default function Service() {
   const { slug } = useParams();
-  const service = findService(slug);
+  const { services } = useSettings();
+  const service = findService(services, slug);
   // Hämtas i webbläsaren (förrenderingen visar sidan utan projekt)
   const { data: projects } = useFetch<ProjectOverview[]>(service ? API.projects : null);
 
   if (!service) return <NotFound />;
 
   const examples = projectsForService(service, projects ?? []).slice(0, 3);
-  const others = SERVICES.filter((s) => s.slug !== service.slug);
+  const others = services.filter((s) => s.slug !== service.slug);
   const path = servicePath(service.slug);
 
   return (
@@ -46,23 +46,23 @@ export default function Service() {
       <div className={styles.serviceLayout}>
         <article className={styles.serviceMain}>
           <h1 className={styles.pageTitle}>{service.title}</h1>
-          {service.intro.map((p) => <p key={p} className={styles.serviceLead}>{p}</p>)}
+          {paragraphs(service.intro).map((p) => <p key={p} className={styles.serviceLead}>{p}</p>)}
 
-          <section aria-labelledby="includes">
+          {service.includes.length > 0 && <section aria-labelledby="includes">
             <h2 id="includes" className={styles.serviceH2}>Det här kan vi hjälpa till med</h2>
             <ul className={styles.checkList}>
               {service.includes.map((item) => (
                 <li key={item}><Check size={18} aria-hidden className={styles.checkIcon} /> {item}</li>
               ))}
             </ul>
-          </section>
+          </section>}
 
-          <aside className={styles.goodToKnow} aria-labelledby="good-to-know">
+          {service.goodToKnow && <aside className={styles.goodToKnow} aria-labelledby="good-to-know">
             <h2 id="good-to-know" className={styles.goodToKnowTitle}>
               <Info size={18} aria-hidden /> Bra att veta
             </h2>
             <p>{service.goodToKnow}</p>
-          </aside>
+          </aside>}
 
           <section aria-labelledby="process">
             <h2 id="process" className={styles.serviceH2}>Så går det till</h2>
@@ -85,7 +85,7 @@ export default function Service() {
               Berätta vad du vill bygga så återkommer vi inom 24 timmar på vardagar. Vi arbetar i {AREA_TEXT}.
             </p>
             <div className={styles.projectCtaButtons}>
-              <Link to={`/book?typ=${service.bookType}`} className={styles.btnPrimary}>Boka kostnadsfri konsultation</Link>
+              <Link to={`/book?typ=${service.slug}`} className={styles.btnPrimary}>Boka kostnadsfri konsultation</Link>
               <a href={CONTACT.phoneHref} className={`${styles.btnGhost} ${styles.iconLine}`}>
                 <Phone size={16} aria-hidden /> {CONTACT.phone}
               </a>

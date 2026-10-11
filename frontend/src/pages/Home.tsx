@@ -13,7 +13,7 @@ import { Check, Star } from "lucide-react";
 import { useSettings } from "../lib/settingsContext";
 import { trustItems, reviewsUrl } from "../lib/settings";
 import { CONTACT } from "../lib/contact";
-import { SERVICES, SERVICES_PATH, servicePath } from "../lib/services";
+import { SERVICES_PATH, servicePath } from "../lib/services";
 
 const HOME_PROJECT_COUNT = 6;
 
@@ -71,7 +71,7 @@ export default function Home() {
             resten av Skåne, från första skiss till färdigt bygge.
           </p>
           <ul className={styles.servicesList}>
-            {SERVICES.map((s) => (
+            {settings.services.map((s) => (
               <li key={s.slug}>
                 <Link to={servicePath(s.slug)} className={styles.servicesLink}>
                   <span className={styles.servicesName}>{s.name}</span>

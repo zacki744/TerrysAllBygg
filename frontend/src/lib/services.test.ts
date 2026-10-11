@@ -1,49 +1,38 @@
 import { describe, expect, it } from "vitest";
-import { SERVICES, findService, projectsForService, serviceForProject } from "./services";
+import { DEFAULT_SERVICES, findService, projectsForService, suggestService, validateServices } from "./services";
 import { slugify } from "./routes";
 
-const BOOK_TYPES = ["altan", "garage", "friggebod", "pool", "bastu", "tillbyggnad", "forrad", "studio", "renovering", "annat"];
-
-describe("tjänster", () => {
-  it("har unika, URL-säkra slugs", () => {
-    const slugs = SERVICES.map((s) => s.slug);
+describe("standardtjänsterna", () => {
+  it("har unika, URL-säkra adresser", () => {
+    const slugs = DEFAULT_SERVICES.map((s) => s.slug);
     expect(new Set(slugs).size).toBe(slugs.length);
     slugs.forEach((slug) => expect(slugify(slug)).toBe(slug));
+    expect(validateServices(DEFAULT_SERVICES)).toBeNull();
   });
 
-  it("har meta-beskrivningar som får plats i Googles resultat", () => {
-    SERVICES.forEach((s) => {
+  it("har texter som får plats i Googles resultat", () => {
+    DEFAULT_SERVICES.forEach((s) => {
       expect(s.description.length, s.slug).toBeGreaterThan(80);
       expect(s.description.length, s.slug).toBeLessThanOrEqual(165);
     });
   });
+});
 
-  it("länkar bara till projekttyper som finns i bokningsformuläret", () => {
-    SERVICES.forEach((s) => expect(BOOK_TYPES, s.slug).toContain(s.bookType));
-  });
-
-  it("kopplar projekt till rätt tjänst – titeln väger tyngst", () => {
-    expect(serviceForProject("Altan med pergola")?.slug).toBe("altaner");
-    expect(serviceForProject("Utomhusbastu i lärk")?.slug).toBe("bastu");
-    expect(serviceForProject("Bastu med altan")?.slug).toBe("bastu");
-    expect(serviceForProject("Projekt i Kivik", "Ett nytt förråd med sedumtak")?.slug).toBe("forrad-och-garage");
-    expect(serviceForProject("Sommarprojekt", "Inget särskilt")).toBeUndefined();
-  });
-
-  it("hittar exempelprojekt för en tjänst", () => {
+describe("etiketter på projekt", () => {
+  it("visar bara projekt med tjänstens etikett", () => {
     const projects = [
-      { title: "Altan med pergola", description: "" },
-      { title: "Gästhus", description: "Med liten altan" },
-      { title: "Bastu", description: "" },
+      { title: "Däck", service: "altaner" },
+      { title: "Golv", service: "renovering" },
+      { title: "Lite blandat", service: null },
     ];
-    expect(projectsForService(findService("altaner")!, projects).map((p) => p.title))
-      .toEqual(["Altan med pergola", "Gästhus"]);
-    expect(findService("finns-inte")).toBeUndefined();
+    expect(projectsForService(findService(DEFAULT_SERVICES, "altaner")!, projects).map((p) => p.title)).toEqual(["Däck"]);
+    expect(findService(DEFAULT_SERVICES, "finns-inte")).toBeUndefined();
+    expect(findService(DEFAULT_SERVICES, null)).toBeUndefined();
   });
 });
 
-describe("dagens projektkategorier på sajten", () => {
-  // Titlarna som finns i databasen hösten 2026 — alla utom "Lite blandat" ska få en tjänst
+describe("förslag på tjänst i admin", () => {
+  // Dagens titlar i databasen — alla utom "Lite blandat" ska få ett förslag
   it.each([
     ["Däck", "altaner"],
     ["Förråd o dyl", "forrad-och-garage"],
@@ -57,15 +46,24 @@ describe("dagens projektkategorier på sajten", () => {
     ["Målning", "renovering"],
     ["Reperationer och Renoveringar", "renovering"],
   ])("%s → %s", (title, slug) => {
-    expect(serviceForProject(title, title)?.slug).toBe(slug);
+    expect(suggestService(DEFAULT_SERVICES, title)?.slug).toBe(slug);
   });
 
-  it("Lite blandat kopplas inte till någon tjänst", () => {
-    expect(serviceForProject("Lite blandat", "Lite blandat")).toBeUndefined();
+  it("föreslår inget för Lite blandat, och \"tak\" räknas bara som eget ord", () => {
+    expect(suggestService(DEFAULT_SERVICES, "Lite blandat")).toBeUndefined();
+    expect(suggestService(DEFAULT_SERVICES, "Altan med skärmtak")?.slug).toBe("altaner");
   });
 
-  it("\"tak\" i andra ord räknas inte som takarbete", () => {
-    expect(serviceForProject("Altan med skärmtak")?.slug).toBe("altaner");
-    expect(serviceForProject("Takstolar")).toBeUndefined();
+  it("hittar även tjänster som Terry själv lagt till, via namnet", () => {
+    const own = [...DEFAULT_SERVICES, { ...DEFAULT_SERVICES[0], slug: "pooler", name: "Pooler" }];
+    expect(suggestService(own, "Pool i trädgården")?.slug).toBe("pooler");
+  });
+});
+
+describe("validering i admin", () => {
+  it("stoppar tomma namn, ogiltiga och dubbla adresser", () => {
+    expect(validateServices([{ name: "", slug: "a" }])).toMatch(/namn/);
+    expect(validateServices([{ name: "Förråd", slug: "Förråd" }])).toMatch(/a–z/);
+    expect(validateServices([{ name: "A", slug: "x" }, { name: "B", slug: "x" }])).toMatch(/samma adress/);
   });
 });

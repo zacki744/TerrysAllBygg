@@ -6,6 +6,7 @@ using API.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Services.Src.Projects;
+using Services.Src.Settings;
 using Services.Src.Snickerier;
 
 namespace API.Controllers;
@@ -22,6 +23,7 @@ namespace API.Controllers;
 public class SitemapController(
     IProjectsService projectsService,
     ISnickeriService snickeriService,
+    ISettingsService settingsService,
     IWebHostEnvironment environment,
     IConfiguration config) : ControllerBase
 {
@@ -46,7 +48,18 @@ public class SitemapController(
 
         var frontend = Path.Combine(environment.ContentRootPath, "wwwroot", "app");
         var pages = PrerenderedPaths(frontend);
-        urls.AddRange((pages.Count > 0 ? pages : StaticPaths).Select(path => Url(baseUrl + path)));
+        var paths = pages.Count > 0 ? pages : [.. StaticPaths];
+
+        // Tjänster som lagts till i admin efter senaste deploy har ingen
+        // förrenderad sida än, men ska ändå finnas i sitemapen.
+        var settings = await settingsService.GetAsync(ct);
+        foreach (var service in settings.Services ?? [])
+        {
+            var path = "/tjanster/" + service.Slug;
+            if (!paths.Contains(path)) paths.Add(path);
+        }
+
+        urls.AddRange(paths.Select(path => Url(baseUrl + path)));
 
         urls.AddRange(projects.Select(p =>
             Url($"{baseUrl}/projekt/{p.Id}/{Slugify(p.Title)}", AbsoluteImage(baseUrl, p.Image))));

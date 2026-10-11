@@ -9,13 +9,15 @@ import { Phone } from "lucide-react";
 import ProjectCard from "../components/project/ProjectCard";
 import { CONTACT } from "../lib/contact";
 import { paragraphs } from "../lib/settings";
-import { serviceForProject, servicePath } from "../lib/services";
+import { findService, servicePath } from "../lib/services";
+import { useSettings } from "../lib/settingsContext";
 import RetryError from "../components/RetryError";
 import { useFetch } from "../hooks/useFetch";
 import { API, isNotFound, type ProjectDetail, type ProjectOverview } from "../lib/api";
 import styles from "../pages.module.css";
 
 export default function ProjectsPageContent() {
+  const { services } = useSettings();
   const { id } = useParams();
   const { data: project, error, loading, reload } =
     useFetch<ProjectDetail>(id ? API.project(id) : null);
@@ -38,7 +40,7 @@ export default function ProjectsPageContent() {
     );
   }
 
-  const service = serviceForProject(project.title, project.description);
+  const service = findService(services, project.service);
 
   return (
     <div className={styles.page}>

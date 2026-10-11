@@ -6,9 +6,12 @@ import Button from "../ui/Button";
 import ImageUploader from "./ImageUploader";
 import { useUnsavedChanges } from "../../hooks/useUnsavedChanges";
 import ProjectWritingHelp from "./ProjectWritingHelp";
+import { useSettings } from "../../lib/settingsContext";
+import { findService, suggestService } from "../../lib/services";
 import { hasPlaceholders } from "../../lib/projectText";
 import type { UpdateProjectRequest, CreateProjectRequest } from "../../lib/project";
 import styles from "../../admin.module.css";
+import uiStyles from "../ui/ui.module.css";
 
 interface ProjectFormProps {
   initialData?: UpdateProjectRequest & { id?: string };
@@ -28,9 +31,11 @@ export default function ProjectForm({
     ...(initialData?.additionalImages || []),
   ];
 
+  const { services } = useSettings();
   const [formData, setFormData] = useState({
     title:       initialData?.title       || "",
     description: initialData?.description || "",
+    service:     initialData?.service     || "",
   });
 
   const [images, setImages] = useState<string[]>(initialImages);
@@ -59,6 +64,7 @@ export default function ProjectForm({
         description:      formData.description,
         mainImage:        images[0],
         additionalImages: images.slice(1),
+        service:          formData.service || null,
       });
     } catch (err) {
       setError(errorMessage(err, "Kunde inte spara projekt"));
@@ -67,6 +73,7 @@ export default function ProjectForm({
     }
   };
 
+  const suggestion = suggestService(services, formData.title, formData.description);
   const initialJson = useState(() => JSON.stringify({ ...formData, images }))[0];
   const dirty = JSON.stringify({ ...formData, images }) !== initialJson;
   const guardLeave = useUnsavedChanges(dirty && !loading);
@@ -105,10 +112,43 @@ export default function ProjectForm({
         />
         <ProjectWritingHelp
           id="project-description-help"
-          title={formData.title}
+          service={findService(services, formData.service)}
           description={formData.description}
           onUseTemplate={(text) => handleChange("description", text)}
         />
+      </div>
+
+      <div className={styles.formField}>
+        <label htmlFor="project-service" className={styles.formLabel}>Tjänst</label>
+        <div className={uiStyles.selectWrapper}>
+        <select
+          id="project-service"
+          className={uiStyles.select}
+          value={formData.service}
+          onChange={(e) => handleChange("service", e.target.value)}
+          aria-describedby="project-service-hint"
+        >
+          <option value="">Ingen tjänst</option>
+          {services.map((s) => <option key={s.slug} value={s.slug}>{s.name}</option>)}
+          {formData.service && !findService(services, formData.service) && (
+            <option value={formData.service}>{formData.service} (borttagen tjänst)</option>
+          )}
+        </select>
+          <div className={uiStyles.selectArrow} aria-hidden>
+            <svg className={uiStyles.selectArrowIcon} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+        </div>
+        <p id="project-service-hint" className={styles.formHint}>
+          Projektet visas som exempel på tjänstens sida och under filtret på projektsidan.
+        </p>
+        {!formData.service && suggestion && (
+          <p className={styles.formHint}>
+            Förslag: <button type="button" className={styles.inlineLinkButton}
+              onClick={() => handleChange("service", suggestion.slug)}>{suggestion.name}</button>
+          </p>
+        )}
       </div>
 
       <div className={styles.card}>

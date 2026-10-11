@@ -4,20 +4,19 @@
 
 import { CircleCheck, CircleAlert, Wand2 } from "lucide-react";
 import { TEMPLATE, WORDS_MAX, WORDS_MIN, hasPlaceholders, mentionsPlace, wordCount } from "../../lib/projectText";
-import { serviceForProject } from "../../lib/services";
+import type { Service } from "../../lib/services";
 import { confirmAction } from "../../lib/notify";
 import styles from "../../admin.module.css";
 
 interface Props {
   id?: string;   // kopplas till textfältet med aria-describedby
-  title: string;
+  service: Service | undefined;   // vald i formuläret
   description: string;
   onUseTemplate: (text: string) => void;
 }
 
-export default function ProjectWritingHelp({ id, title, description, onUseTemplate }: Props) {
+export default function ProjectWritingHelp({ id, service, description, onUseTemplate }: Props) {
   const words = wordCount(description);
-  const service = serviceForProject(title, description);
   const placeholders = hasPlaceholders(description);
 
   const checks = [
@@ -37,7 +36,7 @@ export default function ProjectWritingHelp({ id, title, description, onUseTempla
       ok: !!service,
       text: service
         ? `Visas som exempel på tjänstesidan "${service.name}"`
-        : "Kopplas inte till någon tjänstesida – nämn vad det är (t.ex. bastu, altan, förråd).",
+        : "Ingen tjänst vald – välj en under \"Tjänst\" så visas projektet på tjänstens sida.",
     },
   ];
 

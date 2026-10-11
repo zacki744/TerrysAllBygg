@@ -990,3 +990,115 @@
 
 .writingTips ul { margin: 0.5rem 0; padding-left: 1.2rem; line-height: 1.6; }
 .writingTips p  { margin: 0.5rem 0; }
+
+/* ─── Admin → Tjänster ────────────────────────────────────── */
+
+.serviceAdminList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.serviceAdminItem {
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background: #fff;
+}
+
+.serviceAdminHead {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.5rem 0.5rem 0.25rem;
+}
+
+.serviceAdminToggle {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border: 0;
+  background: none;
+  text-align: left;
+  font: inherit;
+  color: var(--foreground);
+  cursor: pointer;
+  border-radius: 0.5rem;
+}
+
+.serviceAdminToggle > span { display: flex; flex-direction: column; min-width: 0; }
+.serviceAdminToggle:focus-visible { outline: 2px solid var(--accent-ink); }
+.serviceAdminToggle svg { flex-shrink: 0; transition: transform 0.15s; }
+.chevronOpen { transform: rotate(180deg); }
+
+.serviceAdminMeta {
+  font-size: 0.8125rem;
+  color: color-mix(in srgb, var(--foreground) 72%, transparent);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.serviceAdminActions {
+  display: flex;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.serviceAdminActions .tileBtn { width: 2.25rem; flex: none; }
+
+.serviceAdminBody {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1rem 1.25rem 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.twoCols {
+  display: grid;
+  gap: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .twoCols { grid-template-columns: 1fr 1fr; }
+}
+
+.slugLocked {
+  margin: 0;
+  font-size: 0.9375rem;
+}
+
+.slugLocked a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--accent-ink);
+}
+
+.serviceTag,
+.serviceTagMissing {
+  display: inline-block;
+  margin-left: 0.35rem;
+  padding: 0.05rem 0.55rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  vertical-align: 0.1em;
+}
+
+.serviceTag {
+  background: color-mix(in srgb, var(--accent) 14%, var(--background));
+  color: var(--accent-ink);
+}
+
+.serviceTagMissing {
+  border: 1px dashed var(--border);
+  color: color-mix(in srgb, var(--foreground) 72%, transparent);
+  font-weight: 500;
+}

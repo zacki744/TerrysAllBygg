@@ -18,7 +18,8 @@ public class ProjectsService(IDatabase db) : IProjectsService
             Id = Guid.Parse(p.Id),
             Title = p.Title,
             Description = p.Description,
-            Image = p.MainImage ?? "/placeholder.jpg"
+            Image = p.MainImage ?? "/placeholder.jpg",
+            Service = p.Service,
         })];
     }
 
@@ -69,7 +70,8 @@ public class ProjectsService(IDatabase db) : IProjectsService
             Id = Guid.Parse(project.Id),
             Title = project.Title,
             Description = project.Description,
-            Images = [.. allImages]
+            Images = [.. allImages],
+            Service = project.Service,
         };
     }
 
@@ -90,7 +92,8 @@ public class ProjectsService(IDatabase db) : IProjectsService
             request.Title,
             request.Description,
             request.MainImage,
-            Images = imagesJson
+            Images = imagesJson,
+            Service = string.IsNullOrWhiteSpace(request.Service) ? null : request.Service,
         };
 
         await _db.InsertAsync("projects", dto, ct);
@@ -112,7 +115,8 @@ public class ProjectsService(IDatabase db) : IProjectsService
             request.Title,
             request.Description,
             request.MainImage,
-            Images = imagesJson
+            Images = imagesJson,
+            Service = string.IsNullOrWhiteSpace(request.Service) ? null : request.Service,
         };
 
         var rowsAffected = await _db.UpdateAsync(

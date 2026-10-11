@@ -72,9 +72,13 @@ Terrys AllBygg erbjuder skräddarsydda byggprojekt (bastuer, tillbyggnader, alta
 
 Gamla adresser (`/projects?id=…`, `/snickeri?id=…`) omdirigeras till de nya.
 
-### Tjänstesidor (`/tjanster`)
+### Tjänster (`/tjanster`)
 
-En sida per tjänst (bastu, tillbyggnad, altaner, förråd och garage, trädgårdsstudio, snickerier, renovering) med egen text, "Bra att veta" om bygglov, arbetsgång, exempel från projekten och en bokningsknapp som väljer rätt projekttyp (`/book?typ=bastu`). All text finns i `frontend/src/lib/services.ts`. Sidorna förrenderas automatiskt och hamnar i sitemapen, som läser vilka sidor som förrenderats. Projekt kopplas till en tjänst via nyckelord i titel och beskrivning.
+Tjänsterna hanteras i **admin → Tjänster**: namn, text, "det här ingår", "bra att veta" och texten i Googles sökresultat. Listan styr tjänstesidorna, startsidans "Det här bygger vi", Om oss, valen i bokningsformuläret (`/book?typ=<slug>` väljer tjänsten) och företagets strukturerade data. Utan sparade tjänster används standardlistan i `frontend/src/lib/services.ts`.
+
+Projekt får en **etikett** (tjänst) i projektformuläret. Etiketten avgör var projektet visas som exempel, och projektsidan kan filtreras per tjänst (`/projekt?tjanst=altaner`). Formuläret föreslår en tjänst utifrån titeln när etikett saknas.
+
+Tjänstesidorna förrenderas utifrån inställningarna på den publicerade sajten. En ny tjänst fungerar direkt (backend känner igen den och lägger den i sitemapen), men får sin förrenderade sida först vid nästa bygge.
 
 ### E-postflöden
 
@@ -309,7 +313,10 @@ Administrationsgränssnittet nås på `/admin/login`. Första kontot skapas manu
 
 **Inställningar:** sparas som ett JSON-dokument i tabellen `site_settings` (en rad). Tomma fält betyder standardvärde, och standardtexterna finns bara i `frontend/src/lib/settings.ts`. Sidorna läser `GET /api/settings`. Vid bygget hämtar `scripts/prerender.mjs` inställningarna från den publicerade sajten och bäddar in dem i HTML:en, så att förrenderade sidor visar rätt innehåll direkt. Styr adressen med `SETTINGS_URL`, eller sätt `SETTINGS_URL=off` för att bygga med standardvärden. Hero-bilder sparas i `uploads/site/` i 1920 och 960 px.
 
-Tabellen skapas en gång med `TABB/db/site_settings.sql` (t.ex. i Simplys phpMyAdmin). Saknas den visar sajten standardvärdena, men inget går att spara.
+Databasändringarna i `TABB/db/` körs en gång, i den här ordningen, t.ex. i Simplys phpMyAdmin, **innan** den nya versionen deployas:
+
+1. `site_settings.sql` – tabellen för inställningar och tjänster. Utan den visas standardvärdena, men inget går att spara.
+2. `2026-10-projekt-tjanst.sql` – kolumnen `service` på projekt. Utan den går det inte att spara projekt.
 
 ---
 

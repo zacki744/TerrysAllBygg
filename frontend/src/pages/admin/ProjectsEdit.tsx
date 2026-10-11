@@ -76,6 +76,7 @@ export default function EditProjectContent() {
             description: project.description,
             mainImage: project.images[0],
             additionalImages: project.images.slice(1),
+            service: project.service ?? null,
           }}
           onSubmit={handleSubmit}
           onCancel={() => navigate("/admin")}

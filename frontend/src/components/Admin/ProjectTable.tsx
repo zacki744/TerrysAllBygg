@@ -1,6 +1,8 @@
 import type { Project } from "../../lib/auth";
 import { Pencil, Trash2 } from "lucide-react";
 import { thumbUrl } from "../../lib/images";
+import { findService } from "../../lib/services";
+import { useSettings } from "../../lib/settingsContext";
 import styles from "../../admin.module.css";
 
 interface ProjectTableProps {
@@ -10,6 +12,7 @@ interface ProjectTableProps {
 }
 
 export default function ProjectTable({ projects, onEdit, onDelete }: ProjectTableProps) {
+  const { services } = useSettings();
   return (
     <div className={styles.tableWrapper}>
       <table className={styles.table}>
@@ -29,7 +32,12 @@ export default function ProjectTable({ projects, onEdit, onDelete }: ProjectTabl
                         onError={(e) => { if (e.currentTarget.src !== project.image) e.currentTarget.src = project.image; }} />
                     : <span className={styles.tableThumb} aria-hidden />}
                   <div>
-                    <div className={styles.tablePrimary}>{project.title}</div>
+                    <div className={styles.tablePrimary}>
+                      {project.title}{" "}
+                      {findService(services, project.service)
+                        ? <span className={styles.serviceTag}>{findService(services, project.service)!.name}</span>
+                        : <span className={styles.serviceTagMissing}>Ingen tjänst</span>}
+                    </div>
                     <div className={styles.tableSecondary}>{project.description}</div>
                   </div>
                 </div>

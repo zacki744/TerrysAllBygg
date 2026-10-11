@@ -20,7 +20,7 @@ async function fillForm() {
   await user.type(screen.getByLabelText(/^Namn/), "Anna Svensson");
   await user.type(screen.getByLabelText(/^E-post/), "anna@example.se");
   await user.selectOptions(screen.getByLabelText(/^Byggplats/), "utomhus");
-  await user.selectOptions(screen.getByLabelText(/^Typ av projekt/), "bastu");
+  await user.selectOptions(screen.getByLabelText(/^Typ av projekt/), "Bastuer");
   await user.type(screen.getByLabelText(/^Adress/), "Storgatan 1, Kivik");
   await user.type(screen.getByLabelText(/^Projektbeskrivning/), "En utomhusbastu");
   return user;
@@ -51,7 +51,7 @@ describe("Bokningsformuläret", () => {
 
     expect(await screen.findByText(/Tack, din förfrågan är skickad/)).toBeInTheDocument();
     const body = JSON.parse((fetch.mock.calls[0][1] as RequestInit).body as string);
-    expect(body).toMatchObject({ name: "Anna Svensson", project: "bastu", privacyAccepted: true });
+    expect(body).toMatchObject({ name: "Anna Svensson", project: "Bastuer", privacyAccepted: true });
   });
 
   it("förklarar när för många förfrågningar skickats", async () => {
@@ -82,9 +82,9 @@ describe("bokning från en projektsida", () => {
 });
 
 describe("bokning från en tjänstesida", () => {
-  it("väljer projekttyp från ?typ=", () => {
+  it("väljer tjänsten från ?typ= (tjänstens adress)", () => {
     renderBook("/book?typ=bastu");
-    expect(screen.getByLabelText(/^Typ av projekt/)).toHaveValue("bastu");
+    expect(screen.getByLabelText(/^Typ av projekt/)).toHaveValue("Bastuer");
   });
 
   it("ignorerar okända typer", () => {

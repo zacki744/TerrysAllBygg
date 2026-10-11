@@ -4,10 +4,10 @@ import type { ApiSettings } from "./settings";
 
 export interface Project {
   id: string;
-  href: string;
   title: string;
   description: string;
   image: string;
+  service?: string | null;   // tjänstens slug
 }
 
 // ── Auth helpers ───────────────────────────────────────────

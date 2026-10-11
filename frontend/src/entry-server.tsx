@@ -12,10 +12,11 @@ import { HelmetProvider } from "react-helmet-async";
 import { AppRoutes } from "./App";
 import SettingsProvider from "./components/SettingsProvider";
 import { mergeSettings, type ApiSettings } from "./lib/settings";
-import { SERVICES, SERVICES_PATH, servicePath } from "./lib/services";
+import { SERVICES_PATH, servicePath } from "./lib/services";
 
-/** Tjänstesidorna förrenderas också — listan följer SERVICES automatiskt. */
-export const serviceRoutes = [SERVICES_PATH, ...SERVICES.map((s) => servicePath(s.slug))];
+/** Tjänstesidorna förrenderas också — listan följer inställningarna (admin → Tjänster). */
+export const serviceRoutes = (settings?: ApiSettings | null) =>
+  [SERVICES_PATH, ...mergeSettings(settings).services.map((s) => servicePath(s.slug))];
 
 export function render(url: string, settings?: ApiSettings | null): string {
   return renderToString(

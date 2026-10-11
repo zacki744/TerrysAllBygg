@@ -992,3 +992,34 @@ h2.infoBoxTitle { font-size: 1.17em; }
   text-decoration: underline;
   text-underline-offset: 0.2em;
 }
+
+/* ── Filter på projektsidan ── */
+.filterChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: -0.5rem 0 1.75rem;
+}
+
+.filterChip {
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--foreground);
+  font: inherit;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+
+.filterChip:hover { border-color: var(--primary-ink); }
+
+.filterChip[aria-pressed="true"] {
+  background: var(--primary-ink);
+  border-color: var(--primary-ink);
+  color: #fff;
+  font-weight: 600;
+}
+
+.filterChip:focus-visible { outline: 2px solid var(--accent-ink); outline-offset: 2px; }

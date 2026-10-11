@@ -48,6 +48,44 @@ public class SettingsTests
         Assert.False(s.ShowReviews);     // omdömen kräver en länk
     }
 
+    [Fact]
+    public void Två_tjänster_får_inte_ha_samma_adress()
+    {
+        var s = new SiteSettings
+        {
+            Services = [new ServiceItem { Slug = "altaner", Name = "Altaner" }, new ServiceItem { Slug = "altaner", Name = "Däck" }],
+        };
+        Assert.Contains(nameof(SiteSettings.Services), Invalid(s));
+    }
+
+    [Theory]
+    [InlineData("altaner", true)]
+    [InlineData("forrad-och-garage", true)]
+    [InlineData("Förråd", false)]
+    [InlineData("-altan", false)]
+    [InlineData("altan/../x", false)]
+    public void Tjänstens_adress_är_url_säker(string slug, bool valid)
+    {
+        var item = new ServiceItem { Slug = slug, Name = "X" };
+        var results = new List<ValidationResult>();
+        Assert.Equal(valid, Validator.TryValidateObject(item, new ValidationContext(item), results, validateAllProperties: true));
+    }
+
+    [Fact]
+    public void Normalize_städar_tjänsterna()
+    {
+        var s = new SiteSettings
+        {
+            Services = [new ServiceItem { Slug = " Bastu ", Name = " Bastuer ", Intro = "  ", Includes = ["  Vedeldat ", "", " "] }],
+        };
+        s.Normalize();
+        var item = Assert.Single(s.Services!);
+        Assert.Equal("bastu", item.Slug);
+        Assert.Equal("Bastuer", item.Name);
+        Assert.Null(item.Intro);
+        Assert.Equal(new[] { "Vedeldat" }, item.Includes);
+    }
+
     // ── SettingsService mot en databas i minnet ──
 
     private sealed class FakeDb : IDatabase

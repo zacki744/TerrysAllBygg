@@ -6,7 +6,7 @@
 
 import { CONTACT } from "./contact";
 import { DEFAULT_SETTINGS, type SiteSettings } from "./settings";
-import { SERVICES, servicePath, type Service } from "./services";
+import { servicePath, type Service } from "./services";
 
 const BUSINESS_ID = `${CONTACT.baseUrl}/#foretag`;
 const SITE_ID     = `${CONTACT.baseUrl}/#webbplats`;
@@ -44,7 +44,7 @@ export function businessSchema(settings: SiteSettings = DEFAULT_SETTINGS) {
     hasOfferCatalog: {
       "@type": "OfferCatalog",
       name: "Tjänster",
-      itemListElement: SERVICES.map((s) => ({
+      itemListElement: settings.services.map((s) => ({
         "@type": "Offer",
         itemOffered: {
           "@type": "Service",

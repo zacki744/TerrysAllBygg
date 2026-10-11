@@ -7,7 +7,7 @@ namespace Models.Settings;
 /// "använd sajtens standardvärde" — standardtexterna finns i
 /// frontend/src/lib/settings.ts, så att de bara står på ett ställe.
 /// </summary>
-public class SiteSettings
+public class SiteSettings : IValidatableObject
 {
     // ── Startsidan ────────────────────────────────────────
     [MaxLength(120)] public string? HeroTitle { get; set; }
@@ -39,6 +39,21 @@ public class SiteSettings
     // ── Om oss ────────────────────────────────────────────
     [MaxLength(4000)] public string? AboutStory { get; set; }
 
+    // ── Tjänster (admin → Tjänster) ───────────────────────
+    // Null = sajtens standardlista (frontend/src/lib/services.ts).
+    [MaxLength(30)] public List<ServiceItem>? Services { get; set; }
+
+    public IEnumerable<ValidationResult> Validate(ValidationContext context)
+    {
+        if (Services == null) yield break;
+
+        var duplicate = Services.GroupBy(s => s.Slug.Trim().ToLowerInvariant()).FirstOrDefault(g => g.Count() > 1);
+        if (duplicate != null)
+            yield return new ValidationResult($"Två tjänster har samma adress: {duplicate.Key}", [nameof(Services)]);
+
+        // Varje tjänsts fält valideras av MVC (listor valideras rekursivt).
+    }
+
     /// <summary>Trimmar texter och gör tomma fält till null (= standardvärde).</summary>
     public void Normalize()
     {
@@ -57,6 +72,8 @@ public class SiteSettings
 
         if (HeroImage == null)
             HeroImageWidth = HeroImageHeight = null;
+
+        Services?.ForEach(s => s.Normalize());
 
         // Omdömen kan inte visas utan en länk att visa
         if (GoogleReviewsUrl == null)

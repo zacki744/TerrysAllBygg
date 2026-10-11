@@ -1,7 +1,8 @@
 // src/pages/ProjectList.tsx
 // ── /projekt — alla tidigare projekt ──
 
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
+import { useSettings } from "../lib/settingsContext";
 import PageShell from "../components/PageShell";
 import PageMeta from "../components/PageMeta";
 import ProjectCard from "../components/project/ProjectCard";
@@ -14,7 +15,16 @@ import { API, type ProjectOverview } from "../lib/api";
 
 export default function ProjectList() {
   const { data, loading, error, reload } = useFetch<ProjectOverview[]>(API.projects);
-  const projects = data ?? [];
+  const all = data ?? [];
+  const { services } = useSettings();
+  const [params, setParams] = useSearchParams();
+
+  // Filter per tjänst — bara tjänster som har projekt med etiketten
+  const used = services.filter((s) => all.some((p) => p.service === s.slug));
+  const active = used.find((s) => s.slug === params.get("tjanst"));
+  const projects = active ? all.filter((p) => p.service === active.slug) : all;
+  const select = (slug: string | null) =>
+    setParams(slug ? { tjanst: slug } : {}, { replace: true, preventScrollReset: true });
 
   return (
     <PageShell wide>
@@ -30,6 +40,20 @@ export default function ProjectList() {
           Ett urval av det vi byggt på Österlen. Klicka på ett projekt för fler bilder.
         </p>
       </header>
+
+      {used.length > 0 && (
+        <div className={styles.filterChips} role="group" aria-label="Visa projekt för">
+          <button type="button" className={styles.filterChip} aria-pressed={!active} onClick={() => select(null)}>
+            Alla
+          </button>
+          {used.map((s) => (
+            <button key={s.slug} type="button" className={styles.filterChip}
+              aria-pressed={active?.slug === s.slug} onClick={() => select(s.slug)}>
+              {s.name}
+            </button>
+          ))}
+        </div>
+      )}
 
       <div className={styles.projectGrid}>
         {loading && Array.from({ length: 6 }).map((_, i) => <ProjectCardSkeleton key={i} />)}

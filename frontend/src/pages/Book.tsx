@@ -14,33 +14,22 @@ import PrivacyNotice from "../components/PrivacyNotice";
 import { CONTACT } from "../lib/contact";
 import Honeypot from "../components/Honeypot";
 import { FORM_LIMITS } from "../lib/formLimits";
+import { useSettings } from "../lib/settingsContext";
 
 type Status = "idle" | "sending" | "sent" | "error";
 
-// Värdena skickas till servern och syns i mejlet till Terry.
-// Tjänstesidorna länkar hit med ?typ=<värde> (se bookType i lib/services.ts).
-const PROJECT_TYPES = [
-  { value: "altan",       label: "Altan" },
-  { value: "garage",      label: "Garage" },
-  { value: "friggebod",   label: "Friggebod" },
-  { value: "pool",        label: "Pool" },
-  { value: "bastu",       label: "Bastu" },
-  { value: "tillbyggnad", label: "Tillbyggnad" },
-  { value: "forrad",      label: "Förråd" },
-  { value: "studio",      label: "Trädgårdsstudio" },
-  { value: "renovering",  label: "Renovering" },
-  { value: "annat",       label: "Annat" },
-] as const;
-
-const typeFromUrl = (params: URLSearchParams) => {
-  const typ = params.get("typ");
-  return PROJECT_TYPES.some((t) => t.value === typ) ? typ! : "";
-};
+// "Typ av projekt" = tjänsterna i admin → Tjänster, plus "Annat".
+// Värdet är tjänstens namn — det står i mejlet till Terry.
+// Tjänstesidorna länkar hit med ?typ=<slug>.
+const OTHER = "annat";
+const typeFromUrl = (params: URLSearchParams, services: { slug: string; name: string }[]) =>
+  services.find((s) => s.slug === params.get("typ"))?.name ?? "";
 
 export default function Book() {
   // Från "Vill du ha något liknande?" på en projektsida
   const [searchParams] = useSearchParams();
   const reference = bookingReference(searchParams);
+  const { services } = useSettings();
 
   const [form, setForm] = useState(() => ({
     name: "",
@@ -48,7 +37,7 @@ export default function Book() {
     phoneNumber: "",
     placement: "",
     other1: "",
-    project: typeFromUrl(searchParams),
+    project: typeFromUrl(searchParams, services),
     other2: "",
     address: "",
     description: reference ? referenceDescription(reference) : "",
@@ -173,7 +162,8 @@ export default function Book() {
             <div className={styles.formField}>
               <label htmlFor="book-project" className={styles.formLabel}>Typ av projekt *</label>
               <Select id="book-project" name="project" value={form.project} onChange={handleChange} required placeholder="Välj typ av byggprojekt">
-                {PROJECT_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+                {services.map((s) => <option key={s.slug} value={s.name}>{s.name}</option>)}
+                <option value={OTHER}>Annat</option>
               </Select>
             </div>
 

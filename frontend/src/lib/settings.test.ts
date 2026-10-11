@@ -49,3 +49,28 @@ describe("hjälpare", () => {
     expect(heroSmallUrl("/uploads/site/hero-abc.webp")).toBe("/uploads/site/hero-abc-960.webp");
   });
 });
+
+describe("tjänster i inställningarna", () => {
+  it("använder standardlistan tills Terry sparat egna", () => {
+    expect(mergeSettings({ services: null }).services).toEqual(DEFAULT_SETTINGS.services);
+    expect(toApiSettings(DEFAULT_SETTINGS).services).toBeNull();
+  });
+
+  it("tar emot sparade tjänster och hoppar över trasiga", () => {
+    const s = mergeSettings({
+      services: [
+        { slug: "pooler", name: "Pooler", intro: "Vi bygger pooler.", includes: ["Trädäck runt poolen"] },
+        { slug: "", name: "Utan adress" },
+        "skräp",
+      ] as never,
+    });
+    expect(s.services.map((x) => x.slug)).toEqual(["pooler"]);
+    expect(s.services[0].title).toBe("Pooler");        // rubrik saknas → namnet
+    expect(s.services[0].goodToKnow).toBe("");
+  });
+
+  it("skickar ändrade tjänster till servern", () => {
+    const services = DEFAULT_SETTINGS.services.slice(0, 2);
+    expect(toApiSettings({ ...DEFAULT_SETTINGS, services }).services).toEqual(services);
+  });
+});

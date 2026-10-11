@@ -3,6 +3,7 @@ export interface Project {
   title: string;
   description: string;
   image: string;
+  service?: string | null;   // tjänstens slug (admin → Tjänster)
 }
 
 export interface DetailedProject {
@@ -10,6 +11,7 @@ export interface DetailedProject {
   title: string;
   description: string;
   images: string[];
+  service?: string | null;
 }
 
 export interface CreateProjectRequest {
@@ -17,6 +19,7 @@ export interface CreateProjectRequest {
   description:      string;
   mainImage:        string;
   additionalImages: string[];
+  service?:         string | null;
 }
 
 export interface UpdateProjectRequest {
@@ -24,4 +27,5 @@ export interface UpdateProjectRequest {
   description?:      string;
   mainImage?:        string;
   additionalImages?: string[];
+  service?:          string | null;
 }
