@@ -14,8 +14,9 @@ export default function AdminNavbar() {
     navigate("/admin/login");
   };
 
+  // "/admin" (Översikt) är aktiv bara på exakt den sidan, inte på alla /admin/…
   const isActive = (path: string) =>
-    location.pathname === path || location.pathname?.startsWith(path + "/")
+    location.pathname === path || (path !== "/admin" && location.pathname?.startsWith(path + "/"))
       ? `${styles.navLink} ${styles.navLinkActive}`
       : styles.navLink;
 
@@ -23,6 +24,7 @@ export default function AdminNavbar() {
     <nav className={styles.navbar}>
       <div className={styles.navLinks}>
         <Link to="/admin"       className={isActive("/admin")}>Översikt</Link>
+        <Link to="/admin/installningar" className={isActive("/admin/installningar")}>Inställningar</Link>
         <Link to="/admin/users" className={isActive("/admin/users")}>Användare</Link>
         <Link to="/"            className={styles.navLink}>Visa sida</Link>
       </div>

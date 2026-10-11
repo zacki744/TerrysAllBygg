@@ -707,3 +707,44 @@ h2.infoBoxTitle { font-size: 1.17em; }
     column-gap: 2rem;
   }
 }
+
+/* ── Omdömen (startsidan, slås på i admin) ── */
+.reviewsBand {
+  margin-top: 3rem;
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.75rem 1rem;
+  align-items: center;
+}
+
+.reviewsBand > a {
+  grid-column: 1 / -1;
+  justify-self: start;
+}
+
+.reviewsIcon {
+  color: var(--primary);
+  fill: var(--primary);
+}
+
+.reviewsTitle {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  margin: 0;
+}
+
+.reviewsText {
+  margin: 0.25rem 0 0;
+  color: color-mix(in srgb, var(--foreground) 75%, transparent);
+}
+
+@media (min-width: 768px) {
+  .reviewsBand {
+    grid-template-columns: auto 1fr auto;
+    padding: 1.5rem 2rem;
+  }
+  .reviewsBand > a { grid-column: auto; }
+}

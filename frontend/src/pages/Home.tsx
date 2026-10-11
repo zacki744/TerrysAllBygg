@@ -9,25 +9,21 @@ import PageMeta from "./../components/PageMeta";
 import styles from "./../pages.module.css";
 import { useFetch } from "../hooks/useFetch";
 import { API, type ProjectOverview } from "../lib/api";
-import { Check } from "lucide-react";
+import { Check, Star } from "lucide-react";
+import { useSettings } from "../lib/settingsContext";
+import { trustItems, reviewsUrl } from "../lib/settings";
 import { CONTACT } from "../lib/contact";
 import { SERVICES } from "../lib/services";
 
 const HOME_PROJECT_COUNT = 6;
 
-// Punkter som styrs av inställningar i contact.ts visas bara när de stämmer
-const TRUST_ITEMS = [
-  CONTACT.trust.rotDeduction && "ROT-avdrag direkt på fakturan",
-  "Kostnadsfri konsultation",
-  "Lokalt företag på Österlen",
-  CONTACT.trust.fTax && "Godkänd för F-skatt",
-  CONTACT.trust.insured && "Ansvarsförsäkrad",
-].filter((t): t is string => Boolean(t));
 
 
 export default function Home() {
   const { data, loading, error, reload } = useFetch<ProjectOverview[]>(API.projects);
   const projects = data ?? [];
+  const settings = useSettings();
+  const reviews = reviewsUrl(settings);
 
   return (
     <div className={styles.page}>
@@ -41,7 +37,7 @@ export default function Home() {
       <Hero />
 
       <ul className={styles.trustBar} aria-label="Därför Terrys Allbygg">
-        {TRUST_ITEMS.map((t) => (
+        {trustItems(settings).map((t) => (
           <li key={t} className={styles.trustItem}>
             <Check size={15} strokeWidth={2.5} className={styles.trustIcon} aria-hidden />{t}
           </li>
@@ -83,6 +79,20 @@ export default function Home() {
             ))}
           </ul>
         </section>
+
+        {/* ── Omdömen (slås på i admin → Inställningar) ── */}
+        {reviews && (
+          <section className={styles.reviewsBand} aria-labelledby="home-reviews">
+            <Star size={22} className={styles.reviewsIcon} aria-hidden />
+            <div>
+              <h2 id="home-reviews" className={styles.reviewsTitle}>Vad tycker våra kunder?</h2>
+              <p className={styles.reviewsText}>Läs omdömen från kunder på Österlen – eller lämna ett eget efter ditt projekt.</p>
+            </div>
+            <a href={reviews} target="_blank" rel="noopener noreferrer" className={styles.btnGhost}>
+              Omdömen på Google
+            </a>
+          </section>
+        )}
 
         {/* ── CTA ── */}
         <div className={styles.homeCta}>

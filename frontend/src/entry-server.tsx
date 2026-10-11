@@ -10,14 +10,18 @@ import { renderToString } from "react-dom/server";
 import { StaticRouter } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { AppRoutes } from "./App";
+import SettingsProvider from "./components/SettingsProvider";
+import { mergeSettings, type ApiSettings } from "./lib/settings";
 
-export function render(url: string): string {
+export function render(url: string, settings?: ApiSettings | null): string {
   return renderToString(
     <StrictMode>
       <HelmetProvider>
-        <StaticRouter location={url}>
-          <AppRoutes />
-        </StaticRouter>
+        <SettingsProvider initial={mergeSettings(settings)} fetchOnMount={false}>
+          <StaticRouter location={url}>
+            <AppRoutes />
+          </StaticRouter>
+        </SettingsProvider>
       </HelmetProvider>
     </StrictMode>
   );

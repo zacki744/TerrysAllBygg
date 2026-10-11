@@ -27,6 +27,7 @@ const ProjectsEdit = lazy(() => import("./pages/admin/ProjectsEdit"));
 const SnickeriNew  = lazy(() => import("./pages/admin/snickerierNew"));
 const SnickeriEdit = lazy(() => import("./pages/admin/snickerierEdit"));
 const ResetPassword = lazy(() => import("./pages/admin/ResetPassword"));
+const AdminSettings = lazy(() => import("./pages/admin/Settings"));
 
 // ── Auth guard ─────────────────────────────────────────────
 function RequireAuth({ children }: { children: React.ReactNode }) {
@@ -76,6 +77,9 @@ export function AppRoutes() {
         {/* ── Admin — protected ── */}
         <Route path="/admin" element={
           <RequireAuth><AdminPage><Dashboard /></AdminPage></RequireAuth>
+        } />
+        <Route path="/admin/installningar" element={
+          <RequireAuth><AdminPage><AdminSettings /></AdminPage></RequireAuth>
         } />
         <Route path="/admin/users" element={
           <RequireAuth><AdminPage><Users /></AdminPage></RequireAuth>

@@ -10,6 +10,7 @@ import PageShell from "../components/PageShell";
 import PageMeta from "../components/PageMeta";
 import { CONTACT } from "../lib/contact";
 import { PRIVACY } from "../lib/privacy";
+import { useSettings } from "../lib/settingsContext";
 import styles from "../pages.module.css";
 
 const lastUpdated = new Date(PRIVACY.lastUpdated).toLocaleDateString("sv-SE", {
@@ -17,6 +18,7 @@ const lastUpdated = new Date(PRIVACY.lastUpdated).toLocaleDateString("sv-SE", {
 });
 
 export default function Privacy() {
+  const settings = useSettings();
   return (
     <PageShell>
       <PageMeta
@@ -42,7 +44,7 @@ export default function Privacy() {
           </p>
           <ul className={styles.privacyFacts}>
             {CONTACT.orgNumber && <li>Organisationsnummer: {CONTACT.orgNumber}</li>}
-            {CONTACT.address && <li>Adress: {CONTACT.address}</li>}
+            {settings.address && <li>Adress: {settings.address}</li>}
             <li>E-post: <a href={CONTACT.emailHref}>{CONTACT.email}</a></li>
             <li>Telefon: <a href={CONTACT.phoneHref}>{CONTACT.phone}</a></li>
           </ul>

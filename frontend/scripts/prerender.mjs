@@ -17,7 +17,37 @@ const ssrDir  = path.join(root, "dist-ssr");
 // Håll i synk med StaticPaths i TABB/API/Controllers/SitemapController.cs
 const ROUTES = ["/", "/projekt", "/snickerier", "/about", "/book", "/integritetspolicy"];
 
-const template = fs.readFileSync(path.join(distDir, "index.html"), "utf-8");
+// ── Webbplatsinställningar ────────────────────────────────
+// Hämtas från den publicerade sajten så att förrenderad HTML visar det Terry
+// har sparat i admin (hero, förtroenderad, adress …). Saknas API:t (första
+// deployen, eller offline) används standardvärdena i src/lib/settings.ts.
+// Ändringar efter deploy hämtas ändå av webbläsaren när sidan laddas.
+const SETTINGS_URL = process.env.SETTINGS_URL ?? "https://terrysallbygg.se/api/settings";
+
+async function fetchSettings() {
+  if (SETTINGS_URL === "off") return null;
+  try {
+    const res = await fetch(SETTINGS_URL, { signal: AbortSignal.timeout(5000) });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    console.log(`inställningar: hämtade från ${SETTINGS_URL}`);
+    return data;
+  } catch (err) {
+    console.warn(`inställningar: kunde inte hämta ${SETTINGS_URL} (${err.message}) — standardvärden används`);
+    return null;
+  }
+}
+
+const settings = await fetchSettings();
+
+// JSON i <script type="application/json"> körs inte (CSP påverkas inte).
+// "<" escapas så att en text i inställningarna aldrig kan avsluta taggen.
+const settingsTag = settings
+  ? `<script id="site-settings" type="application/json">${JSON.stringify(settings).replace(/</g, "\\u003c")}</script>`
+  : "";
+
+const template = fs.readFileSync(path.join(distDir, "index.html"), "utf-8")
+  .replace("</body>", `${settingsTag}</body>`);
 fs.writeFileSync(path.join(distDir, "index.spa.html"), template);
 
 const { render } = await import(pathToFileURL(path.join(ssrDir, "entry-server.js")).href);
@@ -35,7 +65,7 @@ const OWNED_BY_PAGE = [
 const HEAD_TAG = /<title>[\s\S]*?<\/title>|<meta [^>]*\/>|<link rel="canonical"[^>]*\/>/g;
 
 for (const route of ROUTES) {
-  let html = render(route);
+  let html = render(route, settings);
 
   // Flytta head-taggarna till <head>. data-prerender gör att main.tsx kan ta
   // bort dem innan React lägger in sina egna, så att inget dubbleras.
@@ -48,10 +78,17 @@ for (const route of ROUTES) {
 
   // Hero-bilden är startsidans största element (LCP): förladda den så att
   // webbläsaren hämtar den direkt, innan CSS och JavaScript är klara.
+  // En uppladdad hero-bild har srcset — då förladdas rätt storlek via imagesrcset.
   if (route === "/") {
-    const hero = html.match(/<img[^>]*fetchPriority="high"[^>]*src="([^"]+)"|<img[^>]*src="([^"]+)"[^>]*fetchPriority="high"/i);
-    const src = hero?.[1] ?? hero?.[2];
-    if (src) headTags.unshift(`<link data-prerender rel="preload" as="image" href="${src}" fetchpriority="high"/>`);
+    const img = html.match(/<img[^>]*fetchPriority="high"[^>]*>/i)?.[0] ?? "";
+    const attr = (name) => img.match(new RegExp(`\\s${name}="([^"]+)"`, "i"))?.[1];
+    const src = attr("src");
+    if (src) {
+      const srcset = attr("srcSet");
+      const sizes  = attr("sizes");
+      const extra  = srcset ? ` imagesrcset="${srcset}"${sizes ? ` imagesizes="${sizes}"` : ""}` : "";
+      headTags.unshift(`<link data-prerender rel="preload" as="image" href="${src}"${extra} fetchpriority="high"/>`);
+    }
   }
 
   page = page

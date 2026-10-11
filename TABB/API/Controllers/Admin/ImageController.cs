@@ -19,7 +19,7 @@ public class ImageController(
     private readonly IWebHostEnvironment _environment = environment;
     private readonly ILogger<ImageController> _logger = logger;
 
-    private static readonly HashSet<string> HeicExtensions = [".heic", ".heif", ".hif"];
+    internal static readonly HashSet<string> HeicExtensions = [".heic", ".heif", ".hif"];
 
     private string UploadsRoot =>
         Path.GetFullPath(Path.Combine(_environment.ContentRootPath, "uploads"));
@@ -121,7 +121,7 @@ public class ImageController(
     // -------------------------
     // HEIC → JPEG
     // -------------------------
-    private static async Task<MemoryStream> ConvertHeicToJpegAsync(
+    internal static async Task<MemoryStream> ConvertHeicToJpegAsync(
         Stream input,
         CancellationToken ct)
     {

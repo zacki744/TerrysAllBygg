@@ -1,7 +1,8 @@
 // src/lib/contact.ts
 // ══════════════════════════════════════════════════════════
 // Enda stället där kontaktinformation definieras.
-// Importera härifrån i Footer, PageMeta, Book, e-postmallar.
+// Importera härifrån i Footer, PageMeta, Book m.fl. Mejlen från servern har
+// samma uppgifter i TABB/Services/Src/Mail/EmailLayout.cs (Brand).
 // ══════════════════════════════════════════════════════════
 
 export const CONTACT = {
@@ -16,24 +17,9 @@ export const CONTACT = {
   // tomma fält döljs automatiskt.
   orgNumber:   "570303-9395",
   vatNumber:   "SE570303939501",   // momsreg.nr = SE + org.nr + 01
-  address:     "",   // TODO: "Gatuadress, Postnr Ort"
 
-  // Förtroende — visas i förtroenderaden på startsidan när de är true.
-  // Sätt bara true för det som faktiskt stämmer.
-  trust: {
-    rotDeduction: false,  // TODO: true om ni drar av ROT direkt på fakturan
-    fTax:         false,  // TODO: true om företaget har F-skatt
-    insured:      false,  // TODO: true om ansvarsförsäkring finns
-  },
-
-  // Länk till Google-profilens omdömen (visas i sidfoten när ifylld)
-  googleReviewsUrl: "",   // TODO: "https://g.page/r/…"
-
-  // Sociala medier — lägg till om de finns
-  social: {
-    facebook:  "",   // "https://facebook.com/terrysallbygg"
-    instagram: "",   // "https://instagram.com/terrysallbygg"
-  },
+  // Adress, förtroenderad (ROT/F-skatt/försäkring), Google-omdömen och
+  // sociala medier ställs in i admin → Inställningar (se lib/settings.ts).
 
   // SEO
   baseUrl:   "https://terrysallbygg.se",

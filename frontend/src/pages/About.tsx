@@ -5,9 +5,13 @@ import PageMeta from "../components/PageMeta";
 import { CONTACT } from "../lib/contact";
 import { SERVICES } from "../lib/services";
 import styles from "../pages.module.css";
+import { useSettings } from "../lib/settingsContext";
+import { paragraphs } from "../lib/settings";
 
 
 export default function About() {
+  const settings = useSettings();
+
   return (
     <PageShell>
       <PageMeta
@@ -25,16 +29,9 @@ export default function About() {
 
       <section>
         <h2 className={styles.aboutTitle}>Vår historia</h2>
-        <p className={styles.aboutBody}>
-          Terrys Allbygg grundades av Terry med målet att erbjuda Österlens invånare en pålitlig
-          hantverkare som håller vad han lovar. Med erfarenhet inom byggbranschen och en passion
-          för hantverk har vi hjälpt många kunder förverkliga sina drömmar — från enkla förråd till
-          avancerade tillbyggnader och skräddarsydda snickerier.
-        </p>
-        <p className={styles.aboutBody} style={{ marginTop: "1rem" }}>
-          Vi är stolta över att vara ett lokalt företag som känner sin bygd och sina kunder.
-          För oss är varje projekt unikt och varje kund förtjänar full uppmärksamhet från start till mål.
-        </p>
+        {paragraphs(settings.aboutStory).map((p, i) => (
+          <p key={i} className={styles.aboutBody} style={i > 0 ? { marginTop: "1rem" } : undefined}>{p}</p>
+        ))}
       </section>
 
       <section>

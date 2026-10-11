@@ -18,6 +18,7 @@ public sealed class MySqlDatabase(IDbConnectionFactory factory) : IDatabase
         "admin_users",
         "admin_invitations",
         "password_reset_tokens",
+        "site_settings",
     };
 
     private static string QuoteTable(string table)

@@ -5,6 +5,7 @@
 // ══════════════════════════════════════════════════════════
 
 import { CONTACT } from "./contact";
+import { DEFAULT_SETTINGS, type SiteSettings } from "./settings";
 import { SERVICES } from "./services";
 
 const BUSINESS_ID = `${CONTACT.baseUrl}/#foretag`;
@@ -14,7 +15,7 @@ export const absoluteUrl = (pathOrUrl: string) =>
   pathOrUrl.startsWith("http") ? pathOrUrl : `${CONTACT.baseUrl}${pathOrUrl}`;
 
 /** Företaget. GeneralContractor är en undertyp av LocalBusiness för byggfirmor. */
-export function businessSchema() {
+export function businessSchema(settings: SiteSettings = DEFAULT_SETTINGS) {
   return {
     "@context": "https://schema.org",
     "@type": "GeneralContractor",
@@ -29,7 +30,7 @@ export function businessSchema() {
     ...(CONTACT.vatNumber ? { vatID: CONTACT.vatNumber } : {}),
     address: {
       "@type": "PostalAddress",
-      ...(CONTACT.address ? { streetAddress: CONTACT.address } : {}),
+      ...(settings.address ? { streetAddress: settings.address } : {}),
       addressRegion: "Skåne",
       addressCountry: "SE",
     },
@@ -52,7 +53,7 @@ export function businessSchema() {
         },
       })),
     },
-    sameAs: [CONTACT.googleReviewsUrl, CONTACT.social.facebook, CONTACT.social.instagram]
+    sameAs: [settings.googleReviewsUrl, settings.facebook, settings.instagram]
       .filter(Boolean),
   };
 }

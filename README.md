@@ -87,6 +87,7 @@ Alla mejl skickas som HTML i sajtens stil (logga, färger, sidfot) med en textve
 - Bilduppladdning: WebP i 1600 px + miniatyr i 640 px (SkiaSharp, Magick.NET för HEIC)
 - Bildunderhåll: krymper äldre bilder, skapar saknade miniatyrer och flyttar undan oanvända
 - Användarhantering: bjud in nya admins via e-post, återställ lösenord, radera konton
+- Inställningar (`/admin/installningar`): hero-bild och texter på startsidan, förtroenderad (ROT, F-skatt, försäkring), omdömen på/av, adress, sociala medier och Om oss-texten — utan ny deploy
 
 ---
 
@@ -299,7 +300,11 @@ Administrationsgränssnittet nås på `/admin/login`. Första kontot skapas manu
 
 **Inbjudningsflöde:** Admin → `POST /invite` → e-post med tidsbegränsad länk (1 h) → ny användare sätter lösenord på `/admin/accept-invite`.
 
-**Lösenordsåterställning:** Admin → `POST /{id}/reset-password` → e-post med länk (24 h) → `/admin/reset-password`.
+**Lösenordsåterställning:** Admin → `POST /{id}/reset-password` → e-post med länk (2 h) → `/admin/reset-password`.
+
+**Inställningar:** sparas som ett JSON-dokument i tabellen `site_settings` (en rad). Tomma fält betyder standardvärde, och standardtexterna finns bara i `frontend/src/lib/settings.ts`. Sidorna läser `GET /api/settings`. Vid bygget hämtar `scripts/prerender.mjs` inställningarna från den publicerade sajten och bäddar in dem i HTML:en, så att förrenderade sidor visar rätt innehåll direkt. Styr adressen med `SETTINGS_URL`, eller sätt `SETTINGS_URL=off` för att bygga med standardvärden. Hero-bilder sparas i `uploads/site/` i 1920 och 960 px.
+
+Tabellen skapas en gång med `TABB/db/site_settings.sql` (t.ex. i Simplys phpMyAdmin). Saknas den visar sajten standardvärdena, men inget går att spara.
 
 ---
 

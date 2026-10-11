@@ -337,6 +337,18 @@ CREATE TABLE password_reset_tokens (
 );
 ```
 
+### `site_settings`
+
+En rad (`id = 1`) med alla webbplatsinställningar som JSON. Se `TABB/db/site_settings.sql`.
+
+```sql
+CREATE TABLE site_settings (
+    id      INT        NOT NULL PRIMARY KEY,
+    data    MEDIUMTEXT NOT NULL,
+    updated DATETIME   NOT NULL
+);
+```
+
 ### Bildlagring
 
 Bilder lagras som sökvägar i databasen — **inte som binärdata**. Filer sparas i `uploads/projects/` på servern och serveras statiskt av .NET via `/uploads/*`. Huvud-bild (`main_image`) och extra bilder (`images`) hålls separata i schemat men slås ihop till en ordnad lista i tjänstlagret (`ProjectsService.GetProjectByIdAsync`).

@@ -1,37 +1,53 @@
 import { Link } from "react-router-dom";
 import styles from "./components.module.css";
-import heroImage from "../assets/hero.webp";
+import defaultHeroImage from "../assets/hero.webp";
+import { useSettings } from "../lib/settingsContext";
+import { heroSmallUrl } from "../lib/settings";
+
+// Fokuspunkt för uppladdade bilder (standardbilden har egen inställning i CSS)
+const FOCUS = { left: "25% 50%", center: "50% 50%", right: "75% 50%" } as const;
 
 export default function Hero() {
+  const s = useSettings();
+  const custom = s.heroImage;
+
   return (
     <div className={styles.heroWrapper}>
       <div className={styles.heroInner}>
         <div className={styles.heroMedia}>
-          <img
-            src={heroImage}
-            alt="Terrys Allbygg — byggprojekt i Österlen"
-            className={styles.heroBgImage}
-            fetchPriority="high"
-            width={1080}
-            height={731}
-            decoding="async"
-          />
+          {custom ? (
+            <img
+              src={custom}
+              srcSet={`${heroSmallUrl(custom)} 960w, ${custom} 1920w`}
+              sizes="(max-width: 1280px) 100vw, 1280px"
+              alt={s.heroImageAlt}
+              className={styles.heroBgImage}
+              style={{ objectPosition: FOCUS[s.heroImageFocus] ?? FOCUS.center }}
+              fetchPriority="high"
+              width={s.heroImageWidth ?? 1920}
+              height={s.heroImageHeight ?? 1080}
+              decoding="async"
+            />
+          ) : (
+            <img
+              src={defaultHeroImage}
+              alt={s.heroImageAlt}
+              className={styles.heroBgImage}
+              fetchPriority="high"
+              width={1080}
+              height={731}
+              decoding="async"
+            />
+          )}
         </div>
         <div className={styles.heroBgOverlay} aria-hidden />
 
         <div className={styles.heroContent}>
           <span className={styles.heroBadge}>Österlen · Skåne</span>
 
-          <h1 className={styles.heroTitle}>
-            Byggprojekt med omsorg och hantverk
-          </h1>
+          <h1 className={styles.heroTitle}>{s.heroTitle}</h1>
 
-          <p className={styles.heroLead}>
-            Terrys Allbygg är ditt lokala bygg- och snickeriföretag på
-            Österlen, Skåne. Vi designar och uppför byggprojekt tillsammans
-            med kunden såsom bastuer, tillbyggnader, förråd och andra
-            specialanpassade lösningar.
-          </p>
+          <p className={styles.heroLead}>{s.heroLead}</p>
 
           <div className={styles.heroCtaRow}>
             <Link to="/book" className={styles.heroCtaPrimary}>

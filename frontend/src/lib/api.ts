@@ -28,6 +28,7 @@ export const API = {
   project:    (id: string) => `/api/projects/details/${encodeURIComponent(id)}`,
   snickerier: "/api/snickerier",
   snickeri:   (id: string) => `/api/snickerier/details/${encodeURIComponent(id)}`,
+  settings:   "/api/settings",
 } as const;
 
 /** Fel från API:t med HTTP-status, så att sidor kan skilja 404 från nätverksfel. */

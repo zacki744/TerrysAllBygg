@@ -25,6 +25,10 @@ public static class DependencyInjection
         services.AddScoped<Projects.IProjectsService, Projects.ProjectsService>();
         services.AddScoped<Snickerier.ISnickeriService, Snickerier.SnickeriService>();
 
+        // Webbplatsinställningar
+        services.AddSingleton<Settings.SettingsCache>();
+        services.AddScoped<Settings.ISettingsService, Settings.SettingsService>();
+
         return services;
     }
 }

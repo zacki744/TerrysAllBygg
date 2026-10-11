@@ -5,6 +5,7 @@ import {
   type Crumb, type ProductInfo,
 } from "../lib/schema";
 import { clampDescription } from "../lib/meta";
+import { useSettings } from "../lib/settingsContext";
 
 interface PageMetaProps {
   /** Sidans namn. Blir "<title> | Terrys Allbygg". Utelämna på startsidan. */
@@ -38,6 +39,7 @@ export default function PageMeta({
   breadcrumbs,
   product,
 }: PageMetaProps) {
+  const settings     = useSettings();
   description        = clampDescription(description);
   const isHome       = canonical === "/";
   const fullTitle    = title
@@ -49,7 +51,7 @@ export default function PageMeta({
 
   const schemas: object[] = [];
   if (isHome) schemas.push(websiteSchema());
-  if (BUSINESS_PAGES.includes(canonical)) schemas.push(businessSchema());
+  if (BUSINESS_PAGES.includes(canonical)) schemas.push(businessSchema(settings));
   if (!isHome && !noIndex) {
     schemas.push(breadcrumbSchema(breadcrumbs ?? [{ name: title ?? "Sida", path: canonical }]));
   }
@@ -79,7 +81,8 @@ export default function PageMeta({
       <meta name="twitter:image"       content={ogImageUrl} />
 
       {schemas.map((s, i) => (
-        <script key={i} type="application/ld+json">{JSON.stringify(s)}</script>
+        // "<" escapas: adress m.m. kommer från admin och får aldrig kunna avsluta taggen
+        <script key={i} type="application/ld+json">{JSON.stringify(s).replace(/</g, "\\u003c")}</script>
       ))}
     </Helmet>
   );
