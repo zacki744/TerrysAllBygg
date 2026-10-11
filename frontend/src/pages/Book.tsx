@@ -11,6 +11,8 @@ import styles from "../pages.module.css";
 import PageMeta from "../components/PageMeta";
 import PrivacyNotice from "../components/PrivacyNotice";
 import { CONTACT } from "../lib/contact";
+import Honeypot from "../components/Honeypot";
+import { FORM_LIMITS } from "../lib/formLimits";
 
 type Status = "idle" | "sending" | "sent" | "error";
 
@@ -27,6 +29,7 @@ export default function Book() {
     description: "",
   });
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
+  const [website, setWebsite] = useState("");   // honeypot
   const [status, setStatus] = useState<Status>("idle");
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -46,10 +49,10 @@ export default function Book() {
       const res = await fetch("/api/Booking/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, privacyAccepted }),
+        body: JSON.stringify({ ...form, privacyAccepted, website }),
       });
       if (res.status === 429) {
-        setErrorMsg("Du har skickat flera förfrågningar på kort tid. Vänta en stund eller ring oss direkt.");
+        setErrorMsg(`Du har skickat flera förfrågningar på kort tid. Vänta en stund eller ring oss på ${CONTACT.phone}.`);
         setStatus("error");
         return;
       }
@@ -59,7 +62,7 @@ export default function Book() {
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
       console.error(err);
-      setErrorMsg("Förfrågan kunde inte skickas. Försök igen, eller ring oss direkt.");
+      setErrorMsg(`Förfrågan kunde inte skickas. Försök igen, eller ring oss på ${CONTACT.phone}.`);
       setStatus("error");
     }
   };
@@ -101,18 +104,18 @@ export default function Book() {
             {/* Row 1: Namn + E-post */}
             <div className={styles.formField}>
               <label htmlFor="book-name" className={styles.formLabel}>Namn *</label>
-              <Input id="book-name" name="name" autoComplete="name" placeholder="Ditt namn" value={form.name} onChange={handleChange} required />
+              <Input id="book-name" name="name" autoComplete="name" placeholder="Ditt namn" value={form.name} onChange={handleChange} maxLength={FORM_LIMITS.name} required />
             </div>
 
             <div className={styles.formField}>
               <label htmlFor="book-email" className={styles.formLabel}>E-post *</label>
-              <Input id="book-email" name="email" autoComplete="email" placeholder="din@email.se" type="email" value={form.email} onChange={handleChange} required />
+              <Input id="book-email" name="email" autoComplete="email" placeholder="din@email.se" type="email" value={form.email} onChange={handleChange} maxLength={FORM_LIMITS.email} required />
             </div>
 
             {/* Row 2: Telefon + Byggplats */}
             <div className={styles.formField}>
               <label htmlFor="book-phoneNumber" className={styles.formLabel}>Telefonnummer</label>
-              <Input id="book-phoneNumber" name="phoneNumber" autoComplete="tel" placeholder="070-123 45 67" type="tel" value={form.phoneNumber} onChange={handleChange} />
+              <Input id="book-phoneNumber" name="phoneNumber" autoComplete="tel" placeholder="070-123 45 67" type="tel" value={form.phoneNumber} onChange={handleChange} maxLength={FORM_LIMITS.phone} />
             </div>
 
             <div className={styles.formField}>
@@ -128,7 +131,7 @@ export default function Book() {
             {form.placement === "annat" && (
               <div className={`${styles.formField} ${styles.formFieldFull}`}>
                 <label htmlFor="book-other1" className={styles.formLabel}>Specificera byggplats</label>
-                <Input id="book-other1" name="other1" placeholder="Beskriv platsen" value={form.other1} onChange={handleChange} />
+                <Input id="book-other1" name="other1" placeholder="Beskriv platsen" value={form.other1} onChange={handleChange} maxLength={FORM_LIMITS.shortText} />
               </div>
             )}
 
@@ -151,14 +154,14 @@ export default function Book() {
 
             <div className={styles.formField}>
               <label htmlFor="book-address" className={styles.formLabel}>Adress *</label>
-              <Input id="book-address" name="address" autoComplete="street-address" placeholder="Gatuadress, Ort" value={form.address} onChange={handleChange} required />
+              <Input id="book-address" name="address" autoComplete="street-address" placeholder="Gatuadress, Ort" value={form.address} onChange={handleChange} maxLength={FORM_LIMITS.shortText} required />
             </div>
 
             {/* Conditional: specificera projekttyp — full width */}
             {form.project === "annat" && (
               <div className={`${styles.formField} ${styles.formFieldFull}`}>
                 <label htmlFor="book-other2" className={styles.formLabel}>Specificera projekttyp</label>
-                <Input id="book-other2" name="other2" placeholder="Beskriv ditt projekt" value={form.other2} onChange={handleChange} />
+                <Input id="book-other2" name="other2" placeholder="Beskriv ditt projekt" value={form.other2} onChange={handleChange} maxLength={FORM_LIMITS.shortText} />
               </div>
             )}
 
@@ -171,9 +174,12 @@ export default function Book() {
                 placeholder="Berätta mer om ditt projekt, önskemål och tidsram..."
                 value={form.description}
                 onChange={handleChange}
+                maxLength={FORM_LIMITS.longText}
                 required
               />
             </div>
+
+            <Honeypot value={website} onChange={setWebsite} />
 
             {/* Integritetsinfo + bekräftelse — full width */}
             <PrivacyNotice

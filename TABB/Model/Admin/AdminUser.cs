@@ -1,4 +1,6 @@
-﻿namespace Models.Admin;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Models.Admin;
 
 // ── DB DTOs ────────────────────────────────────────────────
 
@@ -31,23 +33,31 @@ public class PasswordResetToken
 
 public class InviteAdminRequest
 {
+    [EmailAddress, MaxLength(FormLimits.Email)]
     public required string Email { get; init; }
 }
 
 public class AcceptInviteRequest
 {
+    [MaxLength(200)]
     public required string Token { get; init; }
+    [MinLength(FormLimits.PasswordMin, ErrorMessage = "Lösenordet måste vara minst 8 tecken.")]
+    [MaxLength(FormLimits.PasswordMax, ErrorMessage = "Lösenordet får vara högst 72 tecken.")]
     public required string Password { get; init; }
 }
 
 public class RequestPasswordResetRequest
 {
+    [EmailAddress, MaxLength(FormLimits.Email)]
     public required string Email { get; init; }
 }
 
 public class ResetPasswordRequest
 {
+    [MaxLength(200)]
     public required string Token { get; init; }
+    [MinLength(FormLimits.PasswordMin, ErrorMessage = "Lösenordet måste vara minst 8 tecken.")]
+    [MaxLength(FormLimits.PasswordMax, ErrorMessage = "Lösenordet får vara högst 72 tecken.")]
     public required string NewPassword { get; init; }
 }
 

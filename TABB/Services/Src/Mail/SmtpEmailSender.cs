@@ -12,7 +12,7 @@ internal class SmtpEmailSender(IOptions<SmtpSettings> smtpOptions, ILogger<SmtpE
     private readonly SmtpSettings _smtp = smtpOptions.Value;
     private readonly ILogger<SmtpEmailSender> _logger = logger;
 
-    public async Task SendAsync(string to, string subject, string body, bool isHtml = false)
+    public async Task SendAsync(string to, string subject, string body, bool isHtml = false, string? replyTo = null)
     {
         if (string.IsNullOrEmpty(to))
             throw new ArgumentException("Recipient email address is required", nameof(to));
@@ -35,6 +35,8 @@ internal class SmtpEmailSender(IOptions<SmtpSettings> smtpOptions, ILogger<SmtpE
         };
 
         mail.To.Add(to);
+        if (!string.IsNullOrWhiteSpace(replyTo))
+            mail.ReplyToList.Add(new MailAddress(replyTo));
 
         try
         {

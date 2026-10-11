@@ -89,6 +89,7 @@ function ResetPasswordContent() {
           <label className={styles.formLabel}>Nytt lösenord</label>
           <Input
             type="password"
+            maxLength={72}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Minst 8 tecken"
@@ -100,6 +101,7 @@ function ResetPasswordContent() {
           <label className={styles.formLabel}>Bekräfta nytt lösenord</label>
           <Input
             type="password"
+            maxLength={72}
             value={confirm}
             onChange={(e) => setConfirm(e.target.value)}
             placeholder="Upprepa lösenordet"

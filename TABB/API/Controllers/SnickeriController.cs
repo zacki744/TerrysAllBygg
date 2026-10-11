@@ -48,9 +48,19 @@ public class SnickeriController(
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
+        if (!string.IsNullOrEmpty(request.Website))
+        {
+            _logger.LogInformation("Snickeriförfrågan stoppad av honeypot");
+            return Ok(new { message = "Förfrågan skickad!" });
+        }
+
+        var snickeri = await _snickeriService.GetByIdPublicAsync(request.SnickeriId, ct);
+        if (snickeri == null)
+            return NotFound(new { error = "Snickeri not found" });
+
         try
         {
-            await _emailService.SendSnickeriInquiryAsync(request);
+            await _emailService.SendSnickeriInquiryAsync(request, snickeri);
             return Ok(new { message = "Förfrågan skickad!" });
         }
         catch (Exception ex)

@@ -1108,3 +1108,12 @@
     padding-bottom: calc(3rem + 4.5rem + env(safe-area-inset-bottom));
   }
 }
+
+/* ── Honeypot (dolt antispam-fält) ── */
+.honeypot {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}

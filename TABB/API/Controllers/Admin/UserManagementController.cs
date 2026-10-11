@@ -74,8 +74,11 @@ public class UserManagementController(
 
 // ── Public endpoints (no auth required) ───────────────────
 
+// Publika endpoints för inbjudan och återställning. Hela klassen delar
+// inloggningens rate limit, så att tokens inte kan gissas via validate-token.
 [ApiController]
 [Route("api/admin/auth")]
+[EnableRateLimiting(RateLimitingExtensions.AdminLogin)]
 public class UserSetupController(
     IUserManagementService userService,
     ILogger<UserSetupController> logger) : ControllerBase
@@ -85,7 +88,6 @@ public class UserSetupController(
 
     // POST: api/admin/auth/accept-invite
     [HttpPost("accept-invite")]
-    [EnableRateLimiting("admin-login")]
     public async Task<IActionResult> AcceptInvite(
         [FromBody] AcceptInviteRequest request, CancellationToken ct)
     {
@@ -101,7 +103,6 @@ public class UserSetupController(
 
     // POST: api/admin/auth/reset-password
     [HttpPost("reset-password")]
-    [EnableRateLimiting("admin-login")]
     public async Task<IActionResult> ResetPassword(
         [FromBody] ResetPasswordRequest request, CancellationToken ct)
     {

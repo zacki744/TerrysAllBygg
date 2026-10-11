@@ -114,6 +114,7 @@ function AcceptInviteContent() {
           <label className={styles.formLabel}>Lösenord</label>
           <Input
             type="password"
+            maxLength={72}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Minst 8 tecken"
@@ -125,6 +126,7 @@ function AcceptInviteContent() {
           <label className={styles.formLabel}>Bekräfta lösenord</label>
           <Input
             type="password"
+            maxLength={72}
             value={confirm}
             onChange={(e) => setConfirm(e.target.value)}
             placeholder="Upprepa lösenordet"

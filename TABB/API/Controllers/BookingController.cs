@@ -22,6 +22,12 @@ public class BookingController(IEmailService emailService, ILogger<BookingContro
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
+        if (!string.IsNullOrEmpty(request.Website))
+        {
+            _logger.LogInformation("Bokningsförfrågan stoppad av honeypot");
+            return Ok(new { message = "Booking request sent successfully" });
+        }
+
         try
         {
             await _emailService.SendBookingEmailsAsync(request);

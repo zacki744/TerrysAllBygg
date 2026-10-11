@@ -28,25 +28,26 @@ public class EmailService : IEmailService
         if (string.IsNullOrWhiteSpace(booking.Email))
             throw new ArgumentException("Booking must include a valid email");
 
-        await TrySendAsync(_smtp.AdminTo, "Ny konsultationsförfrågan",
-            EmailTemplate.BookingAdmin(booking));
+        // Adminmejlet ÄR förfrågan (inget sparas i databasen). Misslyckas det
+        // ska felet gå vidare så att kunden får veta det.
+        await _sender.SendAsync(_smtp.AdminTo, "Ny konsultationsförfrågan",
+            EmailTemplate.BookingAdmin(booking), replyTo: booking.Email);
 
         await TrySendAsync(booking.Email, "Vi har mottagit din förfrågan",
             EmailTemplate.BookingConfirmation(booking.Name));
     }
 
-    public async Task SendSnickeriInquiryAsync(SnickeriInquiryRequest inquiry)
+    public async Task SendSnickeriInquiryAsync(SnickeriInquiryRequest inquiry, DetailedSnickeri snickeri)
     {
         if (string.IsNullOrWhiteSpace(inquiry.Email))
             throw new ArgumentException("Inquiry must include a valid email");
 
-        await TrySendAsync(_smtp.AdminTo,
-            $"Förfrågan om snickeri: {inquiry.SnickeriTitle}",
-            EmailTemplate.SnickeriInquiryAdmin(inquiry));
+        await _sender.SendAsync(_smtp.AdminTo,
+            $"Förfrågan om snickeri: {snickeri.Title}",
+            EmailTemplate.SnickeriInquiryAdmin(inquiry, snickeri), replyTo: inquiry.Email);
 
         await TrySendAsync(inquiry.Email, "Vi har mottagit din förfrågan",
-            EmailTemplate.SnickeriInquiryConfirmation(
-                inquiry.Name, inquiry.SnickeriTitle, inquiry.SnickeriPrice));
+            EmailTemplate.SnickeriInquiryConfirmation(inquiry.Name, snickeri.Title, snickeri.Price));
     }
 
     public async Task SendInviteEmailAsync(string toEmail, string inviteLink)

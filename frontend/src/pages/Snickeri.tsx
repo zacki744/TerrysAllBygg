@@ -12,6 +12,9 @@ import PrivacyNotice from "../components/PrivacyNotice";
 import NotFound from "./NotFound";
 import { snickeriPath } from "../lib/routes";
 import RetryError from "../components/RetryError";
+import Honeypot from "../components/Honeypot";
+import { FORM_LIMITS } from "../lib/formLimits";
+import { CONTACT } from "../lib/contact";
 import { useFetch } from "../hooks/useFetch";
 import { API, isNotFound, type SnickeriDetail } from "../lib/api";
 import { formatPrice } from "../lib/formatPrice";
@@ -38,6 +41,7 @@ export default function SnickeriPageContent() {
   const [submitted, setSubmitted]   = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
+  const [website, setWebsite] = useState("");   // honeypot
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -54,18 +58,22 @@ export default function SnickeriPageContent() {
       const res = await fetch("/api/snickerier/inquire", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        // Titel och pris slås upp på servern — bara id skickas.
         body: JSON.stringify({
-          snickeriId:    snickeri.id,
-          snickeriTitle: snickeri.title,
-          snickeriPrice: snickeri.price,
+          snickeriId: snickeri.id,
           ...form,
           privacyAccepted,
+          website,
         }),
       });
-      if (!res.ok) throw new Error("Något gick fel");
+      if (res.status === 429) {
+        setSubmitError(`Du har skickat flera förfrågningar på kort tid. Vänta en stund eller ring oss på ${CONTACT.phone}.`);
+        return;
+      }
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       setSubmitted(true);
     } catch {
-      setSubmitError("Något gick fel. Vänligen försök igen.");
+      setSubmitError(`Förfrågan kunde inte skickas. Försök igen, eller ring oss på ${CONTACT.phone}.`);
     } finally {
       setSubmitting(false);
     }
@@ -137,17 +145,17 @@ export default function SnickeriPageContent() {
 
               <div className={styles.formField}>
                 <label htmlFor="inquiry-name" className={styles.formLabel}>Namn *</label>
-                <Input id="inquiry-name" name="name" autoComplete="name" placeholder="Ditt namn" value={form.name} onChange={handleChange} required />
+                <Input id="inquiry-name" name="name" autoComplete="name" placeholder="Ditt namn" value={form.name} onChange={handleChange} maxLength={FORM_LIMITS.name} required />
               </div>
 
               <div className={styles.formField}>
                 <label htmlFor="inquiry-email" className={styles.formLabel}>E-post *</label>
-                <Input id="inquiry-email" name="email" autoComplete="email" type="email" placeholder="din@email.se" value={form.email} onChange={handleChange} required />
+                <Input id="inquiry-email" name="email" autoComplete="email" type="email" placeholder="din@email.se" value={form.email} onChange={handleChange} maxLength={FORM_LIMITS.email} required />
               </div>
 
               <div className={styles.formField}>
                 <label htmlFor="inquiry-phoneNumber" className={styles.formLabel}>Telefonnummer</label>
-                <Input id="inquiry-phoneNumber" name="phoneNumber" autoComplete="tel" type="tel" placeholder="070-123 45 67" value={form.phoneNumber} onChange={handleChange} />
+                <Input id="inquiry-phoneNumber" name="phoneNumber" autoComplete="tel" type="tel" placeholder="070-123 45 67" value={form.phoneNumber} onChange={handleChange} maxLength={FORM_LIMITS.phone} />
               </div>
 
               <div className={`${styles.formField} ${styles.formFieldFull}`}>
@@ -158,8 +166,11 @@ export default function SnickeriPageContent() {
                   placeholder="Eventuella frågor eller önskemål om färg, storlek, material..."
                   value={form.notes}
                   onChange={handleChange}
+                  maxLength={FORM_LIMITS.longText}
                 />
               </div>
+
+              <Honeypot value={website} onChange={setWebsite} />
 
               <PrivacyNotice
                 id="snickeri-privacy"

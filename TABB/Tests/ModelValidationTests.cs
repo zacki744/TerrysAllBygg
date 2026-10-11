@@ -41,7 +41,7 @@ public class ModelValidationTests
     {
         var inquiry = new SnickeriInquiryRequest
         {
-            SnickeriId = "1", SnickeriTitle = "Bänk", SnickeriPrice = 4500,
+            SnickeriId = Guid.NewGuid(),
             Name = "Anna", Email = "inte-en-adress", PrivacyAccepted = false,
         };
 
@@ -68,4 +68,55 @@ public class ModelValidationTests
     [Fact]
     public void Bekräftelsemejlet_länkar_till_integritetspolicyn()
         => Assert.Contains("https://terrysallbygg.se/integritetspolicy", EmailTemplate.BookingConfirmation("Anna"));
+
+    [Fact]
+    public void För_långa_fält_i_bokningen_är_ogiltiga()
+    {
+        var booking = Booking(true);
+        booking.Name = new string('a', Models.FormLimits.Name + 1);
+        booking.Description = new string('a', Models.FormLimits.LongText + 1);
+
+        var members = Validate(booking).SelectMany(e => e.MemberNames).ToList();
+        Assert.Contains(nameof(BookingRequest.Name), members);
+        Assert.Contains(nameof(BookingRequest.Description), members);
+    }
+
+    [Theory]
+    [InlineData("kort", false)]
+    [InlineData("tillräckligt", true)]
+    public void Lösenord_kontrolleras_på_servern(string password, bool valid)
+    {
+        var accept = new Models.Admin.AcceptInviteRequest { Token = "t", Password = password };
+        var reset  = new Models.Admin.ResetPasswordRequest { Token = "t", NewPassword = password };
+
+        Assert.Equal(valid, Validate(accept).Count == 0);
+        Assert.Equal(valid, Validate(reset).Count == 0);
+    }
+
+    [Fact]
+    public void För_långt_lösenord_avvisas()
+    {
+        var accept = new Models.Admin.AcceptInviteRequest
+        {
+            Token = "t", Password = new string('a', Models.FormLimits.PasswordMax + 1),
+        };
+        Assert.NotEmpty(Validate(accept));
+    }
+
+    [Fact]
+    public void Bokning_utan_telefonnummer_är_giltig()
+    {
+        // Formuläret skickar "" för ett tomt fält; [Phone] underkänner "" men inte null.
+        var booking = Booking(true);
+        booking.PhoneNumber = "";
+        Assert.Null(booking.PhoneNumber);
+        Assert.Empty(Validate(booking));
+
+        var inquiry = new SnickeriInquiryRequest
+        {
+            SnickeriId = Guid.NewGuid(), Name = "Anna", Email = "anna@example.se",
+            PhoneNumber = "", PrivacyAccepted = true,
+        };
+        Assert.Empty(Validate(inquiry));
+    }
 }

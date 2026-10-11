@@ -5,7 +5,17 @@ namespace Services.Src.Mail;
 
 public static class EmailTemplate
 {
-    private const string PrivacyUrl = "https://terrysallbygg.se/integritetspolicy";
+    private const string SiteUrl    = "https://terrysallbygg.se";
+    private const string PrivacyUrl = SiteUrl + "/integritetspolicy";
+
+    // Kundens namn hamnar i mejl som skickas till den adress kunden själv angav.
+    // Radbrytningar och extra blanksteg tas bort så att ingen kan bygga ihop en
+    // egen text i mejlet via namnfältet.
+    public static string OneLine(string? value, int max = 100)
+    {
+        var text = string.Join(' ', (value ?? "").Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
+        return text.Length <= max ? text : text[..max];
+    }
 
     private const string PrivacyFooter = $@"
         Dina uppgifter används bara för att besvara din förfrågan.
@@ -31,7 +41,7 @@ public static class EmailTemplate
     ";
 
     public static string BookingConfirmation(string name) => $@"
-        Hej {name},
+        Hej {OneLine(name)},
 
         Tack för att du har skickat en konsultationsförfrågan till Terrys Allbygg.
         Vi har mottagit din förfrågan och återkommer inom 24 timmar på vardagar.
@@ -44,12 +54,12 @@ public static class EmailTemplate
 
     // ── Snickeri inquiry ───────────────────────────────────
 
-    public static string SnickeriInquiryAdmin(SnickeriInquiryRequest r) => $@"
+    public static string SnickeriInquiryAdmin(SnickeriInquiryRequest r, DetailedSnickeri s) => $@"
         Ny förfrågan om snickeri – Terrys Allbygg
 
-        Titel:   {r.SnickeriTitle}
-        Pris:    {r.SnickeriPrice:N0} kr
-        ID:      {r.SnickeriId}
+        Titel:   {s.Title}
+        Pris:    {s.Price:N0} kr
+        Länk:    {SiteUrl}/snickerier/{s.Id}
 
         Namn:    {r.Name}
         E-post:  {r.Email}
@@ -62,7 +72,7 @@ public static class EmailTemplate
     ";
 
     public static string SnickeriInquiryConfirmation(string name, string title, decimal price) => $@"
-        Hej {name},
+        Hej {OneLine(name)},
 
         Tack för din förfrågan om ""{title}"" ({price:N0} kr).
         Vi återkommer inom 24 timmar på vardagar.
