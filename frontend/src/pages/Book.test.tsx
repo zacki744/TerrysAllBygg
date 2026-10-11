@@ -5,10 +5,10 @@ import { HelmetProvider } from "react-helmet-async";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import Book from "./Book";
 
-function renderBook() {
+function renderBook(url = "/book") {
   return render(
     <HelmetProvider>
-      <MemoryRouter initialEntries={["/book"]}>
+      <MemoryRouter initialEntries={[url]}>
         <Book />
       </MemoryRouter>
     </HelmetProvider>
@@ -63,5 +63,20 @@ describe("Bokningsformuläret", () => {
     await user.click(screen.getByRole("button", { name: "Skicka förfrågan" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent(/flera förfrågningar/);
+  });
+});
+
+describe("bokning från en projektsida", () => {
+  it("förifyller beskrivningen och visar vilket projekt det gäller", () => {
+    renderBook("/book?projekt=Altan%20med%20pergola");
+    expect(screen.getByText("Altan med pergola", { selector: "strong" })).toBeInTheDocument();
+    expect(screen.getByLabelText(/^Projektbeskrivning/)).toHaveValue(
+      'Jag har sett projektet "Altan med pergola" på hemsidan och vill ha något liknande.\n\n'
+    );
+  });
+
+  it("lämnar beskrivningen tom utan referens", () => {
+    renderBook();
+    expect(screen.getByLabelText(/^Projektbeskrivning/)).toHaveValue("");
   });
 });

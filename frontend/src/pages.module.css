@@ -748,3 +748,39 @@ h2.infoBoxTitle { font-size: 1.17em; }
   }
   .reviewsBand > a { grid-column: auto; }
 }
+
+/* ── Projektsida: nästa steg + fler projekt ── */
+.projectCta {
+  margin-top: 2.5rem;
+  padding: 1.75rem;
+  border-radius: 1rem;
+  background-color: color-mix(in srgb, var(--primary) 6%, var(--background));
+  border: 1px solid color-mix(in srgb, var(--primary) 20%, var(--border));
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.projectCtaTitle {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.projectCtaText {
+  margin: 0;
+  color: color-mix(in srgb, var(--foreground) 80%, transparent);
+}
+
+.projectCtaButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.moreProjects {
+  margin-top: 2rem;
+  padding-top: 2.5rem;
+  border-top: 1px solid var(--border);
+}

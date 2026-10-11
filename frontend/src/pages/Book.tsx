@@ -5,7 +5,8 @@ import Select from "../components/ui/Select";
 import Textarea from "../components/ui/Textarea";
 import Button from "../components/ui/Button";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
+import { bookingReference, referenceDescription } from "../lib/routes";
 import { CircleCheck, MapPin } from "lucide-react";
 import styles from "../pages.module.css";
 import PageMeta from "../components/PageMeta";
@@ -17,7 +18,11 @@ import { FORM_LIMITS } from "../lib/formLimits";
 type Status = "idle" | "sending" | "sent" | "error";
 
 export default function Book() {
-  const [form, setForm] = useState({
+  // Från "Vill du ha något liknande?" på en projektsida
+  const [searchParams] = useSearchParams();
+  const reference = bookingReference(searchParams);
+
+  const [form, setForm] = useState(() => ({
     name: "",
     email: "",
     phoneNumber: "",
@@ -26,8 +31,8 @@ export default function Book() {
     project: "",
     other2: "",
     address: "",
-    description: "",
-  });
+    description: reference ? referenceDescription(reference) : "",
+  }));
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const [website, setWebsite] = useState("");   // honeypot
   const [status, setStatus] = useState<Status>("idle");
@@ -86,6 +91,15 @@ export default function Book() {
               Fyll i formuläret nedan så återkommer vi till dig inom 24 timmar.
             </p>
           </header>
+
+          {reference && status !== "sent" && (
+            <div className={styles.infoBox}>
+              <p className={styles.infoBoxText}>
+                Du frågar om något som liknar <strong>{reference}</strong>. Vi har skrivit
+                det i beskrivningen – lägg gärna till mått, plats och önskemål.
+              </p>
+            </div>
+          )}
 
           {status === "sent" ? (
             <div className={styles.infoBox} role="status">

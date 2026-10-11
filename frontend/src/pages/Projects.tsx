@@ -4,16 +4,22 @@ import Footer from "../components/Footer";
 import ImageGallery from "../components/project/ImageGallery";
 import PageMeta from "../components/PageMeta";
 import NotFound from "./NotFound";
-import { projectPath } from "../lib/routes";
+import { projectPath, bookPathFor } from "../lib/routes";
+import { Phone } from "lucide-react";
+import ProjectCard from "../components/project/ProjectCard";
+import { CONTACT } from "../lib/contact";
 import RetryError from "../components/RetryError";
 import { useFetch } from "../hooks/useFetch";
-import { API, isNotFound, type ProjectDetail } from "../lib/api";
+import { API, isNotFound, type ProjectDetail, type ProjectOverview } from "../lib/api";
 import styles from "../pages.module.css";
 
 export default function ProjectsPageContent() {
   const { id } = useParams();
   const { data: project, error, loading, reload } =
     useFetch<ProjectDetail>(id ? API.project(id) : null);
+  // Fler projekt längst ner — samma lista som projektsidan (cachas av webbläsaren)
+  const { data: allProjects } = useFetch<ProjectOverview[]>(API.projects);
+  const moreProjects = (allProjects ?? []).filter((p) => p.id !== id).slice(0, 3);
 
   // ── State views — share consistent shell ──────────────────
   if (!id || isNotFound(error)) return <NotFound />;
@@ -55,7 +61,7 @@ export default function ProjectsPageContent() {
         </header>
 
         {/* Gallery — full mainWide bredd */}
-        <ImageGallery images={project.images} title={project.title} />
+        <ImageGallery key={id} images={project.images} title={project.title} />
 
         {/* Beskrivning + knapp begränsas i bredd för läsbarhet */}
         <div className={styles.projectDetailMain}>
@@ -64,12 +70,39 @@ export default function ProjectsPageContent() {
             <p className={styles.descriptionText}>{project.description}</p>
           </section>
 
-          <div style={{ marginTop: "1.5rem" }}>
-            <div>
-                <Link to="/projekt" className={styles.btnGhost}>← Alla projekt</Link>
+          {/* Nästa steg för den som gillar projektet */}
+          <aside className={styles.projectCta} aria-labelledby="project-cta-title">
+            <h2 id="project-cta-title" className={styles.projectCtaTitle}>Vill du ha något liknande?</h2>
+            <p className={styles.projectCtaText}>
+              Berätta om ditt projekt så återkommer vi inom 24 timmar på vardagar.
+              Konsultationen är kostnadsfri.
+            </p>
+            <div className={styles.projectCtaButtons}>
+              <Link to={bookPathFor(project.title)} className={styles.btnPrimary}>Boka konsultation</Link>
+              <a href={CONTACT.phoneHref} className={`${styles.btnGhost} ${styles.iconLine}`}>
+                <Phone size={16} aria-hidden /> Ring {CONTACT.phone}
+              </a>
             </div>
-          </div>
+          </aside>
+
+          {moreProjects.length === 0 && (
+            <div style={{ marginTop: "1.5rem" }}>
+              <Link to="/projekt" className={styles.btnGhost}>← Alla projekt</Link>
+            </div>
+          )}
         </div>
+
+        {moreProjects.length > 0 && (
+          <section className={styles.moreProjects} aria-labelledby="more-projects">
+            <div className={styles.sectionHeader}>
+              <h2 id="more-projects" className={styles.sectionTitle}>Fler projekt</h2>
+              <Link to="/projekt" className={styles.sectionLink}>Alla projekt</Link>
+            </div>
+            <div className={styles.projectGrid}>
+              {moreProjects.map((p) => <ProjectCard key={p.id} {...p} />)}
+            </div>
+          </section>
+        )}
 
       </main>
 

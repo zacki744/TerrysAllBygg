@@ -121,7 +121,7 @@ export default function SnickeriPageContent() {
           <p className={styles.snickeriDetailPrice}>{formatPrice(snickeri.price)}</p>
         </header>
 
-        <ImageGallery images={snickeri.images} title={snickeri.title} />
+        <ImageGallery key={id} images={snickeri.images} title={snickeri.title} />
 
         <section className={styles.descriptionSection}>
           <h2 className={styles.descriptionTitle}>Beskrivning</h2>
