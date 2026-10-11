@@ -1,4 +1,3 @@
-using System.Net;
 using System.Text;
 
 namespace Services.Src.Mail;
@@ -59,7 +58,16 @@ public sealed class MailSpec
 
 public static class EmailLayout
 {
-    private static string E(string? s) => WebUtility.HtmlEncode(s ?? "");
+    // HTML-kodar bara de tecken som kan bryta sig ut ur text eller ett
+    // attribut inom citattecken. WebUtility.HtmlEncode används inte eftersom
+    // den även gör om å/ä/ö till &#229; osv. Det är giltigt, men gör mejlets
+    // källkod oläslig och kan få spamfilter att reagera.
+    internal static string E(string? s) => (s ?? "")
+        .Replace("&", "&amp;")
+        .Replace("<", "&lt;")
+        .Replace(">", "&gt;")
+        .Replace("\"", "&quot;")
+        .Replace("'", "&#39;");
 
     /// <summary>Flerradig text → kodad HTML med &lt;br&gt;.</summary>
     private static string Multiline(string s) =>
