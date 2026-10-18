@@ -16,7 +16,7 @@ const ssrDir  = path.join(root, "dist-ssr");
 
 // Fasta sidor. Sitemapen (SitemapController) läser vilka sidor som
 // förrenderats, så nya sidor här hamnar där automatiskt.
-const STATIC_ROUTES = ["/", "/projekt", "/snickerier", "/about", "/book", "/integritetspolicy"];
+const ROUTES = ["/", "/projekt", "/snickerier", "/about", "/book", "/integritetspolicy"];
 
 // ── Webbplatsinställningar ────────────────────────────────
 // Hämtas från den publicerade sajten så att förrenderad HTML visar det Terry
@@ -51,8 +51,7 @@ const template = fs.readFileSync(path.join(distDir, "index.html"), "utf-8")
   .replace("</body>", `${settingsTag}</body>`);
 fs.writeFileSync(path.join(distDir, "index.spa.html"), template);
 
-const { render, serviceRoutes } = await import(pathToFileURL(path.join(ssrDir, "entry-server.js")).href);
-const ROUTES = [...STATIC_ROUTES, ...serviceRoutes(settings)];
+const { render } = await import(pathToFileURL(path.join(ssrDir, "entry-server.js")).href);
 
 
 // Taggar i index.html som sidan själv sätter via <PageMeta> tas bort ur mallen

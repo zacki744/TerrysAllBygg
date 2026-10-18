@@ -1,18 +1,11 @@
 import { thumbUrl } from "../../lib/images";
+import type { SnickeriOverview } from "../../lib/types";
 import styles from "../../admin.module.css";
 import { Pencil, Trash2 } from "lucide-react";
 import { formatPrice } from "../../lib/formatPrice";
 
-interface SnickeriItem {
-  id: string;
-  title: string;
-  description: string;
-  price: number;
-  image: string;
-}
-
 interface SnickeriTableProps {
-  items: SnickeriItem[];
+  items: SnickeriOverview[];
   onEdit: (id: string) => void;
   onDelete: (id: string, title: string) => void;
 }

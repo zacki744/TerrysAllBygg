@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AuthService } from "./lib/auth";
 import ScrollToTop from "./components/ScrollToTop";
 import PageMeta from "./components/PageMeta";
@@ -17,8 +17,6 @@ import Projects   from "./pages/Projects";
 import Privacy    from "./pages/Privacy";
 import ProjectList from "./pages/ProjectList";
 import NotFound   from "./pages/NotFound";
-import Services   from "./pages/Services";
-import Service    from "./pages/Service";
 
 // ── Admin pages — lazy loaded (aldrig behövda av publika besökare) ──
 const AdminLogin   = lazy(() => import("./pages/admin/AdminLogin"));
@@ -31,12 +29,13 @@ const SnickeriNew  = lazy(() => import("./pages/admin/snickerierNew"));
 const SnickeriEdit = lazy(() => import("./pages/admin/snickerierEdit"));
 const ResetPassword = lazy(() => import("./pages/admin/ResetPassword"));
 const AdminSettings = lazy(() => import("./pages/admin/Settings"));
-const AdminServices = lazy(() => import("./pages/admin/ServicesAdmin"));
 
 // ── Auth guard ─────────────────────────────────────────────
 function RequireAuth({ children }: { children: React.ReactNode }) {
+  const location = useLocation();
   if (!AuthService.isAuthenticated()) {
-    return <Navigate to="/admin/login" replace />;
+    const returnTo = location.pathname + location.search;
+    return <Navigate to={returnTo === "/admin" ? "/admin/login" : `/admin/login?till=${encodeURIComponent(returnTo)}`} replace />;
   }
   return <>{children}</>;
 }
@@ -68,8 +67,6 @@ export function AppRoutes() {
         <Route path="/snickerier/:id/:slug?" element={<Snickeri />} />
         <Route path="/projekt"               element={<ProjectList />} />
         <Route path="/projekt/:id/:slug?"    element={<Projects />} />
-        <Route path="/tjanster"              element={<Services />} />
-        <Route path="/tjanster/:slug"        element={<Service />} />
 
         {/* ── Gamla URL:er → nya (redan delade/indexerade länkar) ── */}
         <Route path="/snickeri" element={<LegacyRedirect toPath={snickeriPath} />} />
@@ -84,9 +81,6 @@ export function AppRoutes() {
         {/* ── Admin — protected ── */}
         <Route path="/admin" element={
           <RequireAuth><AdminPage><Dashboard /></AdminPage></RequireAuth>
-        } />
-        <Route path="/admin/tjanster" element={
-          <RequireAuth><AdminPage><AdminServices /></AdminPage></RequireAuth>
         } />
         <Route path="/admin/installningar" element={
           <RequireAuth><AdminPage><AdminSettings /></AdminPage></RequireAuth>

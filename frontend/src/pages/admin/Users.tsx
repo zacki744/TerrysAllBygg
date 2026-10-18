@@ -3,15 +3,10 @@ import { errorMessage } from "../../lib/errors";
 import { useNavigate } from "react-router-dom";
 import { Mail, Trash2, KeyRound } from "lucide-react";
 import AdminNavbar from "../../components/Admin/AdminNavbar";
-import { AuthService } from "../../lib/auth";
+import { AdminAPI } from "../../lib/adminApi";
+import type { AdminUser } from "../../lib/types";
 import { confirmAction } from "../../lib/notify";
 import styles from "../../admin.module.css";
-
-interface AdminUser {
-  id: string;
-  email: string;
-  createdAt: string;
-}
 
 export default function AdminUsersPage() {
   const navigate = useNavigate();
@@ -22,20 +17,14 @@ export default function AdminUsersPage() {
   const [message, setMessage]   = useState<{ text: string; ok: boolean } | null>(null);
 
   useEffect(() => {
-    if (!AuthService.isAuthenticated()) {
-      navigate("/admin/login");
-      return;
-    }
     load();
   }, [navigate]);
 
   const load = async () => {
     try {
-      const res = await fetch("/api/admin/users", { credentials: "include" });
-      if (!res.ok) throw new Error();
-      setUsers(await res.json());
-    } catch {
-      setMessage({ text: "Kunde inte ladda användare", ok: false });
+      setUsers(await AdminAPI.users.list());
+    } catch (err) {
+      setMessage({ text: errorMessage(err, "Kunde inte läsa användarna"), ok: false });
     } finally {
       setLoading(false);
     }
@@ -46,14 +35,7 @@ export default function AdminUsersPage() {
     setInviting(true);
     setMessage(null);
     try {
-      const res = await fetch("/api/admin/users/invite", {
-        method:      "POST",
-        credentials: "include",
-        headers:     { "Content-Type": "application/json" },
-        body:        JSON.stringify({ email: inviteEmail }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
+      const data = await AdminAPI.users.invite(inviteEmail);
       setMessage({ text: data.message, ok: true });
       setInviteEmail("");
     } catch (err) {
@@ -72,11 +54,7 @@ export default function AdminUsersPage() {
     });
     if (!ok) return;
     try {
-      const res = await fetch(`/api/admin/users/${id}`, {
-        method: "DELETE", credentials: "include",
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
+      await AdminAPI.users.remove(id);
       setUsers((prev) => prev.filter((u) => u.id !== id));
       setMessage({ text: "Konto raderat", ok: true });
     } catch (err) {
@@ -92,11 +70,7 @@ export default function AdminUsersPage() {
     });
     if (!ok) return;
     try {
-      const res = await fetch(`/api/admin/users/${id}/reset-password`, {
-        method: "POST", credentials: "include",
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
+      const data = await AdminAPI.users.sendReset(id);
       setMessage({ text: data.message, ok: true });
     } catch (err) {
       setMessage({ text: errorMessage(err, "Kunde inte skicka länk"), ok: false });

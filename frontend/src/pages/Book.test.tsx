@@ -81,14 +81,14 @@ describe("bokning från en projektsida", () => {
   });
 });
 
-describe("bokning från en tjänstesida", () => {
-  it("väljer tjänsten från ?typ= (tjänstens adress)", () => {
-    renderBook("/book?typ=bastu");
+describe("bokning från en kategori", () => {
+  it("väljer kategorin från ?kategori=", () => {
+    renderBook("/book?kategori=bastu");
     expect(screen.getByLabelText(/^Typ av projekt/)).toHaveValue("Bastuer");
   });
 
-  it("ignorerar okända typer", () => {
-    renderBook("/book?typ=slott");
+  it("ignorerar okända kategorier", () => {
+    renderBook("/book?kategori=slott");
     expect(screen.getByLabelText(/^Typ av projekt/)).toHaveValue("");
   });
 });

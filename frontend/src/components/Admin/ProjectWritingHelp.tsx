@@ -1,22 +1,24 @@
 // src/components/Admin/ProjectWritingHelp.tsx
-// Visas under beskrivningen i projektformuläret: ordräknare, vilken
-// tjänstesida projektet visas på, och tips om vad en bra text innehåller.
+// Visas under beskrivningen i projektformuläret: ordräknare, kategori,
+// och tips om vad en bra text innehåller.
 
 import { CircleCheck, CircleAlert, Wand2 } from "lucide-react";
 import { TEMPLATE, WORDS_MAX, WORDS_MIN, hasPlaceholders, mentionsPlace, wordCount } from "../../lib/projectText";
-import type { Service } from "../../lib/services";
+import type { Category } from "../../lib/categories";
 import { confirmAction } from "../../lib/notify";
 import styles from "../../admin.module.css";
 
 interface Props {
   id?: string;   // kopplas till textfältet med aria-describedby
-  service: Service | undefined;   // vald i formuläret
+  category: Category | undefined;   // vald i formuläret
+  location: string;                 // fältet Ort
   description: string;
   onUseTemplate: (text: string) => void;
 }
 
-export default function ProjectWritingHelp({ id, service, description, onUseTemplate }: Props) {
+export default function ProjectWritingHelp({ id, category, location, description, onUseTemplate }: Props) {
   const words = wordCount(description);
+  const hasPlace = location.trim().length > 0 || mentionsPlace(description);
   const placeholders = hasPlaceholders(description);
 
   const checks = [
@@ -27,16 +29,16 @@ export default function ProjectWritingHelp({ id, service, description, onUseTemp
         : `${words} ord – sikta på ${WORDS_MIN}–${WORDS_MAX}. Längre texter hittas lättare på Google.`,
     },
     {
-      ok: mentionsPlace(description),
-      text: mentionsPlace(description)
-        ? "Orten är nämnd"
-        : "Nämn orten (t.ex. Simrishamn eller Kivik) – många söker på \"altan Simrishamn\".",
+      ok: hasPlace,
+      text: hasPlace
+        ? "Orten är med"
+        : "Fyll i Ort eller nämn orten i texten – många söker på t.ex. \"altan Kivik\".",
     },
     {
-      ok: !!service,
-      text: service
-        ? `Visas som exempel på tjänstesidan "${service.name}"`
-        : "Ingen tjänst vald – välj en under \"Tjänst\" så visas projektet på tjänstens sida.",
+      ok: !!category,
+      text: category
+        ? `Visas under filtret "${category.name}" på projektsidan`
+        : "Ingen kategori vald – välj en så hittas projektet under filtret på projektsidan.",
     },
   ];
 

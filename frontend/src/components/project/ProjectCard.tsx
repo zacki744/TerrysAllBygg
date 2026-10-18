@@ -9,6 +9,7 @@ interface ProjectCardProps {
   title: string;
   description: string;
   image: string;
+  location?: string | null;
   priority?: boolean; // true för de första korten — laddas eager
   /** Rubriknivå för titeln — 2 på sidor där korten ligger direkt under h1 */
   headingLevel?: 2 | 3;
@@ -19,6 +20,7 @@ export default function ProjectCard({
   title,
   description,
   image,
+  location,
   priority = false,
   headingLevel = 3,
 }: ProjectCardProps) {
@@ -49,7 +51,11 @@ export default function ProjectCard({
         </div>
         <div className={styles.cardBody}>
           <Heading className={styles.cardTitle}>{title}</Heading>
-          <p className={styles.cardDescription}>{description}</p>
+          {location && <p className={styles.cardMeta}>{location}</p>}
+          {/* Många beskrivningar är bara titeln igen ("Golv") — visa den inte två gånger */}
+          {description.trim().toLowerCase() !== title.trim().toLowerCase() && (
+            <p className={styles.cardDescription}>{description}</p>
+          )}
         </div>
       </div>
     </Link>

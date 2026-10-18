@@ -49,13 +49,13 @@ public class SettingsTests
     }
 
     [Fact]
-    public void Två_tjänster_får_inte_ha_samma_adress()
+    public void Två_kategorier_får_inte_ha_samma_adress()
     {
         var s = new SiteSettings
         {
-            Services = [new ServiceItem { Slug = "altaner", Name = "Altaner" }, new ServiceItem { Slug = "altaner", Name = "Däck" }],
+            Categories = [new CategoryItem { Slug = "altaner", Name = "Altaner" }, new CategoryItem { Slug = "altaner", Name = "Däck" }],
         };
-        Assert.Contains(nameof(SiteSettings.Services), Invalid(s));
+        Assert.Contains(nameof(SiteSettings.Categories), Invalid(s));
     }
 
     [Theory]
@@ -64,26 +64,22 @@ public class SettingsTests
     [InlineData("Förråd", false)]
     [InlineData("-altan", false)]
     [InlineData("altan/../x", false)]
-    public void Tjänstens_adress_är_url_säker(string slug, bool valid)
+    public void Kategorins_adress_är_url_säker(string slug, bool valid)
     {
-        var item = new ServiceItem { Slug = slug, Name = "X" };
+        var item = new CategoryItem { Slug = slug, Name = "X" };
         var results = new List<ValidationResult>();
         Assert.Equal(valid, Validator.TryValidateObject(item, new ValidationContext(item), results, validateAllProperties: true));
     }
 
     [Fact]
-    public void Normalize_städar_tjänsterna()
+    public void Normalize_städar_kategorierna()
     {
-        var s = new SiteSettings
-        {
-            Services = [new ServiceItem { Slug = " Bastu ", Name = " Bastuer ", Intro = "  ", Includes = ["  Vedeldat ", "", " "] }],
-        };
+        var s = new SiteSettings { Categories = [new CategoryItem { Slug = " Altaner ", Name = " Altaner ", Detail = "  " }] };
         s.Normalize();
-        var item = Assert.Single(s.Services!);
-        Assert.Equal("bastu", item.Slug);
-        Assert.Equal("Bastuer", item.Name);
-        Assert.Null(item.Intro);
-        Assert.Equal(new[] { "Vedeldat" }, item.Includes);
+        var item = Assert.Single(s.Categories!);
+        Assert.Equal("altaner", item.Slug);
+        Assert.Equal("Altaner", item.Name);
+        Assert.Null(item.Detail);
     }
 
     // ── SettingsService mot en databas i minnet ──

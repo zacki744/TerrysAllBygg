@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { bookPathFor, bookingReference, projectPath, slugify, snickeriPath } from "./routes";
+import {
+  bookPathFor, bookingReference, projectMetaDescription, projectPageTitle, projectPath, slugify, snickeriPath,
+} from "./routes";
 
 describe("slugify", () => {
   it("gör om svenska tecken och mellanslag", () => {
@@ -39,5 +41,33 @@ describe("bokning med projektreferens", () => {
     expect(bookingReference(new URLSearchParams(`projekt=${"a".repeat(300)}`))?.length).toBe(100);
     expect(bookingReference(new URLSearchParams("projekt=%20"))).toBeNull();
     expect(bookingReference(new URLSearchParams(""))).toBeNull();
+  });
+});
+
+describe("bokning med kategori", () => {
+  it("lägger till kategorin när projektet har en", () => {
+    expect(bookPathFor("Altan", "altaner")).toBe("/book?projekt=Altan&kategori=altaner");
+    expect(bookPathFor("Altan", null)).toBe("/book?projekt=Altan");
+  });
+});
+
+describe("projektets titel och beskrivning för Google", () => {
+  it("lägger till orten i titeln om den saknas", () => {
+    expect(projectPageTitle("Altan med pergola", "Kivik")).toBe("Altan med pergola i Kivik");
+    expect(projectPageTitle("Bastu i Kivik", "kivik")).toBe("Bastu i Kivik");
+    expect(projectPageTitle("Golv", null)).toBe("Golv");
+    expect(projectPageTitle("Golv", "  ")).toBe("Golv");
+  });
+
+  it("skriver en hel mening när beskrivningen är kort", () => {
+    expect(projectMetaDescription("Golv", "Golv", null))
+      .toBe("Golv – bilder från ett projekt av Terrys Allbygg, bygg och snickeri på Österlen.");
+    expect(projectMetaDescription("Tak", "Nytt tegeltak", "Simrishamn"))
+      .toBe("Nytt tegeltak. Tak i Simrishamn – bilder från ett projekt av Terrys Allbygg, bygg och snickeri på Österlen.");
+  });
+
+  it("behåller en lång beskrivning", () => {
+    const long = "En altan i lärkträ på 40 kvadratmeter med inbyggd pergola, trappa ner mot gräsmattan och belysning.";
+    expect(projectMetaDescription("Altan", long, "Kivik")).toBe(long);
   });
 });

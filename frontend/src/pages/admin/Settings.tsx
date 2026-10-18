@@ -8,7 +8,9 @@ import { ImagePlus, RotateCcw, ExternalLink } from "lucide-react";
 import AdminNavbar from "../../components/Admin/AdminNavbar";
 import Input from "../../components/ui/Input";
 import Textarea from "../../components/ui/Textarea";
-import { SettingsAPI } from "../../lib/auth";
+import { AdminAPI } from "../../lib/adminApi";
+import CategoryEditor from "../../components/Admin/CategoryEditor";
+import { validateCategories } from "../../lib/categories";
 import { errorMessage } from "../../lib/errors";
 import {
   mergeSettings, toApiSettings,
@@ -33,13 +35,25 @@ export default function AdminSettingsPage() {
 
   const [form, setForm]       = useState<SiteSettings | null>(null);
   const [saved, setSaved]     = useState<SiteSettings | null>(null);
+  const [projectCounts, setProjectCounts] = useState<Record<string, number>>({});
   const [loadError, setLoadError] = useState("");
   const [saving, setSaving]   = useState(false);
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState<Message>(null);
 
+  // Antal projekt per kategori (visas vid kategorierna)
   useEffect(() => {
-    SettingsAPI.get()
+    AdminAPI.projects.list()
+      .then((projects) => {
+        const counts: Record<string, number> = {};
+        for (const p of projects) if (p.category) counts[p.category] = (counts[p.category] ?? 0) + 1;
+        setProjectCounts(counts);
+      })
+      .catch(() => { /* bara information */ });
+  }, []);
+
+  useEffect(() => {
+    AdminAPI.settings.get()
       .then((api) => { const s = mergeSettings(api); setForm(s); setSaved(s); })
       .catch((err) => setLoadError(errorMessage(err, "Kunde inte läsa inställningarna")));
   }, []);
@@ -62,7 +76,7 @@ export default function AdminSettingsPage() {
     setUploading(true);
     setMessage(null);
     try {
-      const img = await SettingsAPI.uploadHeroImage(file);
+      const img = await AdminAPI.settings.uploadHero(file);
       setForm((f) => f && ({ ...f, heroImage: img.path, heroImageWidth: img.width, heroImageHeight: img.height }));
       setMessage({ text: "Bilden är uppladdad. Klicka på Spara för att använda den på sajten.", ok: true });
     } catch (err) {
@@ -80,8 +94,11 @@ export default function AdminSettingsPage() {
     setMessage(null);
     try {
       // Omdömen kan inte visas utan länk (servern gör samma kontroll)
-      const toSave = { ...form, showReviews: form.showReviews && !!form.googleReviewsUrl.trim() };
-      const result = mergeSettings(await SettingsAPI.save(toApiSettings(toSave)));
+      const categories = form.categories.map((c) => ({ ...c, name: c.name.trim(), detail: c.detail.trim() }));
+      const problem = validateCategories(categories);
+      if (problem) throw new Error(problem);
+      const toSave = { ...form, categories, showReviews: form.showReviews && !!form.googleReviewsUrl.trim() };
+      const result = mergeSettings(await AdminAPI.settings.save(toApiSettings(toSave)));
       setForm(result);
       setSaved(result);
       setSiteSettings(result);   // syns direkt när man klickar "Visa sida"
@@ -267,6 +284,21 @@ export default function AdminSettingsPage() {
                 maxLength={300} onChange={(e) => set("instagram", e.target.value)} />
             </div>
             <p className={styles.formHint}>Telefon och e-post ändras i koden (de används även i mejlen).</p>
+          </fieldset>
+
+          {/* ── Kategorier ── */}
+          <fieldset className={`${styles.card} ${styles.settingsSection}`}>
+            <legend className={styles.settingsLegend}>Kategorier</legend>
+            <p className={styles.formHint} style={{ marginTop: 0 }}>
+              Kategorierna är etiketter på projekten. De används som filter på projektsidan, som val i
+              bokningsformuläret och i listan "Det här bygger vi" på startsidan och Om oss.
+            </p>
+            <CategoryEditor
+              value={form.categories}
+              onChange={(categories) => set("categories", categories)}
+              savedSlugs={new Set(saved?.categories.map((c) => c.slug) ?? [])}
+              projectCounts={projectCounts}
+            />
           </fieldset>
 
           {/* ── Om oss ── */}

@@ -5,5 +5,8 @@ public class DetailedProject
     public required string Title { get; init; }
     public required string Description { get; init; }
     public required string[] Images { get; init; }
-    public string? Service { get; init; }
+    public string? Category { get; init; }
+    public string? Location { get; init; }
+    public int? Year { get; init; }
+    public string? Scope { get; init; }
 }

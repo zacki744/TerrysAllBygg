@@ -24,7 +24,7 @@ public class ProjectsController(IProjectsService projectsService) : ControllerBa
         var project = await _projectsService.GetProjectByIdPublicAsync(id, ct);
 
         if (project == null)
-            return NotFound(new { error = "Project not found" });
+            return NotFound(new { error = "Projektet hittades inte" });
 
         return Ok(project);
     }

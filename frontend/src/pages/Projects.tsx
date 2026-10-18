@@ -4,12 +4,12 @@ import Footer from "../components/Footer";
 import ImageGallery from "../components/project/ImageGallery";
 import PageMeta from "../components/PageMeta";
 import NotFound from "./NotFound";
-import { projectPath, bookPathFor } from "../lib/routes";
+import { projectPath, bookPathFor, projectPageTitle, projectMetaDescription } from "../lib/routes";
 import { Phone } from "lucide-react";
 import ProjectCard from "../components/project/ProjectCard";
 import { CONTACT } from "../lib/contact";
 import { paragraphs } from "../lib/settings";
-import { findService, servicePath } from "../lib/services";
+import { findCategory, categoryPath } from "../lib/categories";
 import { useSettings } from "../lib/settingsContext";
 import RetryError from "../components/RetryError";
 import { useFetch } from "../hooks/useFetch";
@@ -17,13 +17,17 @@ import { API, isNotFound, type ProjectDetail, type ProjectOverview } from "../li
 import styles from "../pages.module.css";
 
 export default function ProjectsPageContent() {
-  const { services } = useSettings();
+  const { categories } = useSettings();
   const { id } = useParams();
   const { data: project, error, loading, reload } =
     useFetch<ProjectDetail>(id ? API.project(id) : null);
   // Fler projekt längst ner — samma lista som projektsidan (cachas av webbläsaren)
   const { data: allProjects } = useFetch<ProjectOverview[]>(API.projects);
-  const moreProjects = (allProjects ?? []).filter((p) => p.id !== id).slice(0, 3);
+  // Projekt i samma kategori först
+  const moreProjects = (allProjects ?? [])
+    .filter((p) => p.id !== id)
+    .sort((a, b) => Number(b.category === project?.category) - Number(a.category === project?.category))
+    .slice(0, 3);
 
   // ── State views — share consistent shell ──────────────────
   if (!id || isNotFound(error)) return <NotFound />;
@@ -40,13 +44,19 @@ export default function ProjectsPageContent() {
     );
   }
 
-  const service = findService(services, project.service);
+  const category = findCategory(categories, project.category);
+  // Faktarad: bara det som är ifyllt
+  const facts = [
+    project.location && { label: "Ort", value: project.location },
+    project.year && { label: "År", value: String(project.year) },
+    project.scope && { label: "Omfattning", value: project.scope },
+  ].filter((f): f is { label: string; value: string } => Boolean(f));
 
   return (
     <div className={styles.page}>
       <PageMeta
-        title={project.title}
-        description={project.description}
+        title={projectPageTitle(project.title, project.location)}
+        description={projectMetaDescription(project.title, project.description, project.location)}
         canonical={projectPath(id, project.title)}
         breadcrumbs={[
           { name: "Projekt", path: "/projekt" },
@@ -64,6 +74,16 @@ export default function ProjectsPageContent() {
 
         <header className={styles.projectHeader}>
           <h1 className={styles.projectTitle}>{project.title}</h1>
+          {(facts.length > 0 || category) && (
+            <dl className={styles.projectFacts}>
+              {facts.map((f) => (
+                <div key={f.label}><dt>{f.label}</dt><dd>{f.value}</dd></div>
+              ))}
+              {category && (
+                <div><dt>Kategori</dt><dd><Link to={categoryPath(category.slug)}>{category.name}</Link></dd></div>
+              )}
+            </dl>
+          )}
         </header>
 
         {/* Gallery — full mainWide bredd */}
@@ -76,11 +96,7 @@ export default function ProjectsPageContent() {
             {paragraphs(project.description).map((p, i) => (
               <p key={i} className={styles.descriptionText}>{p}</p>
             ))}
-            {service && (
-              <p className={styles.descriptionText}>
-                Läs mer om <Link to={servicePath(service.slug)}>{service.name.toLowerCase()}</Link> och hur vi arbetar.
-              </p>
-            )}
+
           </section>
 
           {/* Nästa steg för den som gillar projektet */}
@@ -91,7 +107,7 @@ export default function ProjectsPageContent() {
               Konsultationen är kostnadsfri.
             </p>
             <div className={styles.projectCtaButtons}>
-              <Link to={bookPathFor(project.title)} className={styles.btnPrimary}>Boka konsultation</Link>
+              <Link to={bookPathFor(project.title, category?.slug)} className={styles.btnPrimary}>Boka konsultation</Link>
               <a href={CONTACT.phoneHref} className={`${styles.btnGhost} ${styles.iconLine}`}>
                 <Phone size={16} aria-hidden /> Ring {CONTACT.phone}
               </a>

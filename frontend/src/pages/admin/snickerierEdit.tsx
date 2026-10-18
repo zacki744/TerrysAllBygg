@@ -1,52 +1,19 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import AdminNavbar from "../../components/Admin/AdminNavbar";
-import SnickeriForm, { type SnickeriFormData } from "../../components/Admin/SnickeriForm";
+import SnickeriForm from "../../components/Admin/SnickeriForm";
+import { AdminAPI } from "../../lib/adminApi";
+import type { SnickeriDetail, SnickeriInput } from "../../lib/types";
 import PageMeta from "../../components/PageMeta";
 import styles from "../../admin.module.css";
 import { notify } from "../../lib/notify";
-
-interface DetailedSnickeri {
-  id: string;
-  title: string;
-  description: string;
-  price: number;
-  images: string[];
-}
-
-async function fetchSnickeri(id: string): Promise<DetailedSnickeri> {
-  const res = await fetch(`/api/admin/snickerier/${id}`, {
-    credentials: "include",
-  });
-  if (!res.ok) throw new Error("Not found");
-  return res.json();
-}
-
-async function updateSnickeri(id: string, data: SnickeriFormData): Promise<void> {
-  const res = await fetch(`/api/admin/snickerier/${id}`, {
-    method:      "PUT",
-    credentials: "include",
-    headers:     { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      title:            data.title,
-      description:      data.description,
-      price:            data.price,
-      mainImage:        data.mainImage,
-      additionalImages: data.additionalImages ?? [],
-    }),
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.message || "Kunde inte uppdatera snickeri");
-  }
-}
 
 export default function EditSnickeri() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const id = searchParams.get("id");
 
-  const [snickeri, setSnickeri] = useState<DetailedSnickeri | null>(null);
+  const [snickeri, setSnickeri] = useState<SnickeriDetail | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -54,7 +21,7 @@ export default function EditSnickeri() {
       navigate("/admin");
       return;
     }
-    fetchSnickeri(id)
+    AdminAPI.snickerier.get(id)
       .then(setSnickeri)
       .catch(() => {
         notify.error("Snickeriet hittades inte. Det kan ha raderats.");
@@ -63,9 +30,9 @@ export default function EditSnickeri() {
       .finally(() => setLoading(false));
   }, [id, navigate]);
 
-  const handleSubmit = async (data: SnickeriFormData) => {
+  const handleSubmit = async (data: SnickeriInput) => {
     if (!id) return;
-    await updateSnickeri(id, data);
+    await AdminAPI.snickerier.update(id, data);
     notify.success(`"${data.title}" är sparat`);
     navigate("/admin");
   };

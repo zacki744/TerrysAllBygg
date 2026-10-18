@@ -5,19 +5,12 @@ import Textarea from "../ui/Textarea";
 import Button from "../ui/Button";
 import ImageUploader from "./ImageUploader";
 import { useUnsavedChanges } from "../../hooks/useUnsavedChanges";
+import type { SnickeriInput } from "../../lib/types";
 import styles from "../../admin.module.css";
 
-export interface SnickeriFormData {
-  title: string;
-  description: string;
-  price: number;
-  mainImage?: string;
-  additionalImages?: string[];
-}
-
 interface SnickeriFormProps {
-  initialData?: SnickeriFormData;
-  onSubmit: (data: SnickeriFormData) => Promise<void>;
+  initialData?: SnickeriInput;
+  onSubmit: (data: SnickeriInput) => Promise<void>;
   onCancel: () => void;
   isEdit?: boolean;
 }

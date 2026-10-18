@@ -8,7 +8,7 @@
 // de även används i mejlen från servern.
 // ══════════════════════════════════════════════════════════
 
-import { DEFAULT_SERVICES, type Service } from "./services";
+import { DEFAULT_CATEGORIES, type Category } from "./categories";
 
 export type HeroFocus = "left" | "center" | "right";
 
@@ -29,7 +29,7 @@ export interface SiteSettings {
   facebook:         string;
   instagram:        string;
   aboutStory:       string;
-  services:         Service[];   // admin → Tjänster
+  categories:       Category[];  // admin → Inställningar → Kategorier
 }
 
 /** Som API:t skickar dem: null eller saknat fält = standardvärde. */
@@ -61,25 +61,15 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     "avancerade tillbyggnader och skräddarsydda snickerier.\n\n" +
     "Vi är stolta över att vara ett lokalt företag som känner sin bygd och sina kunder. " +
     "För oss är varje projekt unikt och varje kund förtjänar full uppmärksamhet från start till mål.",
-  services: DEFAULT_SERVICES,
+  categories: DEFAULT_CATEGORIES,
 };
 
-/** En tjänst från API:t → komplett tjänst (saknade texter blir tomma), eller null om den är trasig. */
-function toService(raw: unknown): Service | null {
+/** En kategori från API:t, eller null om den är trasig. */
+function toCategory(raw: unknown): Category | null {
   if (!raw || typeof raw !== "object") return null;
   const r = raw as Record<string, unknown>;
   if (typeof r.slug !== "string" || typeof r.name !== "string" || !r.slug || !r.name) return null;
-  const str = (v: unknown) => (typeof v === "string" ? v : "");
-  return {
-    slug: r.slug,
-    name: r.name,
-    detail: str(r.detail),
-    title: str(r.title) || r.name,
-    description: str(r.description),
-    intro: str(r.intro),
-    includes: Array.isArray(r.includes) ? r.includes.filter((i): i is string => typeof i === "string") : [],
-    goodToKnow: str(r.goodToKnow),
-  };
+  return { slug: r.slug, name: r.name, detail: typeof r.detail === "string" ? r.detail : "" };
 }
 
 const KEYS = Object.keys(DEFAULT_SETTINGS) as (keyof SiteSettings)[];
@@ -90,9 +80,9 @@ export function mergeSettings(api: ApiSettings | null | undefined): SiteSettings
   for (const key of KEYS) {
     const value = api?.[key];
     if (value === null || value === undefined) continue;
-    if (key === "services") {
+    if (key === "categories") {
       if (!Array.isArray(value)) continue;
-      out.services = value.map(toService).filter((s): s is Service => s !== null);
+      out.categories = value.map(toCategory).filter((c): c is Category => c !== null);
       continue;
     }
     if (typeof value === "string" && value.trim() === "") continue;
@@ -108,9 +98,9 @@ export function toApiSettings(s: SiteSettings): ApiSettings {
   const out: Record<string, unknown> = {};
   for (const key of KEYS) {
     const value = s[key];
-    if (key === "services") {
-      // Oförändrad standardlista skickas som null, så att förbättringar i koden slår igenom
-      out.services = JSON.stringify(value) === JSON.stringify(DEFAULT_SETTINGS.services) ? null : value;
+    if (key === "categories") {
+      // Oförändrad standardlista skickas som null, så att ändringar i koden slår igenom
+      out.categories = JSON.stringify(value) === JSON.stringify(DEFAULT_SETTINGS.categories) ? null : value;
       continue;
     }
     out[key] = typeof value === "string" && (value.trim() === "" || value === DEFAULT_SETTINGS[key])
@@ -124,7 +114,8 @@ export function toApiSettings(s: SiteSettings): ApiSettings {
 // scripts/prerender.mjs bäddar in inställningarna i HTML:en, så att sidan
 // visar rätt innehåll direkt. Sedan hämtas färska värden från API:t.
 
-export const SETTINGS_SCRIPT_ID = "site-settings";
+// Samma id används i scripts/prerender.mjs
+const SETTINGS_SCRIPT_ID = "site-settings";
 
 export function readEmbeddedSettings(): SiteSettings {
   try {

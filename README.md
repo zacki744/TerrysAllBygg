@@ -61,24 +61,29 @@ Terrys AllBygg erbjuder skräddarsydda byggprojekt (bastuer, tillbyggnader, alta
 
 | Sida | Beskrivning |
 |---|---|
-| **Hem** (`/`) | Hero, ett urval av projekt, tjänster och kontaktvägar |
-| **Projekt** (`/projekt`) | Alla tidigare byggprojekt |
-| **Projektdetalj** (`/projekt/<id>/<slug>`) | Bildgalleri och beskrivning |
+| **Hem** (`/`) | Hero, ett urval av projekt, vad vi bygger och kontaktvägar |
+| **Projekt** (`/projekt`) | Alla tidigare byggprojekt, kan filtreras per kategori (`?kategori=altaner`) |
+| **Projektdetalj** (`/projekt/<id>/<slug>`) | Bildgalleri, beskrivning och valfria fakta (ort, år, omfattning) |
 | **Snickerier** (`/snickerier`) | Färdiga snickerier med pris och bild |
 | **Snickeri-detalj** (`/snickerier/<id>/<slug>`) | Produktvy med bildgalleri och förfrågningsformulär |
-| **Om oss** (`/about`) | Företagspresentation, tjänster och kontaktinfo |
+| **Om oss** (`/about`) | Företagspresentation, vad vi bygger och kontaktinfo |
 | **Boka konsultation** (`/book`) | Formulär för kostnadsfri konsultation |
 | **Integritetspolicy** (`/integritetspolicy`) | Hur personuppgifter från formulären hanteras |
 
 Gamla adresser (`/projects?id=…`, `/snickeri?id=…`) omdirigeras till de nya.
 
-### Tjänster (`/tjanster`)
+### Kategorier och projektfakta
 
-Tjänsterna hanteras i **admin → Tjänster**: namn, text, "det här ingår", "bra att veta" och texten i Googles sökresultat. Listan styr tjänstesidorna, startsidans "Det här bygger vi", Om oss, valen i bokningsformuläret (`/book?typ=<slug>` väljer tjänsten) och företagets strukturerade data. Utan sparade tjänster används standardlistan i `frontend/src/lib/services.ts`.
+Kategorierna (t.ex. "Altaner – och uteplatser") hanteras i **admin → Inställningar → Kategorier**: lägg till, byt namn, ändra ordning och ta bort. Listan styr
 
-Projekt får en **etikett** (tjänst) i projektformuläret. Etiketten avgör var projektet visas som exempel, och projektsidan kan filtreras per tjänst (`/projekt?tjanst=altaner`). Formuläret föreslår en tjänst utifrån titeln när etikett saknas.
+- filtret på projektsidan (`/projekt?kategori=<slug>`, bara kategorier som har projekt visas som val),
+- "Typ av projekt" i bokningsformuläret (`/book?kategori=<slug>` väljer kategorin),
+- "Det här bygger vi" på startsidan och Om oss,
+- tjänsterna i företagets strukturerade data (schema.org).
 
-Tjänstesidorna förrenderas utifrån inställningarna på den publicerade sajten. En ny tjänst fungerar direkt (backend känner igen den och lägger den i sitemapen), men får sin förrenderade sida först vid nästa bygge.
+Utan sparade kategorier används standardlistan i `frontend/src/lib/categories.ts`. En kategoris adress (slug) skapas från namnet och låses när kategorin sparats, så att gamla länkar fortsätter fungera.
+
+Varje projekt kan få en kategori som **etikett**. Formuläret föreslår en utifrån titeln när den saknas. Projekt kan också få **valfria fakta**: ort, år och omfattning (t.ex. "6 veckor, ca 40 m²"). De visas som en rad under rubriken, och orten läggs till i sidans titel för Google. Tomma fält visas inte.
 
 ### E-postflöden
 
@@ -90,13 +95,14 @@ Alla mejl skickas som HTML i sajtens stil (logga, färger, sidfot) med en textve
 ### Admin-panel (`/admin`)
 
 - Inloggning via JWT-cookie (httpOnly, Secure, SameSite=Strict)
-- CRUD för projekt (titel, beskrivning, bilder)
-- CRUD för snickerier (titel, beskrivning, pris, bilder)
+- CRUD för projekt (titel, beskrivning, bilder, kategori och valfria fakta)
+- CRUD för snickerier (titel, beskrivning, pris inkl. moms, bilder)
 - Bilduppladdning: WebP i 1600 px + miniatyr i 640 px (SkiaSharp, Magick.NET för HEIC)
 - Bildunderhåll: krymper äldre bilder, skapar saknade miniatyrer och flyttar undan oanvända
 - Användarhantering: bjud in nya admins via e-post, återställ lösenord, radera konton
-- Skrivhjälp för projekttexter: ordräknare, tips om ort och tjänst, och en mall att fylla i
-- Inställningar (`/admin/installningar`): hero-bild och texter på startsidan, förtroenderad (ROT, F-skatt, försäkring), omdömen på/av, adress, sociala medier och Om oss-texten — utan ny deploy
+- Skrivhjälp för projekttexter: ordräknare, tips om ort och kategori, och en mall att fylla i
+- Inställningar (`/admin/installningar`): hero-bild och texter på startsidan, förtroenderad (ROT, F-skatt, försäkring), omdömen på/av, adress, sociala medier, kategorier och Om oss-texten — utan ny deploy
+- Alla anrop från admin går via `frontend/src/lib/adminApi.ts`: gemensam felhantering, och vid utgången inloggning skickas man till inloggningen med ett meddelande
 
 ---
 
@@ -315,8 +321,8 @@ Administrationsgränssnittet nås på `/admin/login`. Första kontot skapas manu
 
 Databasändringarna i `TABB/db/` körs en gång, i den här ordningen, t.ex. i Simplys phpMyAdmin, **innan** den nya versionen deployas:
 
-1. `site_settings.sql` – tabellen för inställningar och tjänster. Utan den visas standardvärdena, men inget går att spara.
-2. `2026-10-projekt-tjanst.sql` – kolumnen `service` på projekt. Utan den går det inte att spara projekt.
+1. `site_settings.sql` – tabellen för inställningar och kategorier. Utan den visas standardvärdena, men inget går att spara.
+2. `2026-10-projekt-kategori-fakta.sql` – kolumnerna `category`, `location`, `year` och `scope` på projekt. Utan dem går det inte att spara projekt. (Om det äldre skriptet `2026-10-projekt-tjanst.sql` redan körts finns en rad i filen som tar bort kolumnen `service`.)
 
 ---
 

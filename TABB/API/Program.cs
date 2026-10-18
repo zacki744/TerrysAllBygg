@@ -257,23 +257,12 @@ try
         var spaPath = context.Request.Path.Value?.TrimEnd('/') ?? "";
         if (spaPath.Length == 0) spaPath = "/";
 
-        string[] exactRoutes  = ["/", "/about", "/book", "/snickerier", "/projekt", "/integritetspolicy", "/tjanster",
+        string[] exactRoutes  = ["/", "/about", "/book", "/snickerier", "/projekt", "/integritetspolicy",
                                  "/snickeri", "/projects"];          // gamla URL:er → omdirigeras i React
         string[] prefixRoutes = ["/snickerier/", "/projekt/", "/admin"];
 
         var isKnownRoute = exactRoutes.Contains(spaPath, StringComparer.OrdinalIgnoreCase) ||
                     prefixRoutes.Any(prefix => spaPath.StartsWith(prefix, StringComparison.OrdinalIgnoreCase));
-
-        // Tjänstesidor: förrenderade serveras redan som statiska filer. En hit
-        // betyder en tjänst skapad i admin efter senaste deploy — eller en som inte finns.
-        if (!isKnownRoute && spaPath.StartsWith("/tjanster/", StringComparison.OrdinalIgnoreCase))
-        {
-            var slug = spaPath["/tjanster/".Length..];
-            var settings = await context.RequestServices
-                .GetRequiredService<Services.Src.Settings.ISettingsService>()
-                .GetAsync(context.RequestAborted);
-            isKnownRoute = settings.Services?.Any(s => s.Slug.Equals(slug, StringComparison.OrdinalIgnoreCase)) == true;
-        }
 
         if (!isKnownRoute)
             context.Response.StatusCode = 404;

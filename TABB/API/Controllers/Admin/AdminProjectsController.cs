@@ -32,7 +32,7 @@ public class AdminProjectsController : ControllerBase
         var project = await _projectsService.GetProjectByIdAsync(id, ct);
 
         if (project == null)
-            return NotFound(new { error = "Project not found" });
+            return NotFound(new { error = "Projektet hittades inte" });
 
         return Ok(project);
     }
@@ -63,7 +63,7 @@ public class AdminProjectsController : ControllerBase
         var success = await _projectsService.UpdateProjectAsync(id, request, ct);
 
         if (!success)
-            return NotFound(new { error = "Project not found" });
+            return NotFound(new { error = "Projektet hittades inte" });
 
         return Ok(new { message = "Project updated successfully" });
     }
@@ -75,7 +75,7 @@ public class AdminProjectsController : ControllerBase
         var success = await _projectsService.DeleteProjectAsync(id, ct);
 
         if (!success)
-            return NotFound(new { error = "Project not found" });
+            return NotFound(new { error = "Projektet hittades inte" });
 
         return Ok(new { message = "Project deleted successfully" });
     }

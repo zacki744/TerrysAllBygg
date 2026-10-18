@@ -18,7 +18,7 @@ public class SnickeriService(IDatabase db) : ISnickeriService
             Title = s.Title,
             Description = s.Description,
             Price = s.Price,
-            Image = s.MainImage ?? "/placeholder.jpg"
+            Image = s.MainImage ?? "/og-image.jpg"   // delningsbilden finns alltid
         })];
     }
 

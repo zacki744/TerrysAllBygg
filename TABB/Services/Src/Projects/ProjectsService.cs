@@ -8,6 +8,11 @@ public class ProjectsService(IDatabase db) : IProjectsService
 {
     private readonly IDatabase _db = db;
 
+    // Visas om ett projekt saknar bild (delningsbilden finns alltid)
+    internal const string NoImage = "/og-image.jpg";
+
+    private static string? Clean(string? value) => string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+
     // Public routes
     public async Task<List<ProjectOverview>> GetOverviewInformationAsync(CancellationToken ct = default)
     {
@@ -18,8 +23,9 @@ public class ProjectsService(IDatabase db) : IProjectsService
             Id = Guid.Parse(p.Id),
             Title = p.Title,
             Description = p.Description,
-            Image = p.MainImage ?? "/placeholder.jpg",
-            Service = p.Service,
+            Image = p.MainImage ?? NoImage,
+            Category = p.Category,
+            Location = p.Location,
         })];
     }
 
@@ -71,7 +77,10 @@ public class ProjectsService(IDatabase db) : IProjectsService
             Title = project.Title,
             Description = project.Description,
             Images = [.. allImages],
-            Service = project.Service,
+            Category = project.Category,
+            Location = project.Location,
+            Year = project.Year,
+            Scope = project.Scope,
         };
     }
 
@@ -93,7 +102,10 @@ public class ProjectsService(IDatabase db) : IProjectsService
             request.Description,
             request.MainImage,
             Images = imagesJson,
-            Service = string.IsNullOrWhiteSpace(request.Service) ? null : request.Service,
+            Category = Clean(request.Category),
+            Location = Clean(request.Location),
+            request.Year,
+            Scope = Clean(request.Scope),
         };
 
         await _db.InsertAsync("projects", dto, ct);
@@ -116,7 +128,10 @@ public class ProjectsService(IDatabase db) : IProjectsService
             request.Description,
             request.MainImage,
             Images = imagesJson,
-            Service = string.IsNullOrWhiteSpace(request.Service) ? null : request.Service,
+            Category = Clean(request.Category),
+            Location = Clean(request.Location),
+            request.Year,
+            Scope = Clean(request.Scope),
         };
 
         var rowsAffected = await _db.UpdateAsync(

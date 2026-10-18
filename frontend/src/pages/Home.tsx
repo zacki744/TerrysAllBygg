@@ -13,7 +13,7 @@ import { Check, Star } from "lucide-react";
 import { useSettings } from "../lib/settingsContext";
 import { trustItems, reviewsUrl } from "../lib/settings";
 import { CONTACT } from "../lib/contact";
-import { SERVICES_PATH, servicePath } from "../lib/services";
+import { categoryPath } from "../lib/categories";
 
 const HOME_PROJECT_COUNT = 6;
 
@@ -63,7 +63,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── Tjänster ── */}
+        {/* ── Kategorier: det här bygger vi ── */}
         <section className={styles.servicesSection} aria-labelledby="home-services">
           <h2 id="home-services" className={styles.sectionTitle}>Det här bygger vi</h2>
           <p className={styles.servicesLead}>
@@ -71,16 +71,16 @@ export default function Home() {
             resten av Skåne, från första skiss till färdigt bygge.
           </p>
           <ul className={styles.servicesList}>
-            {settings.services.map((s) => (
-              <li key={s.slug}>
-                <Link to={servicePath(s.slug)} className={styles.servicesLink}>
-                  <span className={styles.servicesName}>{s.name}</span>
-                  {s.detail && <span className={styles.servicesDetail}> {s.detail}</span>}
+            {settings.categories.map((c) => (
+              <li key={c.slug}>
+                <Link to={categoryPath(c.slug)} className={styles.servicesLink}>
+                  <span className={styles.servicesName}>{c.name}</span>
+                  {c.detail && <span className={styles.servicesDetail}> {c.detail}</span>}
                 </Link>
               </li>
             ))}
           </ul>
-          <Link to={SERVICES_PATH} className={`${styles.sectionLink} ${styles.servicesMore}`}>Läs mer om våra tjänster</Link>
+          <Link to="/projekt" className={`${styles.sectionLink} ${styles.servicesMore}`}>Se våra projekt</Link>
         </section>
 
         {/* ── Omdömen (slås på i admin → Inställningar) ── */}

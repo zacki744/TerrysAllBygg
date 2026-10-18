@@ -2,26 +2,10 @@
 // ══════════════════════════════════════════════════════════
 // Publika API-anrop: adresser och svarstyper på ett ställe.
 // Hämtas med useFetch (src/hooks/useFetch.ts).
-// Admin-anropen ligger i lib/auth.ts (AdminAPI).
+// Admin-anropen ligger i lib/adminApi.ts.
 // ══════════════════════════════════════════════════════════
 
-export type { Project as ProjectOverview, DetailedProject as ProjectDetail } from "./project";
-
-export interface SnickeriOverview {
-  id: string;
-  title: string;
-  description: string;
-  price: number;
-  image: string;
-}
-
-export interface SnickeriDetail {
-  id: string;
-  title: string;
-  description: string;
-  price: number;
-  images: string[];
-}
+export type { ProjectOverview, ProjectDetail, SnickeriOverview, SnickeriDetail } from "./types";
 
 export const API = {
   projects:   "/api/projects",

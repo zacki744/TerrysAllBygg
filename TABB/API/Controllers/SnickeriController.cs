@@ -34,7 +34,7 @@ public class SnickeriController(
     {
         var item = await _snickeriService.GetByIdPublicAsync(id, ct);
         if (item == null)
-            return NotFound(new { error = "Snickeri not found" });
+            return NotFound(new { error = "Snickeriet hittades inte" });
         return Ok(item);
     }
 
@@ -56,7 +56,7 @@ public class SnickeriController(
 
         var snickeri = await _snickeriService.GetByIdPublicAsync(request.SnickeriId, ct);
         if (snickeri == null)
-            return NotFound(new { error = "Snickeri not found" });
+            return NotFound(new { error = "Snickeriet hittades inte" });
 
         try
         {

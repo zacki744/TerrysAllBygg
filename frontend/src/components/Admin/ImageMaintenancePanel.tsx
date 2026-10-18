@@ -4,31 +4,14 @@
 
 import { useState } from "react";
 import { ImageDown } from "lucide-react";
+import { AdminAPI } from "../../lib/adminApi";
+import type { MaintenanceReport } from "../../lib/types";
 import styles from "../../admin.module.css";
-
-interface Report {
-  scanned: number;
-  remaining: number;
-  optimized: number;
-  converted: number;
-  thumbnailsCreated: number;
-  movedUnused: number;
-  bytesBefore: number;
-  bytesAfter: number;
-  errors: string[];
-  dryRun: boolean;
-}
 
 const mb = (bytes: number) => `${(bytes / 1024 / 1024).toFixed(1).replace(".", ",")} MB`;
 
-async function call(method: "GET" | "POST"): Promise<Report> {
-  const res = await fetch("/api/admin/image/maintenance", { method, credentials: "include" });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return res.json();
-}
-
 export default function ImageMaintenancePanel() {
-  const [preview, setPreview] = useState<Report | null>(null);
+  const [preview, setPreview] = useState<MaintenanceReport | null>(null);
   const [result, setResult]   = useState<{ optimized: number; converted: number; thumbs: number; moved: number; saved: number; errors: string[] } | null>(null);
   const [busy, setBusy]       = useState(false);
   const [progress, setProgress] = useState("");
@@ -37,7 +20,7 @@ export default function ImageMaintenancePanel() {
   const check = async () => {
     setBusy(true); setError(""); setResult(null);
     try {
-      setPreview(await call("GET"));
+      setPreview(await AdminAPI.images.maintenance(true));
     } catch {
       setError("Kunde inte kontrollera bilderna.");
     } finally {
@@ -52,7 +35,7 @@ export default function ImageMaintenancePanel() {
       // Backend arbetar i omgångar på ~40 s — fortsätt tills inget återstår
       for (let round = 1; round <= 50; round++) {
         setProgress(`Omgång ${round}…`);
-        const r = await call("POST");
+        const r = await AdminAPI.images.maintenance(false);
         total.optimized += r.optimized;
         total.converted += r.converted;
         total.thumbs    += r.thumbnailsCreated;

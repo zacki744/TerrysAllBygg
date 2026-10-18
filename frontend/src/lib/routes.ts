@@ -33,8 +33,25 @@ export const snickeriPath = (id: string, title?: string) => withSlug("/snickerie
 const REFERENCE_PARAM = "projekt";
 const REFERENCE_MAX = 100;
 
-export const bookPathFor = (projectTitle: string) =>
-  `/book?${REFERENCE_PARAM}=${encodeURIComponent(projectTitle.slice(0, REFERENCE_MAX))}`;
+export const bookPathFor = (projectTitle: string, categorySlug?: string | null) =>
+  `/book?${REFERENCE_PARAM}=${encodeURIComponent(projectTitle.slice(0, REFERENCE_MAX))}` +
+  (categorySlug ? `&kategori=${encodeURIComponent(categorySlug)}` : "");
+
+// ── Projektets titel och beskrivning för Google ────────────
+
+/** "Altan med pergola i Kivik" — orten läggs till om den inte redan står i titeln. */
+export function projectPageTitle(title: string, location?: string | null): string {
+  const place = location?.trim();
+  return place && !title.toLowerCase().includes(place.toLowerCase()) ? `${title} i ${place}` : title;
+}
+
+/** Många projekt har bara en rad som beskrivning ("Golv"). Då skrivs en hel mening för Google. */
+export function projectMetaDescription(title: string, description: string, location?: string | null): string {
+  const text = description.replace(/\s+/g, " ").trim();
+  if (text.length >= 70) return text;
+  const lead = text && text.toLowerCase() !== title.toLowerCase() ? `${text}. ` : "";
+  return `${lead}${projectPageTitle(title, location)} – bilder från ett projekt av Terrys Allbygg, bygg och snickeri på Österlen.`;
+}
 
 /** Projektnamnet ur URL:en, städat (en rad, max 100 tecken), eller null. */
 export function bookingReference(params: URLSearchParams): string | null {

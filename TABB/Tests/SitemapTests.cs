@@ -10,13 +10,13 @@ public class SitemapTests
         var root = Path.Combine(Path.GetTempPath(), "sitemap-" + Guid.NewGuid().ToString("N"));
         try
         {
-            foreach (var dir in new[] { "", "tjanster", "tjanster/bastu", "about", ".well-known", "assets" })
+            foreach (var dir in new[] { "", "integritetspolicy", "projekt", "projekt/arkiv", "about", ".well-known", "assets" })
                 Directory.CreateDirectory(Path.Combine(root, dir));
-            foreach (var file in new[] { "index.html", "index.spa.html", "tjanster/index.html", "tjanster/bastu/index.html",
+            foreach (var file in new[] { "index.html", "index.spa.html", "integritetspolicy/index.html", "projekt/arkiv/index.html",
                                          "about/index.html", ".well-known/index.html", "assets/app.js" })
                 File.WriteAllText(Path.Combine(root, file), "");
 
-            Assert.Equal(new[] { "/", "/about", "/tjanster", "/tjanster/bastu" }, SitemapController.PrerenderedPaths(root));
+            Assert.Equal(new[] { "/", "/about", "/integritetspolicy", "/projekt/arkiv" }, SitemapController.PrerenderedPaths(root));
         }
         finally
         {

@@ -6,47 +6,29 @@ import ProjectTable from "./../../components/Admin/ProjectTable";
 import SnickeriTable from "./../../components/Admin/SnickeriTable";
 import ImageMaintenancePanel from "./../../components/Admin/ImageMaintenancePanel";
 import PageMeta from "../../components/PageMeta";
-import { AuthService, AdminAPI, type Project } from "../../lib/auth";
+import { AdminAPI } from "../../lib/adminApi";
+import type { ProjectOverview, SnickeriOverview } from "../../lib/types";
 import { confirmAction, notify } from "../../lib/notify";
 import { errorMessage } from "../../lib/errors";
 import styles from "./../../admin.module.css";
 
-interface SnickeriItem {
-  id: string;
-  title: string;
-  description: string;
-  price: number;
-  image: string;
-}
-
-async function fetchSnickerier(): Promise<SnickeriItem[]> {
-  const res = await fetch("/api/admin/snickerier", { credentials: "include" });
-  if (!res.ok) throw new Error("Kunde inte läsa snickerierna");
-  return res.json();
-}
-
 export default function AdminDashboard() {
   const navigate = useNavigate();
-  const [projects, setProjects]     = useState<Project[]>([]);
-  const [snickerier, setSnickerier] = useState<SnickeriItem[]>([]);
+  const [projects, setProjects]     = useState<ProjectOverview[]>([]);
+  const [snickerier, setSnickerier] = useState<SnickeriOverview[]>([]);
   const [loading, setLoading]       = useState(true);
   const [loadError, setLoadError]   = useState("");
   const [attempt, setAttempt]       = useState(0);   // ökas av "Försök igen"
 
   useEffect(() => {
-    if (!AuthService.isAuthenticated()) {
-      navigate("/admin/login");
-      return;
-    }
-
-    // Utgången inloggning (401) skickas till inloggningen av adminFetch.
+    // Utgången inloggning (401) skickas till inloggningen av AdminAPI.
     // Andra fel (nätverk, server) visas här i stället för att logga ut.
     const loadAll = async () => {
       setLoadError("");
       try {
         const [projectData, snickeriData] = await Promise.all([
-          AdminAPI.getAllProjects(),
-          fetchSnickerier(),
+          AdminAPI.projects.list(),
+          AdminAPI.snickerier.list(),
         ]);
         setProjects(projectData);
         setSnickerier(snickeriData);
@@ -71,11 +53,11 @@ export default function AdminDashboard() {
     });
     if (!ok) return;
     try {
-      await AdminAPI.deleteProject(id);
+      await AdminAPI.projects.remove(id);
       setProjects((prev) => prev.filter((p) => p.id !== id));
       notify.success(`"${title}" är raderat`);
-    } catch {
-      notify.error("Kunde inte radera projektet. Försök igen.");
+    } catch (err) {
+      notify.error(errorMessage(err, "Kunde inte radera projektet. Försök igen."));
     }
   };
 
@@ -88,14 +70,11 @@ export default function AdminDashboard() {
     });
     if (!ok) return;
     try {
-      const res = await fetch(`/api/admin/snickerier/${id}`, {
-        method: "DELETE", credentials: "include",
-      });
-      if (!res.ok) throw new Error();
+      await AdminAPI.snickerier.remove(id);
       setSnickerier((prev) => prev.filter((s) => s.id !== id));
       notify.success(`"${title}" är raderat`);
-    } catch {
-      notify.error("Kunde inte radera snickeriet. Försök igen.");
+    } catch (err) {
+      notify.error(errorMessage(err, "Kunde inte radera snickeriet. Försök igen."));
     }
   };
 

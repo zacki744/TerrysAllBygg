@@ -3,6 +3,7 @@
 
 import { Link, useSearchParams } from "react-router-dom";
 import { useSettings } from "../lib/settingsContext";
+import { findCategory } from "../lib/categories";
 import PageShell from "../components/PageShell";
 import PageMeta from "../components/PageMeta";
 import ProjectCard from "../components/project/ProjectCard";
@@ -16,15 +17,19 @@ import { API, type ProjectOverview } from "../lib/api";
 export default function ProjectList() {
   const { data, loading, error, reload } = useFetch<ProjectOverview[]>(API.projects);
   const all = data ?? [];
-  const { services } = useSettings();
+  const { categories } = useSettings();
   const [params, setParams] = useSearchParams();
 
-  // Filter per tjänst — bara tjänster som har projekt med etiketten
-  const used = services.filter((s) => all.some((p) => p.service === s.slug));
-  const active = used.find((s) => s.slug === params.get("tjanst"));
-  const projects = active ? all.filter((p) => p.service === active.slug) : all;
+  // Filter per kategori — knappar bara för kategorier som har projekt.
+  // En länk till en kategori utan projekt (t.ex. från startsidan) visar alla
+  // projekt med en förklaring, i stället för en tom sida.
+  const used = categories.filter((c) => all.some((p) => p.category === c.slug));
+  const requested = findCategory(categories, params.get("kategori"));
+  const active = used.find((c) => c.slug === requested?.slug);
+  const emptyRequest = !loading && !error && requested && !active;
+  const projects = active ? all.filter((p) => p.category === active.slug) : all;
   const select = (slug: string | null) =>
-    setParams(slug ? { tjanst: slug } : {}, { replace: true, preventScrollReset: true });
+    setParams(slug ? { kategori: slug } : {}, { replace: true, preventScrollReset: true });
 
   return (
     <PageShell wide>
@@ -46,13 +51,20 @@ export default function ProjectList() {
           <button type="button" className={styles.filterChip} aria-pressed={!active} onClick={() => select(null)}>
             Alla
           </button>
-          {used.map((s) => (
-            <button key={s.slug} type="button" className={styles.filterChip}
-              aria-pressed={active?.slug === s.slug} onClick={() => select(s.slug)}>
-              {s.name}
+          {used.map((c) => (
+            <button key={c.slug} type="button" className={styles.filterChip}
+              aria-pressed={active?.slug === c.slug} onClick={() => select(c.slug)}>
+              {c.name}
             </button>
           ))}
         </div>
+      )}
+
+      {emptyRequest && (
+        <p className={styles.infoBox} role="status" style={{ marginBottom: "1.5rem" }}>
+          Vi har inga bilder från {requested.name.toLowerCase()} upplagda än – här är alla våra projekt.
+          {" "}<Link to={`/book?kategori=${requested.slug}`}>Fråga oss gärna</Link> om ditt projekt.
+        </p>
       )}
 
       <div className={styles.projectGrid}>

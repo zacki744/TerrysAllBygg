@@ -50,27 +50,26 @@ describe("hjälpare", () => {
   });
 });
 
-describe("tjänster i inställningarna", () => {
+describe("kategorier i inställningarna", () => {
   it("använder standardlistan tills Terry sparat egna", () => {
-    expect(mergeSettings({ services: null }).services).toEqual(DEFAULT_SETTINGS.services);
-    expect(toApiSettings(DEFAULT_SETTINGS).services).toBeNull();
+    expect(mergeSettings({ categories: null }).categories).toEqual(DEFAULT_SETTINGS.categories);
+    expect(toApiSettings(DEFAULT_SETTINGS).categories).toBeNull();
   });
 
-  it("tar emot sparade tjänster och hoppar över trasiga", () => {
+  it("tar emot sparade kategorier och hoppar över trasiga", () => {
     const s = mergeSettings({
-      services: [
-        { slug: "pooler", name: "Pooler", intro: "Vi bygger pooler.", includes: ["Trädäck runt poolen"] },
+      categories: [
+        { slug: "pooler", name: "Pooler" },
         { slug: "", name: "Utan adress" },
+        { slug: "tak", name: "" },
         "skräp",
       ] as never,
     });
-    expect(s.services.map((x) => x.slug)).toEqual(["pooler"]);
-    expect(s.services[0].title).toBe("Pooler");        // rubrik saknas → namnet
-    expect(s.services[0].goodToKnow).toBe("");
+    expect(s.categories).toEqual([{ slug: "pooler", name: "Pooler", detail: "" }]);
   });
 
-  it("skickar ändrade tjänster till servern", () => {
-    const services = DEFAULT_SETTINGS.services.slice(0, 2);
-    expect(toApiSettings({ ...DEFAULT_SETTINGS, services }).services).toEqual(services);
+  it("skickar ändrade kategorier till servern", () => {
+    const categories = DEFAULT_SETTINGS.categories.slice(0, 2);
+    expect(toApiSettings({ ...DEFAULT_SETTINGS, categories }).categories).toEqual(categories);
   });
 });

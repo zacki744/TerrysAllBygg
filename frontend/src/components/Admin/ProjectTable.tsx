@@ -1,18 +1,18 @@
-import type { Project } from "../../lib/auth";
+import type { ProjectOverview } from "../../lib/types";
 import { Pencil, Trash2 } from "lucide-react";
 import { thumbUrl } from "../../lib/images";
-import { findService } from "../../lib/services";
+import { findCategory } from "../../lib/categories";
 import { useSettings } from "../../lib/settingsContext";
 import styles from "../../admin.module.css";
 
 interface ProjectTableProps {
-  projects: Project[];
+  projects: ProjectOverview[];
   onEdit: (id: string) => void;
   onDelete: (id: string, title: string) => void;
 }
 
 export default function ProjectTable({ projects, onEdit, onDelete }: ProjectTableProps) {
-  const { services } = useSettings();
+  const { categories } = useSettings();
   return (
     <div className={styles.tableWrapper}>
       <table className={styles.table}>
@@ -34,9 +34,9 @@ export default function ProjectTable({ projects, onEdit, onDelete }: ProjectTabl
                   <div>
                     <div className={styles.tablePrimary}>
                       {project.title}{" "}
-                      {findService(services, project.service)
-                        ? <span className={styles.serviceTag}>{findService(services, project.service)!.name}</span>
-                        : <span className={styles.serviceTagMissing}>Ingen tjänst</span>}
+                      {findCategory(categories, project.category)
+                        ? <span className={styles.categoryTag}>{findCategory(categories, project.category)!.name}</span>
+                        : <span className={styles.categoryTagMissing}>Ingen kategori</span>}
                     </div>
                     <div className={styles.tableSecondary}>{project.description}</div>
                   </div>

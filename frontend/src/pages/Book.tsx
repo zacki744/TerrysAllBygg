@@ -18,18 +18,18 @@ import { useSettings } from "../lib/settingsContext";
 
 type Status = "idle" | "sending" | "sent" | "error";
 
-// "Typ av projekt" = tjänsterna i admin → Tjänster, plus "Annat".
-// Värdet är tjänstens namn — det står i mejlet till Terry.
-// Tjänstesidorna länkar hit med ?typ=<slug>.
+// "Typ av projekt" = kategorierna (admin → Inställningar), plus "Annat".
+// Värdet är kategorins namn — det står i mejlet till Terry.
+// Projektsidor länkar hit med ?kategori=<slug>.
 const OTHER = "annat";
-const typeFromUrl = (params: URLSearchParams, services: { slug: string; name: string }[]) =>
-  services.find((s) => s.slug === params.get("typ"))?.name ?? "";
+const typeFromUrl = (params: URLSearchParams, categories: { slug: string; name: string }[]) =>
+  categories.find((c) => c.slug === params.get("kategori"))?.name ?? "";
 
 export default function Book() {
   // Från "Vill du ha något liknande?" på en projektsida
   const [searchParams] = useSearchParams();
   const reference = bookingReference(searchParams);
-  const { services } = useSettings();
+  const { categories } = useSettings();
 
   const [form, setForm] = useState(() => ({
     name: "",
@@ -37,7 +37,7 @@ export default function Book() {
     phoneNumber: "",
     placement: "",
     other1: "",
-    project: typeFromUrl(searchParams, services),
+    project: typeFromUrl(searchParams, categories),
     other2: "",
     address: "",
     description: reference ? referenceDescription(reference) : "",
@@ -162,7 +162,7 @@ export default function Book() {
             <div className={styles.formField}>
               <label htmlFor="book-project" className={styles.formLabel}>Typ av projekt *</label>
               <Select id="book-project" name="project" value={form.project} onChange={handleChange} required placeholder="Välj typ av byggprojekt">
-                {services.map((s) => <option key={s.slug} value={s.name}>{s.name}</option>)}
+                {categories.map((c) => <option key={c.slug} value={c.name}>{c.name}</option>)}
                 <option value={OTHER}>Annat</option>
               </Select>
             </div>

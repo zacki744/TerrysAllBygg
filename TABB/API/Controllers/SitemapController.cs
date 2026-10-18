@@ -6,7 +6,6 @@ using API.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Services.Src.Projects;
-using Services.Src.Settings;
 using Services.Src.Snickerier;
 
 namespace API.Controllers;
@@ -23,7 +22,6 @@ namespace API.Controllers;
 public class SitemapController(
     IProjectsService projectsService,
     ISnickeriService snickeriService,
-    ISettingsService settingsService,
     IWebHostEnvironment environment,
     IConfiguration config) : ControllerBase
 {
@@ -33,7 +31,7 @@ public class SitemapController(
     // Reserv om det förrenderade bygget saknas (t.ex. lokalt utan frontend-bygge).
     // I drift hämtas listan från de förrenderade sidorna, se PrerenderedPaths.
     private static readonly string[] StaticPaths =
-        ["/", "/tjanster", "/projekt", "/snickerier", "/about", "/book", "/integritetspolicy"];
+        ["/", "/projekt", "/snickerier", "/about", "/book", "/integritetspolicy"];
 
     [HttpGet("/sitemap.xml")]
     [ResponseCache(Duration = 3600)]
@@ -49,16 +47,6 @@ public class SitemapController(
         var frontend = Path.Combine(environment.ContentRootPath, "wwwroot", "app");
         var pages = PrerenderedPaths(frontend);
         var paths = pages.Count > 0 ? pages : [.. StaticPaths];
-
-        // Tjänster som lagts till i admin efter senaste deploy har ingen
-        // förrenderad sida än, men ska ändå finnas i sitemapen.
-        var settings = await settingsService.GetAsync(ct);
-        foreach (var service in settings.Services ?? [])
-        {
-            var path = "/tjanster/" + service.Slug;
-            if (!paths.Contains(path)) paths.Add(path);
-        }
-
         urls.AddRange(paths.Select(path => Url(baseUrl + path)));
 
         urls.AddRange(projects.Select(p =>
@@ -78,8 +66,8 @@ public class SitemapController(
 
     /// <summary>
     /// Sidorna som förrenderats vid bygget (scripts/prerender.mjs): varje mapp
-    /// med en index.html blir en URL, t.ex. tjanster/bastu/index.html →
-    /// /tjanster/bastu. Nya fasta sidor hamnar då i sitemapen automatiskt.
+    /// med en index.html blir en URL, t.ex. integritetspolicy/index.html →
+    /// /integritetspolicy. Nya fasta sidor hamnar då i sitemapen automatiskt.
     /// </summary>
     internal static List<string> PrerenderedPaths(string frontendRoot)
     {

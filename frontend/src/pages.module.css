@@ -218,68 +218,6 @@ h2.infoBoxTitle { font-size: 1.17em; }
   color: var(--foreground);
 }
 
-.projectDescription {
-  font-size: 1.125rem;
-  color: color-mix(in srgb, var(--foreground) 72%, transparent);
-}
-
-.projectLayout {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-@media (min-width: 768px) {
-  .projectLayout { flex-direction: row; }
-}
-
-.galleryPanel {
-  flex: 1;
-  border: 1px solid var(--border);
-  border-radius: 0.75rem;
-  padding: 1rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  background-color: var(--background);
-}
-
-.sidebarPanel {
-  flex: 1;
-  border: 1px solid var(--border);
-  border-radius: 0.75rem;
-  padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  background-color: var(--background);
-}
-
-@media (min-width: 768px) {
-  .sidebarPanel { max-width: 24rem; }
-}
-
-.sidebarTitle {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-  color: var(--foreground);
-}
-
-.sidebarDetails {
-  margin-top: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  font-size: 0.875rem;
-}
-
-.detailLabel {
-  font-weight: 600;
-  color: var(--foreground);
-}
-
-.detailValue {
-  color: color-mix(in srgb, var(--foreground) 72%, transparent);
-  margin-top: 0.125rem;
-}
-
 .descriptionSection {
   display: flex;
   flex-direction: column;
@@ -298,7 +236,6 @@ h2.infoBoxTitle { font-size: 1.17em; }
 }
 
 /* ── Hero container ───────────────────────────────────────── */
-.heroContainer { width: 100%; }
 
 /* ── Trust bar ────────────────────────────────────────────── */
 .trustBar {
@@ -335,7 +272,6 @@ h2.infoBoxTitle { font-size: 1.17em; }
   font-weight: 500;
   color: color-mix(in srgb, var(--foreground) 72%, transparent);
 }
-
 
 /* ── Section header ───────────────────────────────────────── */
 .sectionHeader {
@@ -378,15 +314,6 @@ h2.infoBoxTitle { font-size: 1.17em; }
 }
 
 /* ── Retry button (inline text button) ────────────────────── */
-.retryButton {
-  color: var(--accent-ink);
-  background: none;
-  border: none;
-  cursor: pointer;
-  text-decoration: underline;
-  font-size: inherit;
-  padding: 0;
-}
 
 /* ── NotFound ─────────────────────────────────────────────── */
 .notFound {
@@ -789,197 +716,6 @@ h2.infoBoxTitle { font-size: 1.17em; }
 }
 
 /* ── Tjänster ── */
-.servicesHeader { margin-bottom: 2rem; max-width: 46rem; }
-
-.serviceCards {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 1rem;
-}
-
-@media (min-width: 640px)  { .serviceCards { grid-template-columns: repeat(2, 1fr); } }
-@media (min-width: 1024px) { .serviceCards { grid-template-columns: repeat(3, 1fr); } }
-
-.serviceCard {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  height: 100%;
-  padding: 1.5rem;
-  border: 1px solid var(--border);
-  border-radius: 1rem;
-  background: color-mix(in srgb, #fff 55%, var(--background));
-  color: var(--foreground);
-  text-decoration: none;
-  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
-}
-
-.serviceCard:hover {
-  border-color: color-mix(in srgb, var(--primary) 45%, var(--border));
-  box-shadow: 0 8px 24px rgba(44, 36, 22, 0.08);
-  transform: translateY(-2px);
-}
-
-.serviceCardTitle {
-  font-family: var(--font-display);
-  font-size: 1.35rem;
-  margin: 0;
-}
-
-.serviceCardText {
-  margin: 0;
-  flex: 1;
-  color: color-mix(in srgb, var(--foreground) 78%, transparent);
-  line-height: 1.55;
-}
-
-.serviceCardMore {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  font-weight: 600;
-  color: var(--primary-ink);
-}
-
-.breadcrumbs {
-  font-size: 0.875rem;
-  color: color-mix(in srgb, var(--foreground) 72%, transparent);
-  margin-bottom: 1.25rem;
-}
-
-.breadcrumbs a { color: inherit; }
-
-.serviceLayout {
-  display: grid;
-  gap: 2.5rem;
-}
-
-@media (min-width: 1024px) {
-  .serviceLayout { grid-template-columns: minmax(0, 1fr) 22rem; align-items: start; }
-  .serviceAside  { position: sticky; top: 6rem; }
-  .serviceAside .projectCta { margin-top: 0; }
-}
-
-.serviceMain {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  max-width: 46rem;
-}
-
-.serviceLead {
-  margin: 0;
-  font-size: 1.0625rem;
-  line-height: 1.7;
-}
-
-.serviceH2 {
-  font-family: var(--font-display);
-  font-size: 1.5rem;
-  margin: 1.5rem 0 0.75rem;
-}
-
-.checkList {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 0.6rem;
-}
-
-.checkList li {
-  display: flex;
-  gap: 0.6rem;
-  align-items: flex-start;
-  line-height: 1.5;
-}
-
-.checkIcon {
-  flex-shrink: 0;
-  margin-top: 0.15rem;
-  color: var(--primary-ink);
-}
-
-.goodToKnow {
-  margin-top: 1rem;
-  padding: 1.25rem 1.5rem;
-  border-radius: 0.75rem;
-  border-left: 4px solid var(--accent-ink);
-  background: color-mix(in srgb, var(--accent) 8%, var(--background));
-}
-
-.goodToKnow p { margin: 0; line-height: 1.6; }
-
-.goodToKnowTitle {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 1rem;
-  margin: 0 0 0.5rem;
-  color: var(--accent-ink);
-}
-
-.processList {
-  list-style: none;
-  counter-reset: step;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 1rem;
-}
-
-@media (min-width: 640px) { .processList { grid-template-columns: repeat(2, 1fr); } }
-
-.processList li {
-  counter-increment: step;
-  position: relative;
-  padding: 1rem 1rem 1rem 3.25rem;
-  border: 1px solid var(--border);
-  border-radius: 0.75rem;
-}
-
-.processList li::before {
-  content: counter(step);
-  position: absolute;
-  left: 1rem;
-  top: 1rem;
-  width: 1.6rem;
-  height: 1.6rem;
-  border-radius: 9999px;
-  display: grid;
-  place-items: center;
-  font-weight: 700;
-  font-size: 0.875rem;
-  color: #fff;
-  background: var(--primary-ink);
-}
-
-.processList p { margin: 0.25rem 0 0; line-height: 1.55; color: color-mix(in srgb, var(--foreground) 80%, transparent); }
-
-.processTitle { font-size: 1rem; margin: 0; }
-
-.serviceChips {
-  list-style: none;
-  margin: 1rem 0 0;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.serviceChip {
-  display: inline-block;
-  padding: 0.5rem 1rem;
-  border: 1px solid var(--border);
-  border-radius: 9999px;
-  color: var(--foreground);
-  text-decoration: none;
-  font-size: 0.9375rem;
-}
-
-.serviceChip:hover { border-color: var(--primary-ink); color: var(--primary-ink); }
 
 .servicesLink {
   display: block;
@@ -1023,3 +759,27 @@ h2.infoBoxTitle { font-size: 1.17em; }
 }
 
 .filterChip:focus-visible { outline: 2px solid var(--accent-ink); outline-offset: 2px; }
+
+/* ── Faktarad på projektsidan (Ort · År · Omfattning · Kategori) ── */
+.projectFacts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.75rem;
+  margin: 0.75rem 0 0;
+}
+
+.projectFacts > div { display: flex; flex-direction: column; }
+
+.projectFacts dt {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: color-mix(in srgb, var(--foreground) 72%, transparent);
+}
+
+.projectFacts dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+.projectFacts a { color: var(--primary-ink); }

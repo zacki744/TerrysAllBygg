@@ -1,34 +1,17 @@
 import { useNavigate } from "react-router-dom";
 import AdminNavbar from "../../components/Admin/AdminNavbar";
-import SnickeriForm, { type SnickeriFormData } from "../../components/Admin/SnickeriForm";
+import SnickeriForm from "../../components/Admin/SnickeriForm";
+import { AdminAPI } from "../../lib/adminApi";
+import type { SnickeriInput } from "../../lib/types";
 import PageMeta from "../../components/PageMeta";
 import styles from "../../admin.module.css";
 import { notify } from "../../lib/notify";
 
-async function createSnickeri(data: SnickeriFormData): Promise<void> {
-  const res = await fetch("/api/admin/snickerier", {
-    method:      "POST",
-    credentials: "include",
-    headers:     { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      title:            data.title,
-      description:      data.description,
-      price:            data.price,
-      mainImage:        data.mainImage,
-      additionalImages: data.additionalImages ?? [],
-    }),
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.message || "Kunde inte skapa snickeri");
-  }
-}
-
 export default function NewSnickeri() {
   const navigate = useNavigate();
 
-  const handleSubmit = async (data: SnickeriFormData) => {
-    await createSnickeri(data);
+  const handleSubmit = async (data: SnickeriInput) => {
+    await AdminAPI.snickerier.create(data);
     notify.success(`"${data.title}" är skapat och syns på sajten`);
     navigate("/admin");
   };

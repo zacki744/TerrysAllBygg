@@ -123,4 +123,32 @@ public class ModelValidationTests
         };
         Assert.Empty(Validate(inquiry));
     }
+
+    [Theory]
+    [InlineData("/uploads/projects/a.webp", true)]
+    [InlineData("/uploads/projects/thumbs/a.webp", true)]
+    [InlineData("/uploads/../appsettings.json", false)]
+    [InlineData("https://example.com/a.jpg", false)]
+    [InlineData("javascript:alert(1)", false)]
+    public void Bildsökväg_måste_vara_en_uppladdad_fil(string path, bool valid)
+    {
+        var project = new Models.Project.CreateProjectRequest { Title = "Altan", Description = "Text", MainImage = path };
+        Assert.Equal(valid, Validate(project).Count == 0);
+    }
+
+    [Theory]
+    [InlineData(2025, true)]
+    [InlineData(1800, false)]
+    public void Projektår_måste_vara_rimligt(int year, bool valid)
+    {
+        var project = new Models.Project.CreateProjectRequest { Title = "Altan", Description = "Text", Year = year };
+        Assert.Equal(valid, Validate(project).Count == 0);
+    }
+
+    [Fact]
+    public void Negativt_pris_avvisas()
+    {
+        var snickeri = new Models.Snickeri.CreateSnickeriRequest { Title = "Bänk", Description = "Ek", Price = -1 };
+        Assert.NotEmpty(Validate(snickeri));
+    }
 }

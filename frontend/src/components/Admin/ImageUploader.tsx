@@ -9,6 +9,8 @@
 import { useId, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, GripVertical, ImagePlus, Star, Trash2 } from "lucide-react";
 import { thumbUrl } from "../../lib/images";
+import { AdminAPI } from "../../lib/adminApi";
+import { errorMessage } from "../../lib/errors";
 import styles from "../../admin.module.css";
 
 interface ImageUploaderProps {
@@ -73,19 +75,10 @@ export default function ImageUploader({
     let current = images;
     for (const [i, file] of accepted.entries()) {
       try {
-        const body = new FormData();
-        body.append("image", file);
-        const res = await fetch("/api/admin/image/upload", { method: "POST", credentials: "include", body });
-        const data: { success?: boolean; path?: string; error?: string } = await res.json().catch(() => ({}));
-
-        if (!res.ok || !data.success || !data.path) {
-          problems.push(`${file.name}: ${data.error ?? `uppladdningen misslyckades (${res.status})`}`);
-        } else {
-          current = [...current, data.path];
-          onImagesChange(current);   // visa varje bild direkt när den är klar
-        }
-      } catch {
-        problems.push(`${file.name}: nätverksfel – kontrollera uppkopplingen`);
+        current = [...current, await AdminAPI.images.upload(file)];
+        onImagesChange(current);   // visa varje bild direkt när den är klar
+      } catch (err) {
+        problems.push(`${file.name}: ${errorMessage(err, "uppladdningen misslyckades")}`);
       }
       setProgress({ done: i + 1, total: accepted.length });
     }
@@ -110,12 +103,7 @@ export default function ImageUploader({
 
     // Servern flyttar bara undan filen om inget sparat projekt använder den
     try {
-      await fetch("/api/admin/image/delete", {
-        method: "DELETE",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ path }),
-      });
+      await AdminAPI.images.remove(path);
     } catch { /* bildunderhållet städar senare */ }
   };
 

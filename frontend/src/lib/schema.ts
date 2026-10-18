@@ -6,7 +6,6 @@
 
 import { CONTACT } from "./contact";
 import { DEFAULT_SETTINGS, type SiteSettings } from "./settings";
-import { servicePath, type Service } from "./services";
 
 const BUSINESS_ID = `${CONTACT.baseUrl}/#foretag`;
 const SITE_ID     = `${CONTACT.baseUrl}/#webbplats`;
@@ -44,12 +43,11 @@ export function businessSchema(settings: SiteSettings = DEFAULT_SETTINGS) {
     hasOfferCatalog: {
       "@type": "OfferCatalog",
       name: "Tjänster",
-      itemListElement: settings.services.map((s) => ({
+      itemListElement: settings.categories.map((c) => ({
         "@type": "Offer",
         itemOffered: {
           "@type": "Service",
-          name: s.detail ? `${s.name} ${s.detail}` : s.name,
-          url: absoluteUrl(servicePath(s.slug)),
+          name: c.detail ? `${c.name} ${c.detail}` : c.name,
           areaServed: "Österlen, Skåne",
         },
       })),
@@ -118,18 +116,5 @@ export function productSchema(p: ProductInfo) {
       itemCondition: "https://schema.org/NewCondition",
       seller: { "@id": BUSINESS_ID },
     },
-  };
-}
-
-/** En tjänst (tjänstesidorna). Pekar på företaget som utförare. */
-export function serviceSchema(s: Service) {
-  return {
-    "@context": "https://schema.org",
-    "@type": "Service",
-    name: s.title,
-    description: s.description,
-    url: absoluteUrl(servicePath(s.slug)),
-    provider: { "@id": BUSINESS_ID },
-    areaServed: CONTACT.areaServed.map((name) => ({ "@type": "Place", name })),
   };
 }

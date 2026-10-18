@@ -39,19 +39,19 @@ public class SiteSettings : IValidatableObject
     // ── Om oss ────────────────────────────────────────────
     [MaxLength(4000)] public string? AboutStory { get; set; }
 
-    // ── Tjänster (admin → Tjänster) ───────────────────────
-    // Null = sajtens standardlista (frontend/src/lib/services.ts).
-    [MaxLength(30)] public List<ServiceItem>? Services { get; set; }
+    // ── Kategorier (admin → Inställningar) ────────────────
+    // Null = sajtens standardlista (frontend/src/lib/categories.ts).
+    [MaxLength(30)] public List<CategoryItem>? Categories { get; set; }
 
     public IEnumerable<ValidationResult> Validate(ValidationContext context)
     {
-        if (Services == null) yield break;
+        if (Categories == null) yield break;
 
-        var duplicate = Services.GroupBy(s => s.Slug.Trim().ToLowerInvariant()).FirstOrDefault(g => g.Count() > 1);
+        var duplicate = Categories.GroupBy(c => c.Slug.Trim().ToLowerInvariant()).FirstOrDefault(g => g.Count() > 1);
         if (duplicate != null)
-            yield return new ValidationResult($"Två tjänster har samma adress: {duplicate.Key}", [nameof(Services)]);
+            yield return new ValidationResult($"Två kategorier har samma adress: {duplicate.Key}", [nameof(Categories)]);
 
-        // Varje tjänsts fält valideras av MVC (listor valideras rekursivt).
+        // Varje kategoris fält valideras av MVC (listor valideras rekursivt).
     }
 
     /// <summary>Trimmar texter och gör tomma fält till null (= standardvärde).</summary>
@@ -73,7 +73,7 @@ public class SiteSettings : IValidatableObject
         if (HeroImage == null)
             HeroImageWidth = HeroImageHeight = null;
 
-        Services?.ForEach(s => s.Normalize());
+        Categories?.ForEach(c => c.Normalize());
 
         // Omdömen kan inte visas utan en länk att visa
         if (GoogleReviewsUrl == null)

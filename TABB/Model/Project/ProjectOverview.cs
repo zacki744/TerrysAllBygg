@@ -6,5 +6,6 @@ public class ProjectOverview
     public required string Title { get; init; }
     public required string Description { get; init; }
     public required string Image { get; init; }
-    public string? Service { get; init; }
+    public string? Category { get; init; }
+    public string? Location { get; init; }
 }

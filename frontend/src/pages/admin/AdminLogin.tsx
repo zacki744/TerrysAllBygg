@@ -1,13 +1,20 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { AuthService } from "../../lib/auth";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 import styles from "../../admin.module.css";
 import { Link } from "react-router-dom";
 
+// Bara sidor i admin — aldrig en extern adress
+const safeReturn = (path: string | null) =>
+  path && path.startsWith("/admin") && !path.startsWith("/admin/login") ? path : "/admin";
+
 export default function AdminLogin() {
   const navigate = useNavigate();
+  const [params] = useSearchParams();
+  const expired = params.get("utloggad") === "1";
+  const returnTo = safeReturn(params.get("till"));
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -24,7 +31,7 @@ export default function AdminLogin() {
     try {
       const success = await AuthService.login(form.email, form.password);
       if (success) {
-        navigate("/admin");
+        navigate(returnTo, { replace: true });
       } else {
         setError("Fel e-post eller lösenord.");
       }
@@ -44,12 +51,20 @@ export default function AdminLogin() {
           <p className={styles.loginSubtitle}>Logga in för att hantera sidan</p>
         </div>
 
+        {expired && (
+          <p className={styles.noticeBox} role="status">
+            Du har varit inloggad länge och behöver logga in igen. Ändringar som inte
+            sparats hann tyvärr inte komma med.
+          </p>
+        )}
+
         <form onSubmit={handleSubmit}
           style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
 
           <div>
-            <label className={styles.formLabel}>E-post</label>
+            <label htmlFor="login-email" className={styles.formLabel}>E-post</label>
             <Input
+              id="login-email"
               name="email"
               type="email"
               placeholder="din@email.se"
@@ -61,8 +76,9 @@ export default function AdminLogin() {
           </div>
 
           <div>
-            <label className={styles.formLabel}>Lösenord</label>
+            <label htmlFor="login-password" className={styles.formLabel}>Lösenord</label>
             <Input
+              id="login-password"
               name="password"
               type="password"
               placeholder="Ange lösenord"
@@ -73,7 +89,7 @@ export default function AdminLogin() {
             />
           </div>
 
-          {error && <div className={styles.errorBox}>{error}</div>}
+          {error && <div className={styles.errorBox} role="alert">{error}</div>}
 
           <Button type="submit" disabled={loading} className="w-full">
             {loading ? "Loggar in..." : "Logga in"}
@@ -83,7 +99,7 @@ export default function AdminLogin() {
 
         <Link to="/" style={{
           fontSize: "0.875rem",
-          color: "color-mix(in srgb, var(--foreground) 55%, transparent)",
+          color: "color-mix(in srgb, var(--foreground) 72%, transparent)",
           textDecoration: "none",
           textAlign: "center" as const,
         }}>

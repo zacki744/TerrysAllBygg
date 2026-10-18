@@ -31,7 +31,7 @@ public class AdminSnickeriController : ControllerBase
     {
         var item = await _snickeriService.GetByIdAsync(id, ct);
         if (item == null)
-            return NotFound(new { error = "Snickeri not found" });
+            return NotFound(new { error = "Snickeriet hittades inte" });
         return Ok(item);
     }
 
@@ -59,7 +59,7 @@ public class AdminSnickeriController : ControllerBase
 
         var success = await _snickeriService.UpdateAsync(id, request, ct);
         if (!success)
-            return NotFound(new { error = "Snickeri not found" });
+            return NotFound(new { error = "Snickeriet hittades inte" });
 
         return Ok(new { message = "Snickeri updated successfully" });
     }
@@ -70,7 +70,7 @@ public class AdminSnickeriController : ControllerBase
     {
         var success = await _snickeriService.DeleteAsync(id, ct);
         if (!success)
-            return NotFound(new { error = "Snickeri not found" });
+            return NotFound(new { error = "Snickeriet hittades inte" });
 
         return Ok(new { message = "Snickeri deleted successfully" });
     }
