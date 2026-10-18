@@ -33,12 +33,14 @@
 
 /* Shared content containers */
 .mainNarrow {
+  width: 100%;
   max-width: 56rem;
   margin: 0 auto;
   padding: 6rem 1.5rem 3rem;
 }
 
 .mainWide {
+  width: 100%;          /* auto-marginaler i flex: annars blir bredden innehållets (svepbara rader) */
   max-width: 72rem;
   margin: 0 auto;
   padding: 6rem 2rem 3rem;
@@ -192,6 +194,14 @@ h2.infoBoxTitle { font-size: 1.17em; }
   font-size: 2rem;
   font-weight: 700;
   color: var(--primary-ink);
+  white-space: nowrap;
+}
+
+/* "inkl. moms" efter priset (prisinformationslagen) */
+.vatNote {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: color-mix(in srgb, var(--foreground) 72%, transparent);
   white-space: nowrap;
 }
 
@@ -427,7 +437,7 @@ h2.infoBoxTitle { font-size: 1.17em; }
 }
 
 .privacyBody a {
-  color: var(--accent-ink);
+  color: var(--primary-ink);
   text-decoration: underline;
   text-underline-offset: 2px;
 }
@@ -489,7 +499,7 @@ h2.infoBoxTitle { font-size: 1.17em; }
 }
 
 .privacyLink {
-  color: var(--accent-ink);
+  color: var(--primary-ink);
   text-decoration: underline;
   text-underline-offset: 2px;
 }
@@ -533,7 +543,7 @@ h2.infoBoxTitle { font-size: 1.17em; }
 }
 
 .retryErrorPhone {
-  color: var(--accent-ink);
+  color: var(--primary-ink);
   font-size: 0.9375rem;
 }
 
@@ -734,6 +744,26 @@ h2.infoBoxTitle { font-size: 1.17em; }
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+  margin: -0.5rem 0 1.75rem;
+}
+
+/* Mobil: en rad som sveps i sidled, så att höjden alltid är en rad */
+@media (max-width: 639px) {
+  .filterChips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    margin-inline: -1rem;
+    padding-inline: 1rem;
+    scroll-padding-inline: 1rem;
+  }
+  .filterChips::-webkit-scrollbar { display: none; }
+  .filterChip { flex: 0 0 auto; white-space: nowrap; }
+}
+
+/* Samma höjd som en rad filterknappar (se ProjectList) */
+.filterChipsPlaceholder {
+  height: calc(0.9375rem * 1.6 + 1rem + 2px);
   margin: -0.5rem 0 1.75rem;
 }
 

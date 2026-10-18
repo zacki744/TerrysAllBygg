@@ -7,7 +7,7 @@ import Button from "../components/ui/Button";
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { bookingReference, referenceDescription } from "../lib/routes";
-import { CircleCheck, MapPin } from "lucide-react";
+import { CircleCheck, Mail, MapPin, Phone } from "lucide-react";
 import styles from "../pages.module.css";
 import PageMeta from "../components/PageMeta";
 import PrivacyNotice from "../components/PrivacyNotice";
@@ -97,7 +97,7 @@ export default function Book() {
           <header>
             <h1 className={styles.pageTitle}>Boka kostnadsfri konsultation</h1>
             <p className={styles.pageSubtitle}>
-              Fyll i formuläret nedan så återkommer vi till dig inom 24 timmar.
+              Fyll i formuläret nedan så återkommer vi till dig inom 24 timmar på vardagar.
             </p>
           </header>
 
@@ -222,8 +222,16 @@ export default function Book() {
           <div className={styles.infoBox}>
             <h2 className={styles.infoBoxTitle}>Kontaktinformation</h2>
             <div className={styles.infoBoxText}>
-              <p className={styles.iconLine}><MapPin size={16} aria-hidden /> Österlen, Skåne</p>
-              <p style={{ marginTop: "0.5rem" }}>Vi svarar normalt inom 24 timmar på vardagar.</p>
+              <p className={styles.iconLine}>
+                <Phone size={16} aria-hidden /> <a href={CONTACT.phoneHref}>{CONTACT.phone}</a>
+              </p>
+              <p className={styles.iconLine} style={{ marginTop: "0.5rem" }}>
+                <Mail size={16} aria-hidden /> <a href={CONTACT.emailHref}>{CONTACT.email}</a>
+              </p>
+              <p className={styles.iconLine} style={{ marginTop: "0.5rem" }}>
+                <MapPin size={16} aria-hidden /> Österlen och resten av Skåne
+              </p>
+              <p style={{ marginTop: "0.75rem" }}>{CONTACT.responseTime}.</p>
             </div>
           </div>
 

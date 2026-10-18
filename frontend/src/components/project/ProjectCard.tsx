@@ -38,7 +38,7 @@ export default function ProjectCard({
           <img
             src={thumbFailed ? image : thumbUrl(image)}
             srcSet={thumbFailed ? undefined : cardSrcSet(image)}
-            sizes="(min-width: 1024px) 380px, (min-width: 640px) 50vw, 100vw"
+            sizes="(min-width: 1024px) 380px, (min-width: 640px) 50vw, 42vw"
             onError={() => setThumbFailed(true)}
             alt={title}
             className={`${styles.cardImage} ${loaded ? styles.cardImageLoaded : styles.cardImageHidden}`}

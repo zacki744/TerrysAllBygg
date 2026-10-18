@@ -10,7 +10,7 @@ import styles from "./components.module.css";
 
 export default function CallBar() {
   const { pathname } = useLocation();
-  const onBookPage = pathname === "/book";
+  const onBookPage = pathname.replace(/\/+$/, "") === "/book";   // även /book/ (förrenderad)
 
   return (
     <div className={styles.callBar}>

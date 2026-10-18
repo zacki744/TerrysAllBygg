@@ -52,7 +52,9 @@ export default function SnickeriCard({
             <p className={styles.snickeriCardDescription}>{description}</p>
           </div>
           <div className={styles.snickeriCardFooter}>
-            <span className={styles.snickeriCardPrice}>{formatPrice(price)}</span>
+            <span className={styles.snickeriCardPrice}>
+              {formatPrice(price)} <span className={styles.vatNote}>inkl. moms</span>
+            </span>
             <span className={styles.snickeriCardCta}>Se mer →</span>
           </div>
         </div>

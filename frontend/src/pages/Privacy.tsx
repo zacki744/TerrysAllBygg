@@ -43,10 +43,10 @@ export default function Privacy() {
             behandlas via den här webbplatsen.
           </p>
           <ul className={styles.privacyFacts}>
-            {CONTACT.orgNumber && <li>Organisationsnummer: {CONTACT.orgNumber}</li>}
             {settings.address && <li>Adress: {settings.address}</li>}
             <li>E-post: <a href={CONTACT.emailHref}>{CONTACT.email}</a></li>
             <li>Telefon: <a href={CONTACT.phoneHref}>{CONTACT.phone}</a></li>
+            <li>Momsreg.nr: {CONTACT.vatNumber}</li>
           </ul>
         </section>
 

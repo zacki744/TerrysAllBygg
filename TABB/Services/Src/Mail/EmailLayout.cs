@@ -18,7 +18,7 @@ public static class Brand
     public const string Email     = "terrysallbygg@gmail.com";
     public const string SiteUrl   = "https://terrysallbygg.se";
     public const string SiteLabel = "terrysallbygg.se";
-    public const string OrgNumber = "570303-9395";
+    public const string VatNumber = "SE570303939501";   // momsreg.nr (org.nr visas inte, det är ett personnummer)
     public const string LogoUrl   = SiteUrl + "/apple-touch-icon.png";
     public const string PrivacyUrl = SiteUrl + "/integritetspolicy";
 
@@ -190,7 +190,7 @@ public static class EmailLayout
         <a href=""mailto:{Brand.Email}"" style=""color:{Brand.Muted};text-decoration:none;"">{Brand.Email}</a> &middot;
         <a href=""{Brand.SiteUrl}"" style=""color:{Brand.Muted};text-decoration:none;"">{Brand.SiteLabel}</a>
       </p>
-      <p style=""margin:4px 0 0;"">{Brand.Company} &middot; Org.nr {Brand.OrgNumber} &middot; Österlen, Skåne</p>
+      <p style=""margin:4px 0 0;"">{Brand.Company} &middot; Momsreg.nr {Brand.VatNumber} &middot; Österlen, Skåne</p>
       {privacy}
     </td></tr>
 

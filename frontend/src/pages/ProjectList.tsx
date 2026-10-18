@@ -46,6 +46,9 @@ export default function ProjectList() {
         </p>
       </header>
 
+      {/* Under laddning: håll plats för filterraden så att korten inte hoppar ner */}
+      {loading && categories.length > 0 && <div className={styles.filterChipsPlaceholder} aria-hidden />}
+
       {used.length > 0 && (
         <div className={styles.filterChips} role="group" aria-label="Visa projekt för">
           <button type="button" className={styles.filterChip} aria-pressed={!active} onClick={() => select(null)}>

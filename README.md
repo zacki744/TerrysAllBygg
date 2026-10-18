@@ -85,6 +85,13 @@ Utan sparade kategorier används standardlistan i `frontend/src/lib/categories.t
 
 Varje projekt kan få en kategori som **etikett**. Formuläret föreslår en utifrån titeln när den saknas. Projekt kan också få **valfria fakta**: ort, år och omfattning (t.ex. "6 veckor, ca 40 m²"). De visas som en rad under rubriken, och orten läggs till i sidans titel för Google. Tomma fält visas inte.
 
+### Företagsuppgifter och priser
+
+- Sidfoten, integritetspolicyn och mejlen visar **momsreg.nr** (`CONTACT.vatNumber` i `frontend/src/lib/contact.ts`, `Brand.VatNumber` i `EmailLayout.cs`). Org.nr visas medvetet inte – för en enskild firma är det innehavarens personnummer.
+- "Godkänd för F-skatt" visas i sidfoten och förtroenderaden när den är ikryssad i admin → Inställningar.
+- Priser på snickerier anges **inklusive moms** och visas med "inkl. moms".
+- Svarslöftet ("Vi svarar inom 24 timmar på vardagar") finns i `CONTACT.responseTime`.
+
 ### E-postflöden
 
 - **Konsultationsförfrågan** — skickar bekräftelse till kunden + notifiering till Terry

@@ -20,8 +20,11 @@ export default function Footer() {
         <div>
           <p className={styles.footerBrand}>{CONTACT.companyName}</p>
           <p className={styles.footerText}>
-            Lokalt byggföretag i Österlen, Skåne. Vi förverkligar ditt projekt
-            med kvalitet och omsorg.
+            Lokalt bygg- och snickeriföretag på Österlen. Vi förverkligar ditt
+            projekt med kvalitet och omsorg.
+          </p>
+          <p className={styles.footerText}>
+            Vi arbetar i {CONTACT.areaServed.slice(0, -1).join(", ")} och resten av Skåne.
           </p>
 
           {/* Sociala medier om de finns */}
@@ -72,6 +75,7 @@ export default function Footer() {
               </a>
             )}
           </div>
+          <p className={styles.footerText}>{CONTACT.responseTime}.</p>
         </div>
 
       </div>
@@ -81,8 +85,8 @@ export default function Footer() {
           © {year} {CONTACT.companyName}. Alla rättigheter förbehållna.
         </p>
         <div className={styles.footerLegal}>
-          {CONTACT.orgNumber && <span>Org.nr {CONTACT.orgNumber}</span>}
           {CONTACT.vatNumber && <span>Momsreg.nr {CONTACT.vatNumber}</span>}
+          {settings.trustFTax && <span>Godkänd för F-skatt</span>}
           {settings.address && <span>{settings.address}</span>}
           <Link to={PRIVACY.path}>Integritetspolicy</Link>
         </div>

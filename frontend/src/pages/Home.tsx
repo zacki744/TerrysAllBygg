@@ -17,7 +17,8 @@ import { categoryPath } from "../lib/categories";
 
 const HOME_PROJECT_COUNT = 6;
 
-
+// Hela rader i rutnätet (3 i bredd): 6, 3 eller alla om de är färre än 3
+const homeCount = (n: number) => (n >= 6 ? 6 : n >= 3 ? 3 : n);
 
 export default function Home() {
   const { data, loading, error, reload } = useFetch<ProjectOverview[]>(API.projects);
@@ -51,13 +52,13 @@ export default function Home() {
           <div className={styles.sectionHeader}>
             <h2 id="home-projects" className={styles.sectionTitle}>Tidigare projekt</h2>
             <Link to="/projekt" className={styles.sectionLink}>
-              {projects.length > HOME_PROJECT_COUNT ? `Se alla ${projects.length} projekt` : "Se alla projekt"}
+              {projects.length > homeCount(projects.length) ? `Se alla ${projects.length} projekt` : "Se alla projekt"}
             </Link>
           </div>
           <div className={styles.projectGrid}>
             {loading && Array.from({ length: HOME_PROJECT_COUNT }).map((_, i) => <ProjectCardSkeleton key={i} />)}
             {!!error && <RetryError onRetry={reload} />}
-            {!loading && !error && projects.slice(0, HOME_PROJECT_COUNT).map((p, i) => (
+            {!loading && !error && projects.slice(0, homeCount(projects.length)).map((p, i) => (
               <ProjectCard key={p.id} {...p} priority={i < 3} />
             ))}
           </div>
@@ -102,7 +103,7 @@ export default function Home() {
           <p className={styles.homeCtaTitle}>Redo att sätta igång?</p>
           <p className={styles.homeCtaSubtitle}>
             Vi erbjuder kostnadsfri konsultation — berätta om ditt projekt
-            så återkommer vi inom 24 timmar.
+            så återkommer vi inom 24 timmar på vardagar.
           </p>
           <div className={styles.homeCtaButtons}>
             <Link to="/book"       className={styles.btnPrimary}>Boka konsultation</Link>

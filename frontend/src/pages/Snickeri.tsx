@@ -119,7 +119,9 @@ export default function SnickeriPageContent() {
 
         <header className={styles.snickeriDetailHeader}>
           <h1 className={styles.projectTitle}>{snickeri.title}</h1>
-          <p className={styles.snickeriDetailPrice}>{formatPrice(snickeri.price)}</p>
+          <p className={styles.snickeriDetailPrice}>
+            {formatPrice(snickeri.price)} <span className={styles.vatNote}>inkl. moms</span>
+          </p>
         </header>
 
         <ImageGallery key={id} images={snickeri.images} title={snickeri.title} />
